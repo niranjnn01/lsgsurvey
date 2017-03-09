@@ -3,7 +3,7 @@
 
 class Question extends CI_Controller {
 
-	public function __construct(){
+	public function __construct() {
 
 		parent::__construct();
 
@@ -11,11 +11,11 @@ class Question extends CI_Controller {
 
 		$this->aErrorTypes = c('error_types');
 
-		$this->aAnswerTypes = array(
-			'single_value_text' => 1,
-			'single_value_select' => 2,
-			'multiple_value_checkbox' => 2,
-		);
+		$this->load->config('question_config');
+
+		$this->aAnswerTypes = $this->config->item('answer_types');
+
+		$this->aAnswerTypesDetails = $this->config->item('answer_types_details');
 
 	}
 
@@ -24,13 +24,10 @@ class Question extends CI_Controller {
 
 	}
 
-
-
-
-/**
- * get the next question
- * @return [type] [description]
- */
+	/**
+	 * get the next question
+	 * @return [type] [description]
+	 */
 	public function get($iTemporarySurveyNumber=0, $iQuestionNo=0) {
 
 		$aQuestionData = array();
@@ -79,6 +76,8 @@ class Question extends CI_Controller {
 		// all ok. we can proceed
 		if($bProceed) {
 
+			$aQuestionsMasterData = $this->config->item('questions_master_data');
+	/*
 				$aQuestionsMasterData = array(
 					1 => array(
 						'title' => 'Name of Head of Family',
@@ -86,22 +85,42 @@ class Question extends CI_Controller {
 						'answer_options' => array(),
 					),
 					2 => array(
-						'title' => 'Aadhaar Number',
-						'answer_type' => $this->aAnswerTypes['single_value_text'],
-						'answer_options' => array(),
+						'title' => 'Nature of ownership of house',
+						'answer_type' => $this->aAnswerTypes['single_value_radio'],
+						'answer_options' => array(
+							array(
+								'value' => 1,
+								'title' => 'Own House'
+							),
+							array(
+								'value' => 2,
+								'title' => 'Rental'
+							),
+						),
 					),
-					3 => array(
-						'title' => 'Election ID',
-						'answer_type' => $this->aAnswerTypes['single_value_text'],
-						'answer_options' => array(),
-					),
+
 				);
+*/
+
+				// Is this the last question ?
+				$bIsLastQuestion = $iQuestionNo == count($aQuestionsMasterData) ? TRUE : FALSE;
 
 
 				if(isset($aQuestionsMasterData[$iQuestionNo])) {
+
+					//get the question data
 					$aQuestionData = $aQuestionsMasterData[$iQuestionNo];
 
-					$sJsonData = json_encode($this->_normalizeQuestion($aQuestionData));
+					// normalize the question data
+					$aQuestionData = $this->_normalizeQuestion($aQuestionData);
+
+					// add custom fields
+					$aQuestionData['end_of_section'] = false;
+					$aQuestionData['last_question'] = $bIsLastQuestion;
+
+					// encode the data
+					$sJsonData = json_encode($aQuestionData);
+
 				} else {
 					$sError = 'question not found';
 				}
@@ -124,12 +143,10 @@ class Question extends CI_Controller {
 
 
 		$aNormalizedQuestionStructure = array(
-			'title' => '',
-			'answer_type' => $this->aAnswerTypes['single_value_text'],
-			'answer_options' => array(),
-			'field_name' => 'single_value_text',
-			'end_of_section' => FALSE
-
+			'title' 					=> '',
+			'answer_type' 		=> $aQuestion['answer_type'],
+			'answer_options' 	=> array(),
+			'field_name' 			=> $this->aAnswerTypesDetails[$aQuestion['answer_type']]['field_name'],
 		);
 
 		return array_merge($aNormalizedQuestionStructure, $aQuestion);

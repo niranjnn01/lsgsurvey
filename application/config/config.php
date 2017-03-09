@@ -31,7 +31,7 @@ switch( $base_path ) {
         break;
 
 
-    case '':
+    case '/home/damaccpanel/public_html/lsgsurv':
         $_environment = 'development';
         break;
 }
@@ -45,8 +45,6 @@ echo BASEPATH;
 echo '<br/>';
 echo $_environment;
 */
-
-
 
 define('ENVIRONMENT_', $_environment);
 

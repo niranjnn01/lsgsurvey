@@ -1,5 +1,5 @@
 
-
+var base_url = '<?php echo $base_url;?>';
 
 $(document).ready(function(){
 
@@ -12,7 +12,7 @@ $(document).ready(function(){
 
       // get te survey information
       $.ajax({
-        url:"http://localhost/johnson/lsg_survey/survey/current_survey",
+        url: base_url + "survey/current_survey",
         type:"GET",
         success:function (data) {
 
@@ -20,18 +20,17 @@ $(document).ready(function(){
           // store survey information locally.
           localStorage.setItem('temporary_survey_number', data.temporary_survey_number);
           localStorage.setItem('current_question', data.current_question);
+          localStorage.setItem('last_question', 'false');
 
           //contact the server for first question
           $.ajax({
-            url:"http://localhost/johnson/lsg_survey/question/get/" + data.temporary_survey_number + "/" + data.current_question,
+            url: base_url + "question/get/" + data.temporary_survey_number + "/" + data.current_question,
             type:"GET",
             success:function (data) {
 
               //console.log('success called');
 
               localStorage.setItem('answer_type', data.answer_type);
-
-              console.log(JSON.stringify(data));
 
               appendQuestion(data);
 
@@ -44,11 +43,6 @@ $(document).ready(function(){
         dataType : "json"
       });
     //}
-
-
-
-
-
 
   }
   else {
@@ -66,8 +60,8 @@ $(document).ready(function(){
 
     // handle the current answer
     handleCurrentAnswer();
-
   });
+
 });
 
 function fetchNextQuestion() {
@@ -80,16 +74,14 @@ function fetchNextQuestion() {
 
   //contact the server for next question
   $.ajax({
-    url:"http://localhost/johnson/lsg_survey/question/get/" + temporary_survey_number + "/" + (parseInt(current_question) + 1),
+    url:base_url + "question/get/" + temporary_survey_number + "/" + (parseInt(current_question) + 1),
     type:"GET",
     success:function (data) {
 
-      //console.log('success called');
-
-      console.log(JSON.stringify(data));
 
       localStorage.setItem('current_question', (parseInt(current_question) + 1));
-
+      localStorage.setItem('last_question', data.last_question);
+      localStorage.setItem('answer_type', data.answer_type);
 
       appendQuestion(data);
 
@@ -100,6 +92,7 @@ function fetchNextQuestion() {
 
 
 function handleCurrentAnswer() {
+
 
   var bWasSuccessful = false;
 
@@ -120,12 +113,28 @@ function handleCurrentAnswer() {
 
           oDataObject.single_value_text = input;
           break;
-      }
 
+        case "2":
+          var input = $('#question_container .answer_block input[name="single_value_radio"]:checked').val();
+
+          oDataObject.single_value_radio = input;
+          break;
+
+        case "3":
+          oDataObject.multi_value_checkbox = $('#question_container .answer_block input[name="multi_value_checkbox"]:checked').map(function () {
+            return $(this).val();
+          }).get();
+        case "4":
+          var input = $('#question_container .answer_block textarea[name="single_value_textarea"]').val();
+
+          oDataObject.single_value_textarea = input;
+          break;
+
+      }
 
     //Submit data back to server
     $.ajax({
-      url:"http://localhost/johnson/lsg_survey/survey/accept_answer/" + current_question,
+      url: base_url + "survey/accept_answer/" + current_question,
       data: oDataObject,
       method:"POST",
       success:function (data) {
@@ -133,11 +142,15 @@ function handleCurrentAnswer() {
         if(data.error == '') {
 
 
+          var last_question = localStorage.getItem('last_question');
 
-          fetchNextQuestion();
 
-          //console.log(JSON.stringify(data));
-          //console.log(bWasSuccessful);
+
+          if(last_question == "true") {
+            surveyCompleteRoutines();
+          } else {
+            fetchNextQuestion();
+          }
 
         }
 
@@ -152,6 +165,48 @@ function handleCurrentAnswer() {
 
 }
 
+function showSurveyCompleteView() {
+
+  // remove all buttons etc
+  $('#survey_container').html('');
+
+
+  // show link to access the survey result page. => view page of an individual survey!
+  $('#survey_container').html(
+    $(
+      '<div style="text-align:center;">' +
+        '<h4>Survey has been completed !</h4>' +
+        '<a href="'+base_url+'survey/data/" style="align:center" class="btn btn-primary">View Survey Data' +
+        '</a>' +
+      '</div>'
+      )
+  );
+}
+
+
+function surveyCompleteRoutines() {
+
+  //just let the server know that the survey was completed.
+
+  $.ajax({
+    url: base_url + "survey/complete",
+    type:"GET",
+    success:function (data) {
+
+      if(data.error == '') {
+
+        showSurveyCompleteView();
+
+      } else {
+
+        alert("There was some problem completing the survey.");
+      }
+
+    },
+    dataType : "json"
+  });
+
+}
 
 function appendQuestion(data) {
 
@@ -166,6 +221,47 @@ function appendQuestion(data) {
       '<input type="text" name="single_value_text" class="form-control"/>' +
       '</div>'
       break;
+    case 2:
+
+      answer_html =
+      '<div class="radio">';
+
+      $.each(data.answer_options, function (index, answer_option){
+
+        answer_html +=
+        '<label class="radio-inline">' +
+          '<input type="radio" name="'+ data.field_name +'" value="'+ answer_option.value +'"/> ' + answer_option.title +
+        '</label>';
+
+      });
+
+      answer_html += '</div>';
+      break;
+
+    case 3:
+
+      answer_html =
+      '<div class="radio">';
+
+      $.each(data.answer_options, function (index, answer_option){
+
+        answer_html +=
+        '<label class="checkbox-inline">' +
+          '<input type="checkbox" name="'+ data.field_name +'" value="'+ answer_option.value +'"/> ' + answer_option.title +
+        '</label>';
+
+      });
+
+      answer_html += '</div>';
+      break;
+    case 4:
+      answer_html =
+      '<div class="form-group">'+
+      '<textarea name="single_value_textarea" class="form-control" rows="4"></textarea>' +
+      '</div>'
+      break;
+
+
   }
 
 

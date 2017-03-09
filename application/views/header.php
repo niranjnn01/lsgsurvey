@@ -23,7 +23,7 @@
 <?php /*?>
 <link rel="stylesheet" href="<?php echo $this->config->item('css_template_cdn_url');?>">
 <?php */?>
-<link rel="stylesheet" href="http://localhost/johnson/lsg_survey/asset/bootstrap/3.3.5/css/bootstrap.min.css">
+<link rel="stylesheet" href="<?php echo $this->config->item('asset_url');?>bootstrap/3.3.5/css/bootstrap.min.css">
 
 <?php echo load_files('css');?>
 
