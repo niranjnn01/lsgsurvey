@@ -20,8 +20,20 @@ $(document).ready(function(){
 
         if(data.result) {
 
+          $('#result_container').append('<table class="table"></table>');
+          $('#result_container table').append(
+            $(
+              '<tr>' +
+              '<th>SI</th>' +
+              '<th>Name</th>' +
+              '<th>Ward Id</th>'+
+              '</tr>'
+            )
+          );
           $.each(data.result, function (index, item) {
 
+
+/*
             $('#result_container').append(
               $(
                 '<div class="row">' +
@@ -36,6 +48,27 @@ $(document).ready(function(){
                 '</div>'
               )
             );
+            */
+
+
+            $('#result_container table').append(
+              $(
+                '<tr>' +
+                  '<td>' +
+                  (index + 1) +
+                  '</td>' +
+                  '<td>' +
+                    '<a href="'+ base_url +'survey/data/'+ item.survey_id +'" target="_blank">' +
+                      item.user_name +
+                    '</a>' +
+                  '</td>' +
+                  '<td>' +
+                    item.ward_id +
+                  '</td>' +
+
+                '</tr>'
+              )
+            );
 
           });
         }
@@ -47,5 +80,8 @@ $(document).ready(function(){
     });
 
   });
+
+
+
 
 });

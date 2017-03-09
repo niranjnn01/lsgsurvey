@@ -161,15 +161,15 @@ class Survey_model extends CI_Model{
 						$this->db->where('id', $iLandId);
 						$this->db->set('owner_user_id', $iSurveyeeUserId);
 						$this->db->update('lands');
-
+						break;
 					case 2:
 						// leased
 						$this->markAsLeasedLand($iLandId);
-
+						break;
 					case 3:
 						// legacy
 						$this->markAsLegacyLand($iLandId);
-
+						break;
 				}
 
 				// create mapping between land and house

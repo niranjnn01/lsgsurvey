@@ -175,6 +175,103 @@ function purge_test_data() {
 		$this->load->view('output', array('output' => $sJsonData));
 	}
 
+
+/**
+ *
+ * get details of a survey
+ *
+ * @param  [type] $iSurveyId [description]
+ * @return [type]            [description]oUserPersonalData
+ */
+	function data($iSurveyId){
+
+		$aConfig = array(
+			'table' 		        	=> 'residence_types',
+			'id_field' 		       	=> 'id',
+			'title_field' 	     	=> 'title',
+			'show_default_value' 	=> FALSE
+		);
+		$this->mcontents['aResidenceTypes'] = $this->common_model->getDropDownArray($aConfig);
+
+		$aConfig = array(
+			'table' 		        	=> 'land_area_ranges',
+			'id_field' 		       	=> 'id',
+			'title_field' 	     	=> 'title',
+			'show_default_value' 	=> FALSE
+		);
+		$this->mcontents['aLandAreaRange'] = $this->common_model->getDropDownArray($aConfig);
+
+
+		$aConfig = array(
+			'table' 		        	=> 'house_area_ranges',
+			'id_field' 		       	=> 'id',
+			'title_field' 	     	=> 'title',
+			'show_default_value' 	=> FALSE
+		);
+		$this->mcontents['aHouseAreaRange'] = $this->common_model->getDropDownArray($aConfig);
+
+
+		$this->mcontents['aLandOwnershipTypes'] = array(
+			1 => 'സ്വന്തം',
+			2 => 'പാട്ടം',
+			3 => 'പാരമ്പര്യമായി  കിട്ടിയത്',
+		);
+
+
+
+		// get basic details
+		$this->db->where('id', $iSurveyId);
+		$this->mcontents['oSurveyData'] = $this->db->get('surveys')->row();
+
+		// get house Details
+		$this->mcontents['oHouseData'] = $this->db->get('houses')->row();
+
+		// get personal details
+		$this->db->select('
+			SU.name,
+			SU.id surveyee_user_id,
+			FHM.id residence_type_id,
+			H.id house_id,
+			H.id house_area_range_id
+			');
+		$this->db->join('surveyee_user_family_map SUFM', 'SU.id = SUFM.surveyee_user_id');
+		$this->db->join('families F', 'SUFM.family_id = F.id');
+		$this->db->join('family_house_map FHM', 'F.id = FHM.family_id');
+		$this->db->join('houses H', 'FHM.house_id = H.id');
+		$this->db->join('surveys S', 'S.house_id = H.id');
+		$this->db->where('S.id', $iSurveyId);
+		$this->mcontents['oUserPersonalData'] = $this->db->get('surveyee_users SU')->row();
+
+//		p($this->mcontents['oUserPersonalData']);
+
+		$this->db->select('L.*, LL.lessee_user_id');
+		$this->db->where('H.id', $this->mcontents['oUserPersonalData']->house_id);
+		$this->db->join('land_house_map LHM', 'L.id = LHM.land_id');
+		$this->db->join('houses H', 'LHM.house_id = H.id');
+		$this->db->join('leased_lands LL', 'L.id = LL.land_id', 'LEFT');
+		$this->mcontents['oLandData'] = $this->db->get('lands L')->row();
+
+
+		if($this->mcontents['oLandData']->lessee_user_id) {
+			$this->mcontents['oLandData']->sLandOwnershipType = $this->mcontents['aLandOwnershipTypes'][2];
+		} elseif($this->mcontents['oLandData']->is_legacy) {
+			$this->mcontents['oLandData']->sLandOwnershipType = $this->mcontents['aLandOwnershipTypes'][3];
+		} elseif($this->mcontents['oUserPersonalData']->surveyee_user_id == $this->mcontents['oLandData']->owner_user_id) {
+			$this->mcontents['oLandData']->sLandOwnershipType = $this->mcontents['aLandOwnershipTypes'][1];
+		}
+
+
+		if( safeText('p', false, 'get') == 'iframe' ) {
+			$this->load->view('iframe_header', $this->mcontents);
+			$this->load->view('survey/data');
+			$this->load->view('iframe_footer');
+		} else {
+			loadTemplate('survey/data');
+		}
+
+	}
+
+
 }
 
 /* End of file account.php */

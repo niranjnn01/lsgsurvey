@@ -35,7 +35,7 @@ class Search extends CI_Controller {
 		// Start building query
 
 
-		$this->db->select("SU.name user_name, H.ward_id", false);
+		$this->db->select("S.id survey_id, SU.name user_name, H.ward_id", false);
 
 		$this->db->join('houses H', 'S.house_id = H.id');
 		$this->db->join('land_house_map LHM', 'H.id = LHM.house_id');
@@ -102,23 +102,11 @@ class Search extends CI_Controller {
 			foreach($aSearchResult AS $oRow) {
 				$aJsonData['result'][] = array(
 					'user_name' => $oRow->user_name,
-					'ward_id' 	=> $oRow->ward_id
+					'ward_id' 	=> $oRow->ward_id,
+					'survey_id' 	=> $oRow->survey_id
 				);
 			}
-		} else {
-			/*
-			$aJsonData['result'][] = array(
-				'user_name' => 'Test data - Rakesh',
-				'ward_id' => 1
-			);
-
-			$aJsonData['result'][] = array(
-				'user_name' => 'Test data - Reshmi',
-				'ward_id' => 2
-			);
-			*/
 		}
-
 
 
 		$aJsonData['message'] = count($aJsonData['result']) . ' results found';
