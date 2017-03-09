@@ -106,6 +106,7 @@ class Search extends CI_Controller {
 				);
 			}
 		} else {
+			/*
 			$aJsonData['result'][] = array(
 				'user_name' => 'Test data - Rakesh',
 				'ward_id' => 1
@@ -115,6 +116,7 @@ class Search extends CI_Controller {
 				'user_name' => 'Test data - Reshmi',
 				'ward_id' => 2
 			);
+			*/
 		}
 
 

@@ -36,8 +36,12 @@
 <body style="margin-top:40px;">
 
 <div id="wrapper">
+
+<?php $this->load->view('header/header_menu', array('c_base_url' => $c_base_url));?>
+
 	<!-- start header -->
-	<header></header>
+	<header>
+	</header>
 
 
 	<section id="content">

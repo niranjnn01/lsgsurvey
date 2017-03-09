@@ -176,7 +176,7 @@ function showSurveyCompleteView() {
     $(
       '<div style="text-align:center;">' +
         '<h4>Survey has been completed !</h4>' +
-        '<a href="'+base_url+'survey/data/" style="align:center" class="btn btn-primary">View Survey Data' +
+        '<a href="'+base_url+'search/" style="align:center" class="btn btn-primary">Search the data collected' +
         '</a>' +
       '</div>'
       )

@@ -89,6 +89,7 @@ function purge_test_data() {
 	$this->db->truncate('surveyee_user_family_map');
 	$this->db->truncate('families');
 
+	$this->db->truncate('houses');
 	$this->db->truncate('house_house_type_map');
 	$this->db->truncate('family_house_map');
 

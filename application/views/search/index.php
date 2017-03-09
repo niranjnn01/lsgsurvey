@@ -7,7 +7,7 @@
 
 
 		<div class="form-group">
-			<input type="submit" name="submit" value="Search" class="btn btn-primary"/>
+			<input type="submit" name="submit" value="Click to search" class="btn btn-primary"/>
 		</div>
 
 		<h5><b>വീടിൻ്റെ ഉടമസ്ഥത</b></h5>
@@ -97,7 +97,7 @@
 
 
 		<div class="form-group">
-			<input type="submit" name="submit" value="Search" class="btn btn-primary"/>
+			<input type="submit" name="submit" value="Click to search" class="btn btn-primary"/>
 		</div>
 
 </form>
