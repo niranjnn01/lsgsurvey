@@ -19,9 +19,14 @@ class Survey_model extends CI_Model{
 		$sSessionId = session_id();
 
 		$this->db->trans_start();
+
+		/*
+		temporariy on hold. to generate sample data to populate for demo
+
+		//delete any previous data by this enumerator
 		$this->db->where('enumerator_account_no', $iEnumeratorAccountNo);
 		$this->db->delete('temporary_survey');
-
+		*/
 
 		$this->db->set('session_id', $sSessionId);
 		$this->db->set('enumerator_account_no', $iEnumeratorAccountNo);
@@ -138,14 +143,18 @@ class Survey_model extends CI_Model{
 				switch($aHouseLandData['house_ownership_type']) {
 
 					case 1:
+
 						//own house
 						$this->db->where('id', $iHouseId);
 						$this->db->set('owner_id', $iSurveyeeUserId);
 						$this->db->update('houses');
+						break;
 
 					case 2:
+
 						// rented house
 						$this->markRentedResidence($iHouseId, $iFamilyId);
+						break;
 				}
 
 
@@ -199,8 +208,8 @@ class Survey_model extends CI_Model{
  */
 function markRentedResidence($iHouseId, $ifamilyId) {
 
-	$this->db->set('house_id', $iHouseId);
-	$this->db->set('family_id', $ifamilyId);
+	$this->db->where('house_id', $iHouseId);
+	$this->db->where('family_id', $ifamilyId);
 	$this->db->set('residence_type_id', 1); // 1 = rent
 	$this->db->update('family_house_map');
 }

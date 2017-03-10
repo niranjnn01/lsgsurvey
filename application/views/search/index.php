@@ -70,28 +70,28 @@
 		<h5><b>വീടിന്റെ തരം</b></h5>
 		<div class="checkbox">
 			<label class="checkbox">
-				<input type="checkbox" name="house_type" value="1"/> കുടിൽ
+				<input type="checkbox" name="house_type[]" value="1"/> കുടിൽ
 			</label>
 			<label class="checkbox">
-				<input type="checkbox" name="house_type" value="2"/> ഓല
+				<input type="checkbox" name="house_type[]" value="2"/> ഓല
 			</label>
 			<label class="checkbox">
-				<input type="checkbox" name="house_type" value="3"/> ഷീറ്റ്
+				<input type="checkbox" name="house_type[]" value="3"/> ഷീറ്റ്
 			</label>
 			<label class="checkbox">
-				<input type="checkbox" name="house_type" value="4"/> ഓട്
+				<input type="checkbox" name="house_type[]" value="4"/> ഓട്
 			</label>
 			<label class="checkbox">
-				<input type="checkbox" name="house_type" value="5"/> കോൺക്രീറ്റ്
+				<input type="checkbox" name="house_type[]" value="5"/> കോൺക്രീറ്റ്
 			</label>
 			<label class="checkbox">
-				<input type="checkbox" name="house_type" value="6"/> ആസ്ബറ്റോസ് ഷീറ്റ്
+				<input type="checkbox" name="house_type[]" value="6"/> ആസ്ബറ്റോസ് ഷീറ്റ്
 			</label>
 			<label class="checkbox">
-				<input type="checkbox" name="house_type" value="7"/> അലുമിനിയം
+				<input type="checkbox" name="house_type[]" value="7"/> അലുമിനിയം
 			</label>
 			<label class="checkbox">
-				<input type="checkbox" name="house_type" value="8"/> ടിൻ ഷീറ്റ്റ്
+				<input type="checkbox" name="house_type[]" value="8"/> ടിൻ ഷീറ്റ്റ്
 			</label>
 		</div>
 

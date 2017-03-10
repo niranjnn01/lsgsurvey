@@ -37,6 +37,17 @@
 				<td>Name</td>
 				<td><?php echo $oUserPersonalData->name;?></td>
 			</tr>
+
+			<tr>
+				<td>Election ID</td>
+				<td><?php echo $oUserPersonalData->election_id;?></td>
+			</tr>
+
+			<tr>
+				<td>Aadhar ID</td>
+				<td><?php echo $oUserPersonalData->aadhar_id;?></td>
+			</tr>
+
 		</table>
 	</div>
 
@@ -54,8 +65,8 @@
 				<td><?php echo $oHouseData->address;?></td>
 			</tr>
 			<tr>
-				<td>residence Type</td>
-				<td><?php echo $aResidenceTypes[$oUserPersonalData->residence_type_id]?></td>
+				<td>House Ownership</td>
+				<td><?php echo $oHouseData->sResidenceType?></td>
 			</tr>
 
 			<tr>
@@ -74,8 +85,8 @@
 			</tr>
 
 			<tr>
-				<td>House Type</td>
-				<td><?php echo $aHouseAreaRange[$oHouseData->house_area_range_id];?></td>
+				<td>House Types</td>
+				<td><?php echo $oHouseData->sHouseTypes;?></td>
 			</tr>
 
 		</table>

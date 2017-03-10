@@ -64,9 +64,9 @@ function accept_answer($iQuestionNo=0) {
 	$this->load->view('output', array('output' => $sJsonData));
 }
 
-function preview_data() {
+function preview_data($iTemporarySurveyId) {
 
-	//$this->db->where('enumerator_account_no', s('ACCOUNT_NO'));
+	$this->db->where('id', $iTemporarySurveyId);
 	$this->mcontents['oRow'] = $this->db->get('temporary_survey')->row();
 
 	loadTemplate('survey/preview_data');
@@ -74,10 +74,7 @@ function preview_data() {
 }
 
 
-function test() {
 
-	$this->survey_model->createSurvey(111);
-}
 
 
 
@@ -211,6 +208,20 @@ function purge_test_data() {
 		$this->mcontents['aHouseAreaRange'] = $this->common_model->getDropDownArray($aConfig);
 
 
+		$aConfig = array(
+			'table' 		        	=> 'house_types',
+			'id_field' 		       	=> 'id',
+			'title_field' 	     	=> 'title',
+			'show_default_value' 	=> FALSE
+		);
+		$this->mcontents['aHouseTypes'] = $this->common_model->getDropDownArray($aConfig);
+
+
+		$this->mcontents['aHouseOwnershipTypes'] = array(
+			1 => 'സ്വന്തം',
+			2 => 'വാടകയ്ക്ക്',
+		);
+
 		$this->mcontents['aLandOwnershipTypes'] = array(
 			1 => 'സ്വന്തം',
 			2 => 'പാട്ടം',
@@ -224,15 +235,20 @@ function purge_test_data() {
 		$this->mcontents['oSurveyData'] = $this->db->get('surveys')->row();
 
 		// get house Details
-		$this->mcontents['oHouseData'] = $this->db->get('houses')->row();
+		$this->db->where('S.id', $this->mcontents['oSurveyData']->id);
+		$this->db->join('surveys S', 'H.id = S.house_id');
+		$this->mcontents['oHouseData'] = $this->db->get('houses H')->row();
+
 
 		// get personal details
 		$this->db->select('
 			SU.name,
 			SU.id surveyee_user_id,
-			FHM.id residence_type_id,
+			SU.aadhar_id,
+			SU.election_id,
+			FHM.residence_type_id,
 			H.id house_id,
-			H.id house_area_range_id
+			H.house_area_range_id
 			');
 		$this->db->join('surveyee_user_family_map SUFM', 'SU.id = SUFM.surveyee_user_id');
 		$this->db->join('families F', 'SUFM.family_id = F.id');
@@ -241,18 +257,44 @@ function purge_test_data() {
 		$this->db->join('surveys S', 'S.house_id = H.id');
 		$this->db->where('S.id', $iSurveyId);
 		$this->mcontents['oUserPersonalData'] = $this->db->get('surveyee_users SU')->row();
+		//p($this->mcontents['oUserPersonalData']);
 
-//		p($this->mcontents['oUserPersonalData']);
+if( $this->mcontents['oUserPersonalData']->residence_type_id == 1 ) {
+	//rented stay
+	$this->mcontents['oHouseData']->sResidenceType = $this->mcontents['aResidenceTypes'][1];
+} elseif( $this->mcontents['oUserPersonalData']->residence_type_id == null ) {
 
-		$this->db->select('L.*, LL.lessee_user_id');
+	// see if is_owner
+	if( $this->mcontents['oUserPersonalData']->surveyee_user_id == $this->mcontents['oHouseData']->owner_id ) {
+		$this->mcontents['oHouseData']->sResidenceType = $this->mcontents['aHouseOwnershipTypes'][1];
+	}
+}
+//p($this->mcontents['oUserPersonalData']);
+
+		// house types
+		$this->db->select('HT.title');
+		$this->db->where('HHTM.house_id', $this->mcontents['oUserPersonalData']->house_id);
+		$this->db->join('house_house_type_map HHTM', 'HT.id = HHTM.house_type_id');
+		$aHouseTypes = $this->db->get('house_types HT')->result();
+
+		$this->mcontents['oHouseData']->sHouseTypes = '';
+		foreach($aHouseTypes AS $oItem) {
+			$this->mcontents['oHouseData']->sHouseTypes .= $oItem->title . ', ';
+		}
+		$this->mcontents['oHouseData']->sHouseTypes = rtrim($this->mcontents['oHouseData']->sHouseTypes, ', ');
+
+
+
+		$this->db->select('L.*, LL.lessee_user_id, LL.id leased_land_id');
 		$this->db->where('H.id', $this->mcontents['oUserPersonalData']->house_id);
 		$this->db->join('land_house_map LHM', 'L.id = LHM.land_id');
 		$this->db->join('houses H', 'LHM.house_id = H.id');
 		$this->db->join('leased_lands LL', 'L.id = LL.land_id', 'LEFT');
 		$this->mcontents['oLandData'] = $this->db->get('lands L')->row();
 
-
-		if($this->mcontents['oLandData']->lessee_user_id) {
+		//p($this->mcontents['oLandData']);
+		// determine the land ownership
+		if($this->mcontents['oLandData']->leased_land_id) {
 			$this->mcontents['oLandData']->sLandOwnershipType = $this->mcontents['aLandOwnershipTypes'][2];
 		} elseif($this->mcontents['oLandData']->is_legacy) {
 			$this->mcontents['oLandData']->sLandOwnershipType = $this->mcontents['aLandOwnershipTypes'][3];
@@ -271,6 +313,12 @@ function purge_test_data() {
 
 	}
 
+	function sync_demo_data() {
+
+		foreach($this->db->get('temporary_survey')->result() AS $oItem) {
+			$this->survey_model->createSurvey($oItem->id);
+		}
+	}
 
 }
 
