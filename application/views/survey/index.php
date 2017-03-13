@@ -4,8 +4,8 @@
 	<div class="col-md-8 col-md-offset-2">
 
 		<h5><b>District:</b> Alappuzha</h5>
-		<h5><b>Municpality:</b> Chengannur </h5>
-		<h5><b>Ward: 05</b></h5>
+		<h5><b>Municpality:</b> Alappuzha </h5>
+		<h5><b>Ward No: 45 (Sea View)</b></h5>
 		<div id="survey_container">
 			<div class="row">
 				<div class="col-md-12">
