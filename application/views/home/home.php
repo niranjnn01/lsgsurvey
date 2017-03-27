@@ -1,26 +1,63 @@
 
 <?php showMessage();?>
 
+<div class="row">
+	<div class="col-md-9">
+		<h4>കടൽത്തീരം വാർഡ്</h4>
 
+		
+	</div>
+	<div class="col-md-3">
 
-		<div class="container">
 		<div class="row">
-			<div class="col-lg-12">
-				<div class="row">
-					<div class="col-sm-6 col-lg-6">
-						<h4>About our company</h4>
-						<p><strong>Meliore inciderint qui ne. Suas cotidieque vel ut lobortis reformidans duo</strong></p>
-						<p>
-						Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repudiandae odit iste exercitationem praesentium deleniti nostrum laborum rem id nihil tempora. Adipisci ea commodi unde nam placeat cupiditate quasi a ducimus rem consequuntur ex eligendi minima voluptatem assumenda voluptas quidem sit maiores odio velit voluptate
-						</p>
-						<p>
-						Mel explicari adipiscing consectetuer no, no mel apeirian scripserit repudiandae, ad assum mundi scribentur eam. Graecis offendit phaedrum eu his, eius ferri quidam eos ad, quis delenit vel ei. Alia modus facete te eos, eu tation appellantur per
-						</p>
-					</div>
-					<div class="col-sm-6 col-lg-6">
-						<?php echo $sTabbedContent2;?>
-					</div>
-				</div>
+			<div class="col-md-12">
+				<h4></h4>
 			</div>
 		</div>
-		</div>
+<?php $aCouncillorData = array(
+	'name' => 'KAROLINE PETER',
+	'party_name' => 'Indian National Congress',
+	'img_filename' => 'ward_member_45.jpg'
+
+);?>
+
+<img 	src="<?php echo $c_base_url, 'uploads/councillor_photos/', $aCouncillorData['img_filename'];?>"
+			class="thumbnail"
+			style="height: 250px;margin: 10px auto;"
+			/>
+			<div class="text-center">
+				<h6>
+					<b>Councillor : <?php echo $aCouncillorData['name'];?></b>
+					</h6>
+				<h6>
+					<b>party : <?php echo $aCouncillorData['party_name'];?></b>
+				</h6>
+			</div>
+
+		<table class="table">
+			<tr>
+				<td>
+					<b>ജില്ല</b>
+				</td>
+				<td>
+					ആലപ്പുഴ
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<b>മുനിസിപ്പാലിറ്റി</b>
+				</td>
+				<td>
+					ആലപ്പുഴ
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<b>വാർഡ് നമ്പർ</b>
+				</td>
+				<td>45</td>
+			</tr>
+		</table>
+
+	</div>
+</div>

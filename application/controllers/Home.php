@@ -12,7 +12,7 @@ class Home extends CI_Controller {
 
 		$this->mcontents['sCurrentMainMenu'] = 'home';
 
-		redirect('survey');
+		//redirect('survey');
 		loadTemplate('home/home');
 
 		//p($this->session->userdata);

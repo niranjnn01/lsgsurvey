@@ -12,29 +12,33 @@ class Developer extends CI_Controller {
 	}
 
 
-	public function test_uploader() {
+	public function temporary_data_to_delete() {
 
+		$this->db->where('id', 6);
+		$aRow = $this->db->get('temporary_survey')->row();
 
-		if( isset($_POST) && ! empty($_POST) ) {
+		$aData = unserialize($aRow->raw_data);
 
-				p($_POST);exit;
-		}
+		$aData['surveyee_users']['is_member_political_party'] = 0;
+		$aData['surveyee_users']['is_memeber_socio_cultural_organization'] = 0;
+		$aData['surveyee_users']['is_member_library'] = 0;
 
+		$aData['TEMP']['HAS_DOMESTIC_ANIMALS'] = 0;
+		$aData['ward_sabha_participation']['status'] = 0;
+		$aData['ward_sabha_participation']['is_satisfied'] = 0;
 
-		$this->load->library('lib_upload');
+		$aData['family_pet_map']['has_license'] = 0;
 
+/*
+		p($aData);
+		exit;
+*/
 
-		$sScenario = 'resource';
-		$iNumUploads = 1;
+		$this->db->where('id', 6);
+		$this->db->set('raw_data', serialize($aData));
+		$aRow = $this->db->update('temporary_survey');
 
-		// get the iframe URL
-		$this->mcontents['sFileUpload_IframeURL'] = $this->mcontents['c_base_url'] . 'uploader' . '?'.
-																							'scenario=' . $sScenario .
-																							'&num_uploads=' . $iNumUploads
-																							;
-
-		loadTemplate('developer/test_uploader');
-
+//		p($aData);
 	}
 
 

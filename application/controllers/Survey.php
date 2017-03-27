@@ -21,19 +21,50 @@ class Survey extends CI_Controller {
 	 */
 	public function index() {
 
-
-
 		$this->authentication->is_user_logged_in(true, 'user/login');
 
 //exit('locked');
+		// Initialize stuff
+		$this->mcontents['iCurrentTemporarySurveyNumber']	= 0;
+		$this->mcontents['iNextQuestion']	= 1;
+		$this->mcontents['iLastProcessedQuestion']	= 0;
+		$this->mcontents['bIsLastQuestion']	= FALSE;
 
 		// this has to be moved to another place where the logged in user
 		// chooses to start a new survey
-		$this->survey_model->createTemporarySurvey();
-		$this->mcontents['menu_active']	= 'survey_new';
-		$this->mcontents['load_js'][] = 'survey/survey_manager.js';
+
+		$oCurrentSurvey = $this->survey_model->getCurrentSurvey( s('ACCOUNT_NO') );
+/*
+		p($this->db->last_query());
+		p($oCurrentSurvey);
+		exit;
+	*/
+		if( $oCurrentSurvey ) {
+
+			$this->mcontents['iCurrentTemporarySurveyNumber']	= $oCurrentSurvey->id;
+			$this->mcontents['iNextQuestion']	= $oCurrentSurvey->last_processed_question + 1;
+			$this->mcontents['iLastProcessedQuestion']	= $oCurrentSurvey->last_processed_question;
+			$this->mcontents['bIsLastQuestion']	= $this->survey_model->isLastQuestion($this->mcontents['iNextQuestion']);
+
+		} else {
+
+			$oNewTemporarySurveyId = $this->survey_model->createTemporarySurvey();
+			$this->survey_model->setTemporarySurveyAsCurrent($oNewTemporarySurveyId, s('ACCOUNT_NO'));
+
+			$this->mcontents['iCurrentTemporarySurveyNumber']	= $oNewTemporarySurveyId;
+			$this->mcontents['iNextQuestion']	= 1;
+			$this->mcontents['iLastProcessedQuestion']	= 0;
+			$this->mcontents['bIsLastQuestion']	= $this->survey_model->isLastQuestion($this->mcontents['iNextQuestion']);
+		}
+
+
+
 		$this->load->config('question_config');
 		$this->mcontents['question_groups'] = json_encode($this->config->item('question_groups'));
+
+		$this->mcontents['menu_active']	= 'survey_new';
+		$this->mcontents['load_js'][] = 'survey/survey_manager.js';
+
 		loadTemplate('survey/index');
 	}
 
@@ -42,6 +73,9 @@ class Survey extends CI_Controller {
 
 
 function accept_answer($iQuestionNo=0) {
+
+	// sanitize the data
+	$iQuestionNo = safeText($iQuestionNo, false, '', TRUE);
 
 	// get answer_type for the question
 	$iAnswerType = 1;
@@ -53,6 +87,28 @@ function accept_answer($iQuestionNo=0) {
 	//list($iAnswerProcessingStatus, $sError) = $this->ProcessAnswer_model->$sFunctionName();
 	list($iAnswerProcessingStatus, $sError) = $this->ProcessAnswer_model->processAnswerForQuestion($iQuestionNo);
 
+
+if(! $sError) {
+
+	// set this question as last_processed_question
+
+	$iEnumeratorAccountNo = s('ACCOUNT_NO');
+
+	//$bIsLastQuestion = $this->survey_model->isLastQuestion($iQuestionNo);
+
+	if( $iEnumeratorAccountNo ) {
+
+		if( $oRow = $this->survey_model->getCurrentSurvey( $iEnumeratorAccountNo ) ) {
+			$this->db->where('enumerator_account_no', $iEnumeratorAccountNo);
+			$this->db->where('id', $oRow->id);
+			$this->db->set('last_processed_question', $iQuestionNo);
+			$this->db->update('temporary_survey');
+		}
+	}
+
+
+
+}
 
 	$aJsonData = array(
 									'error' => $sError,
@@ -96,6 +152,22 @@ function purge_test_data() {
 	$this->db->truncate('land_house_map');
 
 
+	$this->db->truncate('family_appliance_map');
+	$this->db->truncate('family_domestic_fuel_type_map');
+	$this->db->truncate('family_pet_map');
+	$this->db->truncate('family_residence_history_map');
+	$this->db->truncate('family_vehicle_type_map');
+	$this->db->truncate('house_agricultural_produce_map');
+	$this->db->truncate('house_livestock_map');
+	$this->db->truncate('house_road_map');
+	$this->db->truncate('house_public_utility_proximity');
+	$this->db->truncate('house_tax');
+
+	$this->db->truncate('surveyee_user_family_map');
+	$this->db->truncate('house_waste_management_solution_map');
+	$this->db->truncate('house_water_source_map');
+	$this->db->truncate('ward_sabha_participation');
+
 }
 
 
@@ -107,7 +179,10 @@ function purge_test_data() {
 	public function current_survey() {
 
 		$aJsonData = array();
-
+		$aJsonData = array(
+									'temporary_survey_number' => 0,
+									'current_question' => '1'
+								);
 		if(	$this->authentication->is_user_logged_in(false) ) {
 
 			$oCurrentSurvey = $this->survey_model->getCurrentSurvey();
@@ -154,8 +229,16 @@ function purge_test_data() {
 		if($bProceed) {
 
 
-			$iTemporarySurveyNumber = $this->db->get('temporary_survey')->row()->id;
+			$oTemporarySurvey = $this->survey_model->getCurrentTemporarySurvey();
 
+
+			$iTemporarySurveyNumber = $oTemporarySurvey->id;
+
+/*
+						p($this->db->last_query());
+						p($oTemporarySurvey);
+						exit;
+						*/
 			$this->survey_model->createSurvey($iTemporarySurveyNumber);
 
 			if($sErrorMessage) {

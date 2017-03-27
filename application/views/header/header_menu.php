@@ -7,7 +7,7 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="<?php echo $c_base_url;?>">
-                LSG Survey App
+                LSG Survey App - Alpha 1.0
             </a>
         </div>
         <div class="navbar-collapse collapse ">
