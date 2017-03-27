@@ -4,7 +4,7 @@
 
 	<div class="col-md-6">
 		<h4>General Data</h4>
-		<?php p(unserialize($oRow->general_data));?>
+		<?php p(unserialize($oRow->raw_data));?>
 	</div>
 
 	<div class="col-md-6">

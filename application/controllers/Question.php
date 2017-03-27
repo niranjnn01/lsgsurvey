@@ -102,7 +102,8 @@ class Question extends CI_Controller {
 */
 
 				// Is this the last question ?
-				$bIsLastQuestion = $iQuestionNo == count($aQuestionsMasterData) ? TRUE : FALSE;
+				//$bIsLastQuestion = $iQuestionNo == count($aQuestionsMasterData) ? TRUE : FALSE;
+				$bIsLastQuestion = $this->survey_model->isLastQuestion($iQuestionNo);
 
 
 				if(isset($aQuestionsMasterData[$iQuestionNo])) {

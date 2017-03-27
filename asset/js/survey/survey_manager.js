@@ -6,11 +6,26 @@ $(document).ready(function(){
 	console.log(question_groups[1]);
   if (storageAvailable('localStorage')) {
 
-    var temporary_survey_number = localStorage.getItem('temporary_survey_number');
+		var temporary_survey_number = null;
+		var temporary_survey_current_question = 0;
+		var temporary_survey_last_processed_question = 0;
+		var temporary_survey_is_last_question = false;
 
-    //if( temporary_survey_number == null) {
 
-      // get te survey information
+		if($('#current_temporary_survey_number').val()) {
+			temporary_survey_number = $('#current_temporary_survey_number').val();
+			temporary_survey_current_question = $('#current_temporary_survey_next_question').val();
+			temporary_survey_last_procesed_question = $('#current_temporary_survey_last_procesed_question').val();
+
+			temporary_survey_is_last_question = $('#current_temporary_survey_is_last_question').val() == 1 ? true : false;
+
+		}
+
+    //var temporary_survey_number = localStorage.getItem('temporary_survey_number');
+
+    if( temporary_survey_number == null) {
+
+      // get the survey information
       $.ajax({
         url: base_url + "survey/current_survey",
         type:"GET",
@@ -22,7 +37,14 @@ $(document).ready(function(){
           localStorage.setItem('current_question', data.current_question);
           localStorage.setItem('last_question', 'false');
 
-          //contact the server for first question
+					if(data.temporary_survey_number != 0) {
+						//contact the server for first question
+	        	fetchNextQuestion();
+					} else {
+						alert("Error: No Survey found");
+					}
+
+          /*
           $.ajax({
             url: base_url + "question/get/" + data.temporary_survey_number + "/" + data.current_question,
             type:"GET",
@@ -31,20 +53,32 @@ $(document).ready(function(){
               //console.log('success called');
 
               localStorage.setItem('answer_type', data.answer_type);
-			  
+
               appendQuestion(data);
-			  $('#survey_container').addClass('animated fadeInLeft');
-			  $('#survey_container').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function (){$('#survey_container').addClass('animated fadeInLeft');});
+
+						  $('#survey_container').addClass('animated fadeInLeft');
+						  $('#survey_container').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function (){$('#survey_container').addClass('animated fadeInLeft');});
 
             },
             dataType : "json"
           });
-
+					*/
 
         },
         dataType : "json"
       });
-    //}
+
+    } else {
+
+
+			// store survey information locally.
+			localStorage.setItem('temporary_survey_number', temporary_survey_number);
+			localStorage.setItem('current_question', temporary_survey_last_procesed_question); // TO Do : fetchNextQuestion() should use "last_processed_question" instead of current_question. for more clarity in code
+			localStorage.setItem('last_question', temporary_survey_is_last_question);
+
+			//contact the server for next question
+			fetchNextQuestion();
+		}
 
   }
   else {
@@ -199,7 +233,7 @@ function surveyCompleteRoutines() {
     success:function (data) {
 
       if(data.error == '') {
-		
+
         showSurveyCompleteView();
 		dont_confirm_leave = 1;
       } else {
@@ -249,7 +283,7 @@ function appendQuestion(data) {
       '<div class="radio">';
 
       $.each(data.answer_options, function (index, answer_option){
-		// name="'+ data.field_name 
+		// name="'+ data.field_name
         answer_html +=
         '<label class="checkbox-inline">' +
           '<input type="checkbox" name="multi_value_checkbox" value="'+ answer_option.value +'"/> ' + answer_option.title +

@@ -42,7 +42,7 @@
 		</div>
         <script>
 			var question_groups = <?php echo $question_groups;?>;
-			
+
 			/*window.onbeforeunload = function() {
 				if(check_reaload){
 			  		return "Data will be lost if you leave the page, are you sure?";
@@ -50,10 +50,10 @@
 					return "";
 				}
 			};*/
-			
+
 
 				var leave_message = 'You sure you want to leave?'
-				function goodbye(e) 
+				function goodbye(e)
 				{
 					if(dont_confirm_leave!==1)
 					{
@@ -62,20 +62,25 @@
 						e.cancelBubble = true;
 						e.returnValue = leave_message;
 						//e.stopPropagation works in Firefox.
-						if (e.stopPropagation) 
+						if (e.stopPropagation)
 						{
 							e.stopPropagation();
 							e.preventDefault();
 						}
-		
+
 						//return works for Chrome and Safari
 						return leave_message;
 					}
-				}   
+				}
 			window.onbeforeunload=goodbye;
 
         </script>
-		
+		<form>
+			<input type="hidden" id="current_temporary_survey_number" value="<?php echo $iCurrentTemporarySurveyNumber;?>" />
+			<input type="hidden" id="current_temporary_survey_last_procesed_question" value="<?php echo $iLastProcessedQuestion;?>" />
+			<input type="hidden" id="current_temporary_survey_is_last_question" value="<?php echo $bIsLastQuestion ? 1 : 0;?>" />
+
+		</form>
 
 	</div>
 </div>
