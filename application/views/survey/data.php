@@ -21,7 +21,7 @@
 			</tr>
 			<tr>
 				<td>Municpality</td>
-				<td>Chengnnur</td>
+				<td>Alappuzha</td>
 			</tr>
 			<tr>
 				<td>Ward No:</td>
