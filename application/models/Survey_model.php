@@ -71,8 +71,8 @@ class Survey_model extends CI_Model{
 			if($oSurveyData = $this->db->get('temporary_survey')->row()) {
 				$aRawData	= unserialize($oSurveyData->raw_data);
 				$iWardId 	= $oSurveyData->ward_id;
-				echo '<pre>';
-				print_r($aRawData);
+				//echo '<pre>';
+				//print_r($aRawData);
 				//exit;
 				$this->db->trans_start();
 				
