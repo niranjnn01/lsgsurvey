@@ -1,9 +1,9 @@
 
 var base_url = '<?php echo $base_url;?>';
-
+var dont_confirm_leave = 1; //set dont_confirm_leave to 1 when you want the user to be able to leave withou confirmation
 $(document).ready(function(){
 
-
+	console.log(question_groups[1]);
   if (storageAvailable('localStorage')) {
 
     var temporary_survey_number = localStorage.getItem('temporary_survey_number');
@@ -31,8 +31,10 @@ $(document).ready(function(){
               //console.log('success called');
 
               localStorage.setItem('answer_type', data.answer_type);
-
+			  
               appendQuestion(data);
+			  $('#survey_container').addClass('animated fadeInLeft');
+			  $('#survey_container').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function (){$('#survey_container').addClass('animated fadeInLeft');});
 
             },
             dataType : "json"
@@ -82,8 +84,10 @@ function fetchNextQuestion() {
       localStorage.setItem('current_question', (parseInt(current_question) + 1));
       localStorage.setItem('last_question', data.last_question);
       localStorage.setItem('answer_type', data.answer_type);
-
       appendQuestion(data);
+	  $('#survey_container').removeClass('animated fadeInLeft');
+	  $('#survey_container').addClass('animated fadeInLeft');
+			  $('#survey_container').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function (){$('#survey_container').removeClass('animated fadeInLeft');});
 
     },
     dataType : "json"
@@ -149,6 +153,7 @@ function handleCurrentAnswer() {
           if(last_question == "true") {
             surveyCompleteRoutines();
           } else {
+			dont_confirm_leave = 0;
             fetchNextQuestion();
           }
 
@@ -170,7 +175,7 @@ function showSurveyCompleteView() {
   // remove all buttons etc
   $('#survey_container').html('');
 
-
+  $('#question-group-id').text('');
   // show link to access the survey result page. => view page of an individual survey!
   $('#survey_container').html(
     $(
@@ -194,9 +199,9 @@ function surveyCompleteRoutines() {
     success:function (data) {
 
       if(data.error == '') {
-
+		
         showSurveyCompleteView();
-
+		dont_confirm_leave = 1;
       } else {
 
         alert("There was some problem completing the survey.");
@@ -227,10 +232,10 @@ function appendQuestion(data) {
       '<div class="radio">';
 
       $.each(data.answer_options, function (index, answer_option){
-
+		// name="'+ data.field_name +'"
         answer_html +=
         '<label class="radio-inline">' +
-          '<input type="radio" name="'+ data.field_name +'" value="'+ answer_option.value +'"/> ' + answer_option.title +
+          '<input type="radio" name="single_value_radio" value="'+ answer_option.value +'"/> ' + answer_option.title +
         '</label>';
 
       });
@@ -244,10 +249,10 @@ function appendQuestion(data) {
       '<div class="radio">';
 
       $.each(data.answer_options, function (index, answer_option){
-
+		// name="'+ data.field_name 
         answer_html +=
         '<label class="checkbox-inline">' +
-          '<input type="checkbox" name="'+ data.field_name +'" value="'+ answer_option.value +'"/> ' + answer_option.title +
+          '<input type="checkbox" name="multi_value_checkbox" value="'+ answer_option.value +'"/> ' + answer_option.title +
         '</label>';
 
       });
@@ -264,7 +269,7 @@ function appendQuestion(data) {
 
   }
 
-
+  $('#question-group-id').text(question_groups[data.group_id].title);
   $('#question_container').html(
     $(
       '<h3>'+

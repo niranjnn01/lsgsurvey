@@ -26,7 +26,7 @@ $_environment = 'local';
 
 switch( $base_path ) {
 
-    case 'C:/wamp/www/johnson/lsg_surv':
+    case 'C:/wamp/www/lsg_survey':
         //$_environment = 'local-rakesh'; // local, development, testing, production
         break;
 

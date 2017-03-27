@@ -498,7 +498,7 @@
 		
 		$CI = &get_instance ();
 		
-		$CI->mcontents['load_js'][] = 'bootstrap_accordion.js';
+		//$CI->mcontents['load_js'][] = 'bootstrap_accordion.js';
 		
 		$sOpenIcon = 'fa fa-angle-down';
 		$sCloseIcon = 'fa fa-angle-right';

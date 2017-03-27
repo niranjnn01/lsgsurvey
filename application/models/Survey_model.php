@@ -64,12 +64,248 @@ class Survey_model extends CI_Model{
 			return $bIsValid;
 		}
 
-
+		
 		function createSurvey($iTemporarySurveyNumber) {
 
 			$this->db->where('id', $iTemporarySurveyNumber);
 			if($oSurveyData = $this->db->get('temporary_survey')->row()) {
+				$aRawData	= unserialize($oSurveyData->raw_data);
+				$iWardId 	= $oSurveyData->ward_id;
+				echo '<pre>';
+				print_r($aRawData);
+				//exit;
+				$this->db->trans_start();
+				
+				// create the user entity
+				$this->db->set($aRawData['surveyee_users']);
+				$this->db->insert('surveyee_users');
+				$iSurveyeeUserId = $this->db->insert_id();
+				
+				// Create the family entity
+				$this->db->set($aRawData['families']);
+				$this->db->insert('families');
+				$iFamilyId = $this->db->insert_id();
 
+				// Build the user-to-family relationship.
+				$this->db->set('surveyee_user_id', $iSurveyeeUserId);
+				$this->db->set('family_id', $iFamilyId);
+				$this->db->set('is_head', 1);
+				$this->db->insert('surveyee_user_family_map');
+
+				// Create house entity
+				$aRawData['surveyee_users']['ward_id']	= $iWardId;				
+				$this->db->set($aRawData['houses']);
+				$this->db->insert('houses');
+				$iHouseId = $this->db->insert_id();				
+				
+				// create mapping between house and house type
+				if(isset($aHouseLandData['house_house_type_map']) 
+					&& count($aHouseLandData['house_house_type_map']) > 0) {
+
+					foreach ($aHouseLandData['house_house_type_map']['house_type_id'] AS $iHouseType) {
+						$this->db->set('house_id', $iHouseId);
+						$this->db->set('house_type_id', $iHouseType);
+						$this->db->insert('house_house_type_map');
+					}
+				}				
+				
+				// map family to a house
+				$this->db->set('house_id', $iHouseId);
+				$this->db->set('family_id', $iFamilyId);
+				$this->db->insert('family_house_map');
+				
+				if(isset($aRawData['TEMP']['YEARS_OF_STAYING']) && $aRawData['TEMP']['YEARS_OF_STAYING'] > 0){
+					$iYear	= $aRawData['TEMP']['YEARS_OF_STAYING'];
+					$aResidenceHistory	= array(
+						'ward_id' 	=> $iWardId,
+						'family_id'	=> $iFamilyId,
+						'from'		=> date('Y-m-d', strtotime("- $iYear year", time())),
+						'to'		=> date('Y-m-d')
+					);
+					$this->db->set($aResidenceHistory);
+					$this->db->insert('family_residence_history_map');
+				
+				}
+				
+				// house ownership
+				if(isset($aRawData['TEMP']['HOUSE_OWNERSHIP'])){
+					switch($aRawData['TEMP']['HOUSE_OWNERSHIP']) {
+	
+						case 1:
+	
+							//own house
+							$this->db->where('id', $iHouseId);
+							$this->db->set('owner_id', $iSurveyeeUserId);
+							$this->db->update('houses');
+							break;
+	
+						case 2:
+	
+							// rented house
+							$this->markRentedResidence($iHouseId, $iFamilyId);
+							break;
+					}
+				}
+
+
+				// create the land entity
+				if(isset($aRawData['lands']['area_range']) && $aRawData['lands']['area_range'] > 0){					
+					$this->db->set($aRawData['lands']);
+					$this->db->insert('lands');
+					$iLandId = $this->db->insert_id();
+				}
+				if(isset($iLandId)){
+					switch($aRawData['TEMP']['LAND_OWNERSHIP']) {
+	
+						case 1:
+							//own
+							$this->db->where('id', $iLandId);
+							$this->db->set('owner_user_id', $iSurveyeeUserId);
+							$this->db->update('lands');
+							break;
+						case 2:
+							// leased
+							$this->markAsLeasedLand($iLandId);
+							break;
+						case 3:
+							// legacy
+							$this->markAsLegacyLand($iLandId);
+							break;
+					}
+	
+					// create mapping between land and house
+					$this->db->set('land_id', $iLandId);
+					$this->db->set('house_id', $iHouseId);
+					$this->db->insert('land_house_map');
+				}
+				
+				
+				// insert house tax
+				if(isset($aRawData['house_tax']['amount']) && $aRawData['house_tax']['amount'] > 0){
+					$this->db->set($aRawData['house_tax']);
+					$this->db->set('house_id', $iHouseId);
+					$this->db->insert('house_tax');				
+				}
+				// insert ward sabha participation
+				if(isset($aRawData['ward_sabha_participation']) && count($aRawData['ward_sabha_participation']) > 0){
+					$this->db->set($aRawData['ward_sabha_participation']);
+					$this->db->set('surveyee_user_id', $iSurveyeeUserId);
+					$this->db->insert('ward_sabha_participation');
+				}
+				
+				// insert family vehicle map
+				if(isset($aRawData['family_vehicle_type_map']['vehicle_type_id'])
+					&& count($aRawData['family_vehicle_type_map']['vehicle_type_id']) > 0){
+					foreach ($aRawData['family_vehicle_type_map']['vehicle_type_id'] AS $iVehicleType) {
+						$this->db->set('family_id', $iFamilyId);
+						$this->db->set('vehicle_type_id', $iVehicleType);
+						$this->db->insert('family_vehicle_type_map');
+					}
+				}
+				
+				// insert family appliance map
+				if(isset($aRawData['family_appliance_map']['house_appliance_id'])
+					&& count($aRawData['family_appliance_map']['house_appliance_id']) > 0){
+					foreach ($aRawData['family_appliance_map']['house_appliance_id'] AS $iApplianceType) {
+						$this->db->set('family_id', $iFamilyId);
+						$this->db->set('house_appliance_id', $iApplianceType);
+						$this->db->insert('family_appliance_map');
+					}
+				}
+				
+				// insert house road map
+				if(isset($aRawData['house_road_map']['road_type_id']) && $aRawData['house_road_map']['road_type_id'] > 0) 
+					$this->db->set($aRawData['house_road_map']);
+					$this->db->set('house_id', $iHouseId);
+					$this->db->insert('house_road_map');
+				}
+				
+				
+				// insert public utitlity Autorikshaw distance from house
+				if(isset($aRawData['house_public_utility_proximity']['proximity']) 
+					&& $aRawData['house_public_utility_proximity']['proximity'] > 0){
+						
+					$this->db->set('public_utility_id', 4); // auto rikshaw
+					$this->db->set('proximity', $aRawData['house_public_utility_proximity']['proximity']);
+					$this->db->set('house_id', $iHouseId);
+					$this->db->insert('house_public_utility_proximity');
+				}
+				
+				// insert public utitlity Autorikshaw distance from house
+				if(isset($aRawData['house_public_utility_proximity']['public_utility_id']) 
+					&& count($aRawData['house_public_utility_proximity']['public_utility_id']) > 0){
+					
+					foreach($aRawData['house_public_utility_proximity']['public_utility_id'] as $iUtilityId){
+						$this->db->set('public_utility_id', $iUtilityId);
+						$this->db->set('house_id', $iHouseId);
+						$this->db->insert('house_public_utility_proximity');
+					}
+				}
+				
+				// insert water sources
+				if(isset($aRawData['house_water_source_map']['house_water_source_id']) 
+					&& count($aRawData['house_water_source_map']['house_water_source_id']) > 0){
+					
+					foreach($aRawData['house_water_source_map']['house_water_source_id'] as $iWaterSourceId){
+						$this->db->set('house_water_source_id', $iWaterSourceId);
+						$this->db->set('house_id', $iHouseId);
+						$this->db->insert('house_water_source_map');
+					}
+				}
+				
+				// insert waste management
+				if(isset($aRawData['house_waste_management_solution_map']['waste_management_solution_id']) 
+					&& count($aRawData['house_waste_management_solution_map']['waste_management_solution_id']) > 0){
+					
+					foreach($aRawData['house_waste_management_solution_map']['waste_management_solution_id'] as $iSolutionId){
+						$this->db->set('waste_management_solution_id', $iSolutionId);
+						$this->db->set('house_id', $iHouseId);
+						$this->db->insert('house_waste_management_solution_map');
+					}
+				}
+				
+				// insert domestic fuel types
+				if(isset($aRawData['family_domestic_fuel_type_map']['domestic_fuel_type_id']) 
+					&& count($aRawData['family_domestic_fuel_type_map']['domestic_fuel_type_id']) > 0){
+					
+					foreach($aRawData['family_domestic_fuel_type_map']['domestic_fuel_type_id'] as $iFuelTypeId){
+						$this->db->set('domestic_fuel_type_id', $iFuelTypeId);
+						$this->db->set('family_id', $iFamilyId);
+						$this->db->insert('family_domestic_fuel_type_map');
+					}
+				}
+				
+				// insert pet animals
+				if(isset($aRawData['HAS_DOMESTIC_ANIMALS']) && TRUE == $aRawData['HAS_DOMESTIC_ANIMALS'] && isset($aRawData['family_pet_map']['pet_id']) 
+					&& count($aRawData['family_pet_map']['pet_id']) > 0){
+					
+					foreach($aRawData['family_pet_map']['pet_id'] as $iPetId){
+						if(1 == $iPetId && isset($aRawData['family_pet_map']['has_license'])){
+							$this->db->set('has_license', $aRawData['family_pet_map']['has_license']);
+						}
+						$this->db->set('pet_id', $iPetId);
+						$this->db->set('family_id', $iFamilyId);
+						$this->db->insert('family_pet_map');
+					}
+				}				
+				
+				
+				// create survey
+				$this->db->set('enumerator_account_no', $oSurveyData->enumerator_account_no);
+				$this->db->set('house_id', $iHouseId);
+				$this->db->insert('surveys');
+
+				
+				$this->db->trans_complete();
+			}
+		
+		function create__Survey($iTemporarySurveyNumber) {
+
+			$this->db->where('id', $iTemporarySurveyNumber);
+			if($oSurveyData = $this->db->get('temporary_survey')->row()) {
+				echo '<pre>';
+				print_r(unserialize($oSurveyData->raw_data));
+				exit;
 				$iWardId = $oSurveyData->ward_id;
 
 				$this->db->trans_start();
@@ -198,33 +434,33 @@ class Survey_model extends CI_Model{
 
 		}
 
-/**
- *
- * Mark a house as rented house
- *
- * @param  [type] $iHouseId  [description]
- * @param  [type] $ifamilyId [description]
- * @return [type]            [description]
- */
-function markRentedResidence($iHouseId, $ifamilyId) {
-
-	$this->db->where('house_id', $iHouseId);
-	$this->db->where('family_id', $ifamilyId);
-	$this->db->set('residence_type_id', 1); // 1 = rent
-	$this->db->update('family_house_map');
-}
-
-function markAsLeasedLand($iLandId, $iLesseeUserId=null, $iOwnerUserId=null) {
-
-	$this->db->set('land_id', $iLandId);
-	$this->db->insert('leased_lands');
-}
-
-function markAsLegacyLand($iLandId) {
-
-	$this->db->where('id', $iLandId);
-	$this->db->set('is_legacy', 1);
-	$this->db->update('lands');
-}
+		/**
+		 *
+		 * Mark a house as rented house
+		 *
+		 * @param  [type] $iHouseId  [description]
+		 * @param  [type] $ifamilyId [description]
+		 * @return [type]            [description]
+		 */
+		function markRentedResidence($iHouseId, $ifamilyId) {
+		
+			$this->db->where('house_id', $iHouseId);
+			$this->db->where('family_id', $ifamilyId);
+			$this->db->set('residence_type_id', 1); // 1 = rent
+			$this->db->update('family_house_map');
+		}
+		
+		function markAsLeasedLand($iLandId, $iLesseeUserId=null, $iOwnerUserId=null) {
+		
+			$this->db->set('land_id', $iLandId);
+			$this->db->insert('leased_lands');
+		}
+		
+		function markAsLegacyLand($iLandId) {
+		
+			$this->db->where('id', $iLandId);
+			$this->db->set('is_legacy', 1);
+			$this->db->update('lands');
+		}
 
 }

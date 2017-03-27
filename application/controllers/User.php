@@ -323,7 +323,6 @@ class User extends CI_Controller {
 
 		$this->mcontents['page_heading'] = $this->mcontents['page_title'] = 'Login';
 
-		//var_dump($this->authentication->is_user_logged_in());
 
 		if(!$this->authentication->is_user_logged_in()) {
 
@@ -348,7 +347,7 @@ class User extends CI_Controller {
 
 
 						// see if the initial set up has been complete or not.
-						$bDoubleCheck = TRUE; // this double check is done only during login time
+						$bDoubleCheck = FALSE; // this double check is done only during login time
 						$this->user_model->initialSetupRoutines(s('ACCOUNT_NO'), $bDoubleCheck);
 
 
@@ -359,7 +358,15 @@ class User extends CI_Controller {
 						}
 
 
+						if($this->authentication->is_admin_logged_in()){
 
+								redirect('user/listing');
+
+						}else{
+							
+								redirect('survey');
+								
+						}
 
 						// See if the user needs to be redirected to a previous page he was seeying
 						// redirect the users to the link which they were trying to access
@@ -407,7 +414,109 @@ class User extends CI_Controller {
 	 * The signup form is displayed
 	 *
 	 */
-	function register() {
+	function create() {
+
+		$this->authentication->is_admin_logged_in (true);
+
+		isAdminSection();
+
+
+		$this->mcontents['page_heading'] 	= 'Create New Enumerator';
+		$this->mcontents['page_title'] 		= 'Create New Enumerator';
+
+		$error	= FALSE;
+		if (!empty($_POST) && isset($_POST)) {
+
+			$this->_validate_create_user();
+
+			if (TRUE == $this->form_validation->run()) {
+
+				//write_log('SIGNUP 4');
+				$post_data['first_name']	= safeText('first_name');
+				$post_data['last_name']		= safeText('last_name');
+
+				//$post_data['landline_number_country_code']		= safeText('landline_number_country_code');
+				/*$post_data['username'] = $aConfig = array(
+																		'table' => 'users',
+																		'field' => 'account_no',
+																	);*/
+				$aConfig = array(
+								'table' => 'users',
+								'field' => 'account_no',
+							);																	
+				$post_data['username'] 		= safeText('username');
+				$post_data['account_no']	= $this->common_model->generateUniqueNumber($aConfig);
+				$post_data['username'] 		= $post_data['username'];
+	    		$post_data['password']		= $this->authentication->encryptPassword( $post_data['username'] );
+    			$post_data['status']		= $this->aUserStatus['active'];
+				$post_data['email_id']		= safeText('email_id');//$post_data['account_no'] . '@temporary.com';
+	    		$post_data['gender']		= safeText('gender');
+				$post_data['type']			= $this->aUserTypes['enumerator'];
+				$post_data['joined_on']		= date('Y-m-d H:i:s');
+				$post_data['mobile_verification_status']		= $this->mcontents['aUserMobileVerificationStatus']['no_sms_verification_done'];
+				$post_data['initial_setup_complete']	= 1; 
+
+
+
+				if(!$error) {
+
+					//start transaction
+					$this->db->trans_start();
+
+					$this->db->set ($post_data);
+			       	$this->db->insert ('users');
+
+					if( $iUserId = $this->db->insert_id() ) {
+
+						$oUser = $this->user_model->getUserBy('id', $iUserId);
+
+
+						$this->load->model('account_model');
+
+						//Assign default profile image for user
+						$this->account_model->createProfilePicture($oUser);
+						
+						/*
+						// create address and contact number
+						$bByPassAddressValidation = TRUE;
+						$this->load->model('address_model');
+						$iAddressUid = $this->address_model->create_address_and_contact_numbers($bByPassAddressValidation);
+
+						// create mapping between user and address
+						$aData = array(
+											'one' => $oUser->account_no,
+											'many' => array($iAddressUid),
+											'extra_field_value_pairs' => array('is_main' => 1)
+										);
+						one_to_many_mapping('create', 'user_address', $aData);
+						*/
+
+						//End transaction
+						$this->db->trans_complete();
+
+						sf('success_message', 'Successfully created new Enumerator.');
+
+						redirect('user/listing');
+
+					} else {
+						$this->merror['error']         = "There was some issue with Enumerator creation. Please try back later.";
+					}
+				}
+			}
+		}
+
+
+		$this->mcontents['load_js'][] 	= "jquery/jquery.validate.min.js";
+		$this->mcontents['load_js'][] 	= "validation/register.js";
+
+
+
+		$this->mcontents['aGenders'] 	= $this->aGenders;//array_flip($this->aGenders);
+		
+		loadAdminTemplate('user/create', $this->mcontents);
+	}
+
+function register() {
 
 		if($this->authentication->is_user_logged_in ()){
 			redirect('home');
@@ -500,7 +609,6 @@ class User extends CI_Controller {
 
 		loadTemplate('user/register', $this->mcontents);
 	}
-
 
 
 
@@ -660,7 +768,7 @@ class User extends CI_Controller {
 
 			$this->form_validation->set_rules ('first_name','First Name', 'trim|required');
 			$this->form_validation->set_rules ('last_name','Last Name', 'trim');
-			$this->form_validation->set_rules ('address_mobile1_','Mobile Number', 'trim|required');
+			$this->form_validation->set_rules ('address_mobile1_','Mobile Number', 'trim');
 			$this->form_validation->set_rules ('mobile_code','Mobile Code', 'trim');
 			$this->form_validation->set_rules ('address_landline1_','Landline Number', 'trim');
 			$this->form_validation->set_rules ('gender','Gender', 'trim|required');
@@ -907,8 +1015,8 @@ class User extends CI_Controller {
 		ss('BACKBUTTON_URI', $this->mcontents['uri_string']);
 		ss('redirect_to', $this->mcontents['uri_string']); // used only related to the profile section
 
-		$this->mcontents['page_title'] 		= 'Users';
-		$this->mcontents['page_heading']	= 'Users';
+		$this->mcontents['page_title'] 		= 'Enumerators';
+		$this->mcontents['page_heading']	= 'Enumerators';
 
 		$this->load->helper('date');
 

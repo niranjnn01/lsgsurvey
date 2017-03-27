@@ -46,9 +46,10 @@
 <div class="container-fluid">
 <div class="row">
 	<div class="col-xs-2">
-		<a href="<?php echo c('base_url');?>"  title="<?php echo c('website_name');?>">
+		<!--<a href="<?php echo c('base_url');?>"  title="<?php echo c('website_name');?>">
 			<img src="<?php echo $c_static_image_url, c('logo_image_name');?>" alt="<?php echo $c_website_title;?>"/>
-		</a>
+		</a>-->
+        <h1><?php echo $c_website_title;?></h1>
 		<hr/>
 
 		<?php //echo 'test';?>
@@ -80,23 +81,23 @@
 
 
 			array(
-				'title' => 'Registered Users',
-				'uri' => 'registered_user/listing',
+				'title' => 'Enumerators',
+				'uri' => 'user/listing',
                 'opened' => false
 			),
 
-      /*
+      
 			array(
-				'title' => 'Create New User',
+				'title' => 'Create Enumerator',
 				'uri' => 'user/create',
                 'opened' => false
 			),
-*/
+
 		),
         'opened' => ($sCurrentMainMenu == 'users') ? true : false,
 	),
 
-
+	/*
 	array(
 		'section_title' => 'Sitepages',
 		'links' => array(
@@ -125,7 +126,7 @@
 		),
         'opened' => ($sCurrentMainMenu == 'contact_us') ? true : false,
 	),
-
+*/
 	array(
 		'section_title' => 'Logout',
         'links' => array(),
@@ -169,9 +170,5 @@
 		</div>
 		<div class="row">
 		<div class="col-md-12">
-
-			<br/><br/>
-				<br/>
-			<br/>
 
 			<h2><?php echo $page_heading;?></h2>

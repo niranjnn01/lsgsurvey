@@ -41,6 +41,7 @@
 	
 	<div class="form-group">
 		<label for="gender">Gender</label>
+
 		<br/>
 		<label class="radio-inline">
 			<input type="radio" name="gender" value="<?php echo $aGenders['female'];?>" <?php echo set_radio('gender', $aGenders['female'], TRUE); ?> /> Female	

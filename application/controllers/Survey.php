@@ -30,10 +30,10 @@ class Survey extends CI_Controller {
 		// this has to be moved to another place where the logged in user
 		// chooses to start a new survey
 		$this->survey_model->createTemporarySurvey();
-
+		$this->mcontents['menu_active']	= 'survey_new';
 		$this->mcontents['load_js'][] = 'survey/survey_manager.js';
-
-
+		$this->load->config('question_config');
+		$this->mcontents['question_groups'] = json_encode($this->config->item('question_groups'));
 		loadTemplate('survey/index');
 	}
 
@@ -50,7 +50,8 @@ function accept_answer($iQuestionNo=0) {
 
 	$sFunctionName = 'processAnswerForQuestion_' . $iQuestionNo;
 
-	list($iAnswerProcessingStatus, $sError) = $this->ProcessAnswer_model->$sFunctionName();
+	//list($iAnswerProcessingStatus, $sError) = $this->ProcessAnswer_model->$sFunctionName();
+	list($iAnswerProcessingStatus, $sError) = $this->ProcessAnswer_model->processAnswerForQuestion($iQuestionNo);
 
 
 	$aJsonData = array(
@@ -314,7 +315,7 @@ if( $this->mcontents['oUserPersonalData']->residence_type_id == 1 ) {
 	}
 
 	function sync_demo_data() {
-
+		$this->db->where('pushed_to_main', 1);
 		foreach($this->db->get('temporary_survey')->result() AS $oItem) {
 			$this->survey_model->createSurvey($oItem->id);
 		}

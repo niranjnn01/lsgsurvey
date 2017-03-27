@@ -148,7 +148,6 @@ class Authentication {
 	 */
 	function is_user_logged_in ($bRedirect=false, $sRedirectTo='home', $bReturnObject=false, $bTest=false){
 		
-		
 		$return = 0;
 		
 		$oUserData = $this->CI->user_model->getUserBy('id', s('USERID'), 'full');
@@ -245,7 +244,6 @@ class Authentication {
 				$return = false;
 			}
 		}
-		
 		
 		// check if the initial set up routines were completed or not
 		if($oUserData) {

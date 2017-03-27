@@ -1,10 +1,8 @@
 
 <div class="row">
-	<div class="col-md-6 col-md-offset-3">
+	<div class="col-md-4 col-md-offset-4">
 
 		<div class="row">
-
-			<div class="col-md-7">
 
 				<div class="row">
 					<div class="col-md-12">
@@ -27,14 +25,12 @@
 								<a href="<?php echo c('base_url').'account/recovery';?>" >Forgot Username/ Password</a>
 								<?php */?>
 							</div>
-							<div class="col-md-6">
-								<input type="submit" name="login" class="btn btn-default pull-right" id="submit_btn btn-default" value="Login"/>
-							</div>
+								<input type="submit" name="login" class="btn btn-primary pull-right form-control" id="submit_btn btn-default" value="Login"/>
+
 						</div>
 						<?php echo form_close(); ?>
 					</div>
 				</div>
-			</div>
 
 			<?php /*?>
 			<div class="col-md-2">

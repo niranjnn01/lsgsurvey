@@ -32,8 +32,8 @@ class Question extends CI_Controller {
 
 		$aQuestionData = array();
 		$sJsonData = '{}';
-
-		$iTotalQuestionCount = 50;
+		$questions_master_data	= $this->config->item('questions_master_data');
+		$iTotalQuestionCount = count($questions_master_data);
 		$bProceed = TRUE;
 
 		//$iQuestionNo = ltrim($sQuestion, 'q');
@@ -52,7 +52,6 @@ class Question extends CI_Controller {
 			$bProceed = FALSE;
 			$sError = 'No question no:';
 		}
-
 		if(
 				$bProceed  &&
 				(

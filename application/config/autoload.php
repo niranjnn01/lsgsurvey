@@ -125,7 +125,7 @@ $autoload['language'] = array();
 
 $autoload['model'] = array(
                             'common_model',
-			                       'user_model',
+			                 'user_model',
 
                         );
 

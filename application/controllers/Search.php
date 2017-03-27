@@ -15,7 +15,7 @@ class Search extends CI_Controller {
 	 *
 	 */
 	public function index() {
-
+$this->mcontents['menu_active']	= 'survey_search';
 		$this->mcontents['load_js'][] = 'survey/search.js';
 		loadTemplate('search/index');
 	}

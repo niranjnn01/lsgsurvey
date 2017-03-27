@@ -170,8 +170,8 @@ $config['static_image_path']	= $config['asset_path'].$config['asset_img_folder_n
 |
 */
 $config['website_domain_name']		= 'lsg.com';
-$config['website_title']			= 'LSG';
-$config['website_title_abbrv']		= 'LSG'; // usefull when sending SMS, to use in short URLs etc
+$config['website_title']			= 'LSG SURVEY';
+$config['website_title_abbrv']		= 'LSG SURVEY'; // usefull when sending SMS, to use in short URLs etc
 $config['copyright_text']			= '';
 $config['website_official_name']	= '';
 //$config['logo_image_name']          = 'logo.jpg';

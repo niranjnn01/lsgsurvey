@@ -22,7 +22,7 @@ class Admin extends CI_Controller {
 	{
 
 // temporary redirect for demo
-redirect('survey');
+//redirect('survey');
 
 		if( hasAccess(array('admin', 'staff') ) ) {
 

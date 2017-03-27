@@ -1,14 +1,8 @@
 <?php showMessage();?>
-<h3><?php echo @$page_heading;?></h3>
-
-
-
-
-
 
 <div class="row">
 	<div class="col-md-3">
-		Total of <?php echo $iTotal;?> users
+		Total of <?php echo $iTotal;?> Enumerator
 	</div>
 	<div class="col-md-9">
 		<div class="row">
@@ -62,9 +56,9 @@
 		<td>
 
 			<div>
-				<a href="<?php echo $c_base_url;?>profile/view/<?php echo $oItem->account_no;?>" target="_blank">
+				<!--<a href="<?php echo $c_base_url;?>profile/view/<?php echo $oItem->account_no;?>" target="_blank">-->
 					<?php echo getCurrentProfilePic($oItem, 'small'); ?>
-				</a>
+				<!--</a>-->
 			</div>
 			<h4><?php echo $oItem->full_name;?></h4>
 			
@@ -85,7 +79,11 @@
 			<div class="action" title="Edit">
 				<a class="linkable" href="<?php echo $c_base_url;?>user/edit/<?php echo $oItem->account_no;?>">Edit User </a>
 			</div>
-			<div class="action" title="Edit">
+			<?php
+			
+			/*
+            
+            <div class="action" title="Edit">
 				<a class="linkable" href="<?php echo $c_base_url;?>profile/edit/<?php echo $oItem->account_no;?>">Edit Profile</a>
 			</div>
 			<div class="action" title="Edit">
@@ -110,7 +108,7 @@
 			<?php endif;?>
 			
 			<hr class="small">
-			<?php /* History items*/?>
+			
 			<div>
 				<a href="<?php echo $c_base_url;?>history/election_id/<?php echo $oItem->account_no;?>">Election Id history</a>
 			</div>
@@ -123,12 +121,16 @@
 			<div class="action" title="Logout User">
 				<a href="javascript:void(0);" class="close_account linkable" id="<?php echo $oItem->id;?>">Close Account</a>
 			</div>
+			
 			<div class="action" title="Close Account">
 				<a href="javascript:void(0);" class="logout_user linkable" id="<?php echo $oItem->id;?>">Logout User</a>
 			</div>
+			
 			<div class="action delete" title="Delete">
 				<a href="javascript:void(0);" class="perm_delete linkable" id="<?php echo $oItem->id;?>">Permanent Delete</a>
 			</div>
+			*/
+			?>
 		</td>
 		
     </tr>

@@ -24,6 +24,8 @@
 <link rel="stylesheet" href="<?php echo $this->config->item('css_template_cdn_url');?>">
 <?php */?>
 <link rel="stylesheet" href="<?php echo $this->config->item('asset_url');?>bootstrap/3.3.5/css/bootstrap.min.css">
+<link rel="stylesheet" href="<?php echo $this->config->item('asset_url');?>css/themes/misty/css/client.css" />
+<link rel="stylesheet" href="<?php echo $this->config->item('asset_url');?>css/themes/misty/css/animate.css" />
 
 <?php echo load_files('css');?>
 
@@ -33,7 +35,7 @@
 </head>
 
 
-<body style="margin-top:40px;">
+<body >
 
 <div id="wrapper">
 

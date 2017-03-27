@@ -208,15 +208,91 @@ class Processanswer_model extends CI_Model{
 			$sError = '';
 			return array($iAnswerProcessingStatus, $sError);
 		}
+		
+		function processAnswerForQuestion_11() {
 
-	function updateTemporaryTable($iEnumeratorAccountNo, $aData, $sGroupName ) {
+			$this->db->where('enumerator_account_no', s('ACCOUNT_NO'));
 
-		$sSectionFieldName = $sGroupName;
+			if($oRow = $this->db->get('temporary_survey')->row()) {
 
-		$this->db->where('enumerator_account_no', s('ACCOUNT_NO'));
-		$this->db->set($sSectionFieldName, serialize($aData));
-		$this->db->update('temporary_survey');
-	}
+				$aData = unserialize($oRow->house_land_data);
+
+				$aData['house_floors'] = safeText('single_value_radio');
+
+				$this->updateTemporaryTable($this->iEnumeratorAccountNo, $aData, 'house_land_data' );
+
+			}
+
+			$iAnswerProcessingStatus = 1;
+			$sError = '';
+			return array($iAnswerProcessingStatus, $sError);
+		}
+		function processAnswerForQuestion_12() {
+
+			$this->db->where('enumerator_account_no', s('ACCOUNT_NO'));
+
+			if($oRow = $this->db->get('temporary_survey')->row()) {
+
+				$aData = unserialize($oRow->house_land_data);
+
+				$aData['house_basement'] = safeText('multi_value_checkbox');
+
+				$this->updateTemporaryTable($this->iEnumeratorAccountNo, $aData, 'house_land_data' );
+
+			}
+
+			$iAnswerProcessingStatus = 1;
+			$sError = '';
+			return array($iAnswerProcessingStatus, $sError);
+		}
+		function processAnswerForQuestion_13() {
+
+			$this->db->where('enumerator_account_no', s('ACCOUNT_NO'));
+
+			if($oRow = $this->db->get('temporary_survey')->row()) {
+
+				$aData = unserialize($oRow->house_land_data);
+
+				$aData['house_basement'] = safeText('multi_value_checkbox');
+
+				$this->updateTemporaryTable($this->iEnumeratorAccountNo, $aData, 'house_land_data' );
+
+			}
+
+			$iAnswerProcessingStatus = 1;
+			$sError = '';
+			return array($iAnswerProcessingStatus, $sError);
+		}
+		
+		
+		function processAnswerForQuestion($iQuestionNo){
+			$this->load->config('question_config');
+			$questions_master_data 	= $this->config->item('questions_master_data');
+			$answer_types_details	= $this->config->item('answer_types_details');
+			$this->db->where('enumerator_account_no', s('ACCOUNT_NO'));
+
+			if($oRow = $this->db->get('temporary_survey')->row()) {
+				
+				$aData = unserialize($oRow->raw_data);
+				$aData[$questions_master_data[$iQuestionNo]['table_name']][$questions_master_data[$iQuestionNo]['field_name']] = safeText($answer_types_details[$questions_master_data[$iQuestionNo]['answer_type']]['field_name']);
+
+				$this->updateTemporaryTable($this->iEnumeratorAccountNo, $aData, 'raw_data' );
+
+			}
+
+			$iAnswerProcessingStatus = 1;
+			$sError = '';
+			return array($iAnswerProcessingStatus, $sError);
+		}
+		
+		function updateTemporaryTable($iEnumeratorAccountNo, $aData, $sGroupName ) {
+	
+			$sSectionFieldName = $sGroupName;
+	
+			$this->db->where('enumerator_account_no', s('ACCOUNT_NO'));
+			$this->db->set($sSectionFieldName, serialize($aData));
+			$this->db->update('temporary_survey');
+		}
 
 
 }

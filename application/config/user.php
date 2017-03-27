@@ -26,15 +26,13 @@ $config['user_status_title'] = array(
                                                     // but before he has changed his password.
 						);
 $config['user_types'] = array(
-							'admin'			=>1,
-							'staff'			=>2, //general
-							'user'			=>4,
+							'admin'			=> 1,
+							'enumerator'	=> 2
 						);
 
 $config['user_types_title'] = array(
 							1 => 'admin',
-							2 => 'staff',
-							4 => 'user',
+							2 => 'enumerator'
 						);
 
 $config['date_picker_user_format'] 	= 'd F Y'; // calendar date format as seen by the user when choosing date
