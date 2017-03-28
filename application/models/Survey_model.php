@@ -82,8 +82,6 @@ function setTemporarySurveyAsCurrent($iTemporarySurveyId, $iEnumeratorAccountNo)
 
 				$aRawData	= unserialize($oSurveyData->raw_data);
 				$iWardId 	= $oSurveyData->ward_id;
-
-
 /*
 
 								echo '<pre>';
