@@ -448,7 +448,7 @@ class User extends CI_Controller {
 				$post_data['username'] 		= safeText('mobile_number');
 				$post_data['account_no']	= $this->common_model->generateUniqueNumber($aConfig);
 				$post_data['username'] 		= $post_data['username'];
-	    		$post_data['password']		= $this->authentication->encryptPassword( 'LSG_123' );
+	    		$post_data['password']		= $this->authentication->encryptPassword( 'LSG123' );
     			$post_data['status']		= $this->aUserStatus['active'];
 				$post_data['email_id']		= $post_data['account_no'] . '@temporary.com';
 	    		$post_data['gender']		= safeText('gender');
