@@ -1706,3 +1706,22 @@
 		}
 
 	}
+	
+	
+	function getQuestionAnswer($field_name, $aAnswerIds){
+		$CI = & get_instance();
+		$questions_master_data = $CI->config->item('questions_master_data');
+		$aQuestionId = array_column($questions_master_data, 'field_name');
+		$iQuestionId = array_search( $field_name, $aQuestionId) + 1;
+		$aAnswers	= [];
+		if(!is_array($aAnswerIds)){
+			$aAnswerIds = array( 0 => $aAnswerIds);
+		}
+		$aAnswerOptions	= $questions_master_data[$iQuestionId]['answer_options'];
+		foreach($aAnswerOptions as $aAnswerOption){
+			if(is_array($aAnswerIds) && in_array($aAnswerOption['value'], $aAnswerIds)){
+				array_push($aAnswers, $aAnswerOption['title']);
+			}
+		}
+		return implode(',', $aAnswers);
+	}

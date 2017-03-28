@@ -204,7 +204,7 @@ function handleCurrentAnswer() {
 
 }
 
-function showSurveyCompleteView() {
+function showSurveyCompleteView(survey_id) {
 
   // remove all buttons etc
   $('#survey_container').html('');
@@ -215,7 +215,7 @@ function showSurveyCompleteView() {
     $(
       '<div style="text-align:center;">' +
         '<h4>Survey has been completed !</h4>' +
-        '<a href="'+base_url+'search/" style="align:center" class="btn btn-primary">Search the data collected' +
+        '<a href="'+base_url+'survey/data/'+survey_id+'" style="align:center" class="btn btn-primary">View the data collected' +
         '</a>' +
       '</div>'
       )
@@ -234,7 +234,7 @@ function surveyCompleteRoutines() {
 
       if(data.error == '') {
 
-        showSurveyCompleteView();
+        showSurveyCompleteView(data.survey_id);
 		dont_confirm_leave = 1;
       } else {
 

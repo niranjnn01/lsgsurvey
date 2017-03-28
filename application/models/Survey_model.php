@@ -315,13 +315,14 @@ function setTemporarySurveyAsCurrent($iTemporarySurveyId, $iEnumeratorAccountNo)
 				$this->db->set('enumerator_account_no', $oSurveyData->enumerator_account_no);
 				$this->db->set('house_id', $iHouseId);
 				$this->db->insert('surveys');
-
+				$iSurveyeId = $this->db->insert_id();
 
 				// mark the survey item in the temporary_survey as not current
 				$this->survey_model->unmarkAsCurrentSurvey($iTemporarySurveyNumber);
 
 
 				$this->db->trans_complete();
+				return $iSurveyeId;
 			}
 		}
 

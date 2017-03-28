@@ -67,7 +67,7 @@
 		<td>
 			<div>
 				username : <?php echo $oItem->username;?>
-				<?php echo $oItem->email_id ? ' | ' . $oItem->email_id : '';?>
+				<?php /*echo $oItem->email_id ? ' | ' . $oItem->email_id : '';*/?>
 			</div>
 			<div>Acc No: <?php echo $oItem->account_no;?></div>
 			<div>gender : <?php echo $aGenders[$oItem->gender];?></div>

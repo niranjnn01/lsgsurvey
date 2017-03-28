@@ -7,15 +7,18 @@
 <div></div>
 	
 	<div class="form-group">
-		<label for="username">Username</label>
-		<input type="text" name="username" class="form-control" autocomplete="off" value="<?php echo set_value('username') ? set_value('username') : '';?>"/>
+		<label for="username">Mobile Number</label>
+		<input type="text" name="mobile_number" class="form-control" autocomplete="off" value="<?php echo set_value('mobile_number') ? set_value('mobile_number') : '';?>"/>
 	</div>
-	
+	<?php
+	/*
 	<div class="form-group">
 		<label for="email_id">Email Id</label>
 		<input type="text" id="email_id" class="form-control" name="email_id" value="<?php echo set_value('email_id') ? set_value('email_id') : '';?>"/>
 		<div class="l dn" id="email_id_result"></div>
 	</div>
+	*/
+	?>
 <?php /*?>
 
 	<div class="form-group">
@@ -28,12 +31,12 @@
 		<label for="first_name">First Name</label>
 		<input type="text" name="first_name" class="form-control" value="<?php echo set_value('first_name') ? set_value('first_name') : '';?>"/>
 	</div>
-	
+<?php /*	
 	<div class="form-group">
 		<label for="middle_name">Middle Name</label>
 		<input type="text" name="middle_name" class="form-control" value="<?php echo set_value('middle_name') ? set_value('middle_name') : '';?>"/>
 	</div>
-	
+*/ ?>
 	<div class="form-group">
 		<label for="last_name">Last Name</label>
 		<input type="text" name="last_name" class="form-control" value="<?php echo set_value('last_name') ? set_value('last_name') : '';?>"/>
@@ -52,12 +55,12 @@
 		
 	</div>
 	
-	<div class="checkbox">
+	<div class="form-group">
 		
 		<label for="">User Roles</label>
 		
 		<?php foreach($aAllRoles AS $sRoleName => $aItem) :?>
-				<label class="checkbox">
+				<label class="checkbox"  style="padding-left:20px;font-weight:normal;">
 					<input type="checkbox" name="user_roles[]" value="<?php echo $aItem['id'];?>"
 					<?php echo set_checkbox('user_roles', $aItem['id']); ?> />
 					<?php echo $aItem['title']?>

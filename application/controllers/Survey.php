@@ -239,7 +239,7 @@ function purge_test_data() {
 						p($oTemporarySurvey);
 						exit;
 						*/
-			$this->survey_model->createSurvey($iTemporarySurveyNumber);
+			$aJsonData['survey_id'] = $this->survey_model->createSurvey($iTemporarySurveyNumber);
 
 			if($sErrorMessage) {
 				$aJsonData['error'] = $sErrorMessage;
@@ -267,7 +267,7 @@ function purge_test_data() {
 	function data($iSurveyId){
 
 		$aConfig = array(
-			'table' 		        	=> 'residence_types',
+			'table' 		        => 'residence_types',
 			'id_field' 		       	=> 'id',
 			'title_field' 	     	=> 'title',
 			'show_default_value' 	=> FALSE
@@ -275,7 +275,7 @@ function purge_test_data() {
 		$this->mcontents['aResidenceTypes'] = $this->common_model->getDropDownArray($aConfig);
 
 		$aConfig = array(
-			'table' 		        	=> 'land_area_ranges',
+			'table' 		        => 'land_area_ranges',
 			'id_field' 		       	=> 'id',
 			'title_field' 	     	=> 'title',
 			'show_default_value' 	=> FALSE
@@ -284,7 +284,7 @@ function purge_test_data() {
 
 
 		$aConfig = array(
-			'table' 		        	=> 'house_area_ranges',
+			'table' 		        => 'house_area_ranges',
 			'id_field' 		       	=> 'id',
 			'title_field' 	     	=> 'title',
 			'show_default_value' 	=> FALSE
@@ -293,7 +293,7 @@ function purge_test_data() {
 
 
 		$aConfig = array(
-			'table' 		        	=> 'house_types',
+			'table' 		        => 'house_types',
 			'id_field' 		       	=> 'id',
 			'title_field' 	     	=> 'title',
 			'show_default_value' 	=> FALSE
@@ -312,11 +312,17 @@ function purge_test_data() {
 			3 => 'പാരമ്പര്യമായി  കിട്ടിയത്',
 		);
 
-
-
+		$this->load->config('question_config');
+		//$this->mcontents['questions_master_data']	= $this->config->item('questions_master_data');
+		
 		// get basic details
-		$this->db->where('id', $iSurveyId);
-		$this->mcontents['oSurveyData'] = $this->db->get('surveys')->row();
+		$this->db->select("
+			CONCAT(U.first_name, ' ', U.last_name) as enumerator_name,
+			S.*
+			", FALSE);
+		$this->db->where('S.id', $iSurveyId);
+		$this->db->join('users U', 'U.account_no = S.enumerator_account_no');
+		$this->mcontents['oSurveyData'] = $this->db->get('surveys S')->row();
 
 		// get house Details
 		$this->db->where('S.id', $this->mcontents['oSurveyData']->id);
@@ -332,7 +338,32 @@ function purge_test_data() {
 			SU.election_id,
 			FHM.residence_type_id,
 			H.id house_id,
-			H.house_area_range_id
+			H.house_number,
+			H.address,
+			H.num_floors,
+			H.num_rooms,
+			H.floor_type_id,
+			H.largest_accessible_vehicle,
+			H.toilet_type,
+			H.toilet_count,
+			H.is_electrified,						
+			H.house_area_range_id,
+			SU.belief_in_religion_id,
+			SU.is_scst,
+			SU.is_obc,
+			SU.mobile_number,
+			SU.landline_number,
+			SU.email_id,
+			SU.whatsapp_number,	
+			SU.facebook_link,
+			SU.is_member_ayalkoottam,
+			SU.is_member_political_party,
+			SU.is_memeber_socio_cultural_organization,
+			SU.is_office_bearer_ayalkoottam,
+			SU.is_office_bearer_religious_organization,
+			SU.is_member_library,
+			SU.is_birth_same_ward,
+			SU.ifnot_birth_place
 			');
 		$this->db->join('surveyee_user_family_map SUFM', 'SU.id = SUFM.surveyee_user_id');
 		$this->db->join('families F', 'SUFM.family_id = F.id');
@@ -343,17 +374,17 @@ function purge_test_data() {
 		$this->mcontents['oUserPersonalData'] = $this->db->get('surveyee_users SU')->row();
 		//p($this->mcontents['oUserPersonalData']);
 
-if( $this->mcontents['oUserPersonalData']->residence_type_id == 1 ) {
-	//rented stay
-	$this->mcontents['oHouseData']->sResidenceType = $this->mcontents['aResidenceTypes'][1];
-} elseif( $this->mcontents['oUserPersonalData']->residence_type_id == null ) {
-
-	// see if is_owner
-	if( $this->mcontents['oUserPersonalData']->surveyee_user_id == $this->mcontents['oHouseData']->owner_id ) {
-		$this->mcontents['oHouseData']->sResidenceType = $this->mcontents['aHouseOwnershipTypes'][1];
-	}
-}
-//p($this->mcontents['oUserPersonalData']);
+		if( $this->mcontents['oUserPersonalData']->residence_type_id == 1 ) {
+			//rented stay
+			$this->mcontents['oHouseData']->sResidenceType = $this->mcontents['aResidenceTypes'][1];
+		} elseif( $this->mcontents['oUserPersonalData']->residence_type_id == null ) {
+		
+			// see if is_owner
+			if( $this->mcontents['oUserPersonalData']->surveyee_user_id == $this->mcontents['oHouseData']->owner_id ) {
+				$this->mcontents['oHouseData']->sResidenceType = $this->mcontents['aHouseOwnershipTypes'][1];
+			}
+		}
+		//p($this->mcontents['oUserPersonalData']);
 
 		// house types
 		$this->db->select('HT.title');

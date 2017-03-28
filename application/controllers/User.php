@@ -444,12 +444,13 @@ class User extends CI_Controller {
 								'table' => 'users',
 								'field' => 'account_no',
 							);																	
-				$post_data['username'] 		= safeText('username');
+				$post_data['mobile_number'] = safeText('mobile_number');
+				$post_data['username'] 		= safeText('mobile_number');
 				$post_data['account_no']	= $this->common_model->generateUniqueNumber($aConfig);
 				$post_data['username'] 		= $post_data['username'];
-	    		$post_data['password']		= $this->authentication->encryptPassword( $post_data['username'] );
+	    		$post_data['password']		= $this->authentication->encryptPassword( 'LSG_123' );
     			$post_data['status']		= $this->aUserStatus['active'];
-				$post_data['email_id']		= safeText('email_id');//$post_data['account_no'] . '@temporary.com';
+				$post_data['email_id']		= $post_data['account_no'] . '@temporary.com';
 	    		$post_data['gender']		= safeText('gender');
 				$post_data['type']			= $this->aUserTypes['enumerator'];
 				$post_data['joined_on']		= date('Y-m-d H:i:s');
@@ -749,15 +750,10 @@ function register() {
 
 
 	function _validate_create_user() {
-
+		$this->form_validation->set_rules ('mobile_number','Mobile Number', 'trim|required');		
 		$this->form_validation->set_rules ('first_name','First Name', 'trim|required');
-		$this->form_validation->set_rules ('middle_name','Middle Name', 'trim');
 		$this->form_validation->set_rules ('last_name','Last Name', 'trim');
-	    $this->form_validation->set_rules ('email_id','Email', 'trim|valid_email');
-	    $this->form_validation->set_rules ('username','Username', c('username_validation_rules'));
-		$this->form_validation->set_rules ('dob','Date of Birth', 'trim');
-		$this->form_validation->set_rules ('gender','Gender', 'trim');
-		$this->form_validation->set_rules ('user_type','User Type', 'trim');
+		$this->form_validation->set_rules ('gender','Gender', 'trim|required');
 		$this->form_validation->set_rules ('user_roles','User Roles', 'trim');
 
 	}
