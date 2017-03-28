@@ -4,8 +4,8 @@
 <div class="row">
 	<div class="col-md-9">
 		<h4>കടൽത്തീരം വാർഡ്</h4>
+		<p>സീ വ്യൂ വാർഡിനെ സംപൂർണ പങ്കാളിത്ത ജനാധിപത്യ വാർഡാക്കി മാറ്റുന്നതിനുവേണ്ടിയുള്ള വിവരശേഖരണ യജ്ഞം</p>
 
-		
 	</div>
 	<div class="col-md-3">
 
@@ -16,6 +16,7 @@
 		</div>
 <?php $aCouncillorData = array(
 	'name' => 'KAROLINE PETER',
+	'url' => 'http://www.alappuzhamunicipality.in/council&cid=2015018504501',
 	'party_name' => 'Indian National Congress',
 	'img_filename' => 'ward_member_45.jpg'
 
@@ -27,7 +28,7 @@
 			/>
 			<div class="text-center">
 				<h6>
-					<b>Councillor : <?php echo $aCouncillorData['name'];?></b>
+					<b>Councillor : <a href="<?php echo $aCouncillorData['url'];?>"  target="_blank"><?php echo $aCouncillorData['name'];?></a></b>
 					</h6>
 				<h6>
 					<b>party : <?php echo $aCouncillorData['party_name'];?></b>
@@ -48,7 +49,7 @@
 					<b>മുനിസിപ്പാലിറ്റി</b>
 				</td>
 				<td>
-					ആലപ്പുഴ
+					<a href='http://www.alappuzhamunicipality.in' target="_blank">ആലപ്പുഴ</a>
 				</td>
 			</tr>
 			<tr>
