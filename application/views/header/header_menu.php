@@ -12,9 +12,15 @@
         </div>
         <div class="navbar-collapse collapse ">
             <ul class="nav navbar-nav pull-right">
-		          <?php if( $this->authentication->is_user_logged_in() ):?>
+		        <?php if( $this->authentication->is_user_logged_in() ):?>
                 <li class="<?php echo (isset($menu_active) && 'survey_new' == $menu_active) ? 'active': '';?>"><a href="<?php echo $c_base_url;?>survey">New Survey</a></li>
+                <?php endif?>
+                
+                <?php if( $this->authentication->is_admin_logged_in() ):?>
                 <li class="<?php echo (isset($menu_active) && 'survey_search' == $menu_active) ? 'active': '';?>"><a href="<?php echo $c_base_url;?>search">Search</a></li>
+                <?php endif?>
+                
+                <?php if( $this->authentication->is_user_logged_in() ):?>
                 <li><a href="<?php echo $c_base_url;?>logout">Log out</a></li>
               <?php else:?>
                 <li><a href="<?php echo $c_base_url;?>user/login">Login</a></li>

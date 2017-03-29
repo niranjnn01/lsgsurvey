@@ -1723,5 +1723,14 @@
 				array_push($aAnswers, $aAnswerOption['title']);
 			}
 		}
-		return implode(',', $aAnswers);
+		return implode(', ', $aAnswers);
+	}
+	
+	function getQuestionText($field_name){
+		$CI = & get_instance();
+		$questions_master_data = $CI->config->item('questions_master_data');
+		$aQuestionId = array_column($questions_master_data, 'field_name');
+		$iQuestionId = array_search( $field_name, $aQuestionId) + 1;
+		
+		return $questions_master_data[$iQuestionId]['title'];
 	}

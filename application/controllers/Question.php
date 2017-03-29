@@ -76,6 +76,22 @@ class Question extends CI_Controller {
 		if($bProceed) {
 
 			$aQuestionsMasterData = $this->config->item('questions_master_data');
+			
+			/*
+			$oTemporarySurvey = $this->survey_model->getCurrentTemporarySurvey();
+
+			$iTemporarySurveyNumber = $oTemporarySurvey->id;
+			$this->db->where('id', $iTemporarySurveyNumber);
+			
+			if($oSurveyData = $this->db->get('temporary_survey')->row()) {
+
+				$aRawData	= unserialize($oSurveyData->raw_data);
+				echo '<pre>';
+				print_r($aRawData[$aQuestionsMasterData[$iQuestionNo]['table_name']][$aQuestionsMasterData[$iQuestionNo]['field_name']]);
+				exit;
+			}
+			
+			*/
 	/*
 				$aQuestionsMasterData = array(
 					1 => array(
@@ -115,8 +131,10 @@ class Question extends CI_Controller {
 					$aQuestionData = $this->_normalizeQuestion($aQuestionData);
 
 					// add custom fields
-					$aQuestionData['end_of_section'] = false;
-					$aQuestionData['last_question'] = $bIsLastQuestion;
+					$aQuestionData['question_count']	= count($aQuestionsMasterData);
+					$aQuestionData['question_no']		= $iQuestionNo;
+					$aQuestionData['end_of_section']	= false;
+					$aQuestionData['last_question'] 	= $bIsLastQuestion;
 
 					// encode the data
 					$sJsonData = json_encode($aQuestionData);
@@ -143,10 +161,10 @@ class Question extends CI_Controller {
 
 
 		$aNormalizedQuestionStructure = array(
-			'title' 					=> '',
+			'title' 			=> '',
 			'answer_type' 		=> $aQuestion['answer_type'],
 			'answer_options' 	=> array(),
-			'field_name' 			=> $this->aAnswerTypesDetails[$aQuestion['answer_type']]['field_name'],
+			'field_name' 		=> $this->aAnswerTypesDetails[$aQuestion['answer_type']]['field_name'],
 		);
 
 		return array_merge($aNormalizedQuestionStructure, $aQuestion);

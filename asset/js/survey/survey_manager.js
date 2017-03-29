@@ -39,7 +39,7 @@ $(document).ready(function(){
 
 					if(data.temporary_survey_number != 0) {
 						//contact the server for first question
-	        	fetchNextQuestion();
+	        			fetchNextQuestion('');
 					} else {
 						alert("Error: No Survey found");
 					}
@@ -77,7 +77,7 @@ $(document).ready(function(){
 			localStorage.setItem('last_question', temporary_survey_is_last_question);
 
 			//contact the server for next question
-			fetchNextQuestion();
+			fetchNextQuestion('');
 		}
 
   }
@@ -91,45 +91,69 @@ $(document).ready(function(){
 
   $('#next_btn').click(function (event) {
 
+	showOverlay();
+    event.preventDefault();
+
+    // handle the current answer
+    handleCurrentAnswer('next');
+  });
+  
+  $('#previous_btn').click(function (event) {
+
 
     event.preventDefault();
 
     // handle the current answer
-    handleCurrentAnswer();
+    handleCurrentAnswer('prev');
   });
 
 });
-
-function fetchNextQuestion() {
+function showOverlay(){
+	$('#overlay').show();
+}
+function hideOverlay(){
+	$('#overlay').hide();
+}
+function fetchNextQuestion(direction) {
+	direction = 'next';//currently only have next button 
   //clear the container
   $('#question_container').html('');
 
   var temporary_survey_number = localStorage.getItem('temporary_survey_number');
   var current_question = localStorage.getItem('current_question');
 
-
+  
+  
+  if(direction == 'prev'){
+	  var next_question_id = (parseInt(current_question) - 1);
+  }else if(direction == 'next'){
+	  var next_question_id = (parseInt(current_question) + 1);
+  }else{
+	  var next_question_id = parseInt(current_question);
+  }
+  
   //contact the server for next question
   $.ajax({
-    url:base_url + "question/get/" + temporary_survey_number + "/" + (parseInt(current_question) + 1),
+    url:base_url + "question/get/" + temporary_survey_number + "/" + next_question_id,
     type:"GET",
     success:function (data) {
 
 
-      localStorage.setItem('current_question', (parseInt(current_question) + 1));
+      localStorage.setItem('current_question', next_question_id);
       localStorage.setItem('last_question', data.last_question);
-      localStorage.setItem('answer_type', data.answer_type);
+      localStorage.setItem('answer_type', data.answer_type);	  
       appendQuestion(data);
 	  $('#survey_container').removeClass('animated fadeInLeft');
 	  $('#survey_container').addClass('animated fadeInLeft');
 			  $('#survey_container').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function (){$('#survey_container').removeClass('animated fadeInLeft');});
-
+	  hideOverlay();
     },
     dataType : "json"
   });
 }
 
 
-function handleCurrentAnswer() {
+function handleCurrentAnswer(direction) {
 
 
   var bWasSuccessful = false;
@@ -142,7 +166,6 @@ function handleCurrentAnswer() {
 
 
     var oDataObject = new Object();
-
 
       switch(answer_type) {
 
@@ -188,7 +211,7 @@ function handleCurrentAnswer() {
             surveyCompleteRoutines();
           } else {
 			dont_confirm_leave = 0;
-            fetchNextQuestion();
+            fetchNextQuestion(direction);			
           }
 
         }
@@ -208,8 +231,9 @@ function showSurveyCompleteView(survey_id) {
 
   // remove all buttons etc
   $('#survey_container').html('');
+  hideOverlay();
 
-  $('#question-group-id').text('');
+  $('#question-group-id,#question-status').text('');
   // show link to access the survey result page. => view page of an individual survey!
   $('#survey_container').html(
     $(
@@ -302,7 +326,15 @@ function appendQuestion(data) {
 
 
   }
-
+  //$('#previous_btn').prop('disabled', false);
+  if(data.question_no == data.question_count){
+  	$('#next_btn').text('Save & Complete Survey');
+  }else if(data.question_no == 1){
+	  //$('#previous_btn').prop('disabled', true);
+  }else{
+	  $('#next_btn').text('Next Question');
+  }
+  $('#question-status').text(data.question_no+' of '+data.question_count);
   $('#question-group-id').text(question_groups[data.group_id].title);
   $('#question_container').html(
     $(

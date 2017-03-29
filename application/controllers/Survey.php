@@ -363,16 +363,26 @@ function purge_test_data() {
 			SU.is_office_bearer_religious_organization,
 			SU.is_member_library,
 			SU.is_birth_same_ward,
-			SU.ifnot_birth_place
+			SU.ifnot_birth_place,
+			WP.status as is_ward_sabha_participant,
+			WP.reason as not_participation_reason,
+			WP.is_satisfied as is_participant_satisfied ,
+			WP.have_suggestion as have_ward_sabha_suggestion,
+			HTX.amount as house_tax,
+			FHM.family_id
 			');
 		$this->db->join('surveyee_user_family_map SUFM', 'SU.id = SUFM.surveyee_user_id');
 		$this->db->join('families F', 'SUFM.family_id = F.id');
 		$this->db->join('family_house_map FHM', 'F.id = FHM.family_id');
 		$this->db->join('houses H', 'FHM.house_id = H.id');
 		$this->db->join('surveys S', 'S.house_id = H.id');
+		$this->db->join('ward_sabha_participation WP', 'WP.surveyee_user_id = SU.id', 'left');
+		$this->db->join('house_tax HTX', 'HTX.house_id= H.id', 'left');
 		$this->db->where('S.id', $iSurveyId);
 		$this->mcontents['oUserPersonalData'] = $this->db->get('surveyee_users SU')->row();
 		//p($this->mcontents['oUserPersonalData']);
+		
+		$this->mcontents['oHouseData']->largest_accessible_vehicle	= $this->mcontents['oUserPersonalData']->largest_accessible_vehicle;
 
 		if( $this->mcontents['oUserPersonalData']->residence_type_id == 1 ) {
 			//rented stay
@@ -384,6 +394,99 @@ function purge_test_data() {
 				$this->mcontents['oHouseData']->sResidenceType = $this->mcontents['aHouseOwnershipTypes'][1];
 			}
 		}
+		
+		
+		//House tax
+		$this->mcontents['oHouseData']->tax_amount = $this->mcontents['oUserPersonalData']->house_tax;
+		
+		// Ward Residence history
+		$this->db->select('FR.from, FR.to');
+		$this->db->where('FR.family_id', $this->mcontents['oUserPersonalData']->family_id);
+		$aFamilyResidence = $this->db->get('family_residence_history_map FR')->row();
+		$this->mcontents['oUserPersonalData']->sFamilyResidenceHistory	= '';
+		if(isset($aFamilyResidence->from)){
+			$this->mcontents['oUserPersonalData']->sFamilyResidenceHistory = 
+				date('Y', strtotime($aFamilyResidence->to)) - date('Y', strtotime($aFamilyResidence->from)) . ' വർഷം ' . '('.
+				date('Y', strtotime($aFamilyResidence->from)).' - '.
+				date('Y', strtotime($aFamilyResidence->to)).')';
+		}
+		
+		// House Road Type
+		$this->db->select('HRM.road_type_id as id');
+		$this->db->where('HRM.house_id', $this->mcontents['oUserPersonalData']->house_id);
+		$aHomeRoadMap = $this->db->get('house_road_map HRM')->row();
+
+		$this->mcontents['oHouseData']->sHomeRoadMap = '';
+		if(isset($this->mcontents['oHouseData']->sHomeRoadMap)){
+			$this->mcontents['oHouseData']->sHomeRoadMap = $aHomeRoadMap->id;
+		}
+		
+		// House Public Utility Proximity
+		$this->db->select('HPU.public_utility_id as id, HPU.proximity');
+		$this->db->where('HPU.house_id', $this->mcontents['oUserPersonalData']->house_id);
+		$aHomeUtilityProximity = $this->db->get('house_public_utility_proximity HPU')->result();
+		$this->mcontents['oHouseData']->aHomeUtilityProximity = [];
+		$this->mcontents['oHouseData']->aHomeUtilityServices = [];
+		foreach($aHomeUtilityProximity as $oUtility){
+			$this->mcontents['oHouseData']->aHomeUtilityProximity[$oUtility->id] = $oUtility->proximity;
+			if(4 != $oUtility->id){
+				array_push($this->mcontents['oHouseData']->aHomeUtilityServices, $oUtility->id);
+			}
+		}
+		
+		// House Water Sources
+		$this->db->select('HWS.house_water_source_id as id');
+		$this->db->where('HWS.house_id', $this->mcontents['oUserPersonalData']->house_id);
+		$aHomeWaterSources = $this->db->get('house_water_source_map HWS')->result();
+		$this->mcontents['oHouseData']->aHomeWaterSources = [];
+		foreach($aHomeWaterSources as $oItem){
+			array_push($this->mcontents['oHouseData']->aHomeWaterSources, $oItem->id);
+		}
+		
+		// House Waste Management
+		$this->db->select('HWM.waste_management_solution_id as id');
+		$this->db->where('HWM.house_id', $this->mcontents['oUserPersonalData']->house_id);
+		$aHomeWasteManagements = $this->db->get('house_waste_management_solution_map HWM')->result();
+		$this->mcontents['oHouseData']->aHomeWasteManagements = [];
+		foreach($aHomeWaterSources as $oItem){
+			array_push($this->mcontents['oHouseData']->aHomeWasteManagements, $oItem->id);
+		}
+		
+		// Family Domestic Fuel Types
+		$this->db->select('FDF.domestic_fuel_type_id as id');
+		$this->db->where('FDF.family_id', $this->mcontents['oUserPersonalData']->family_id);
+		$aHomeDomesticFuelTypes = $this->db->get('family_domestic_fuel_type_map FDF')->result();
+		$this->mcontents['oHouseData']->aHomeDomesticFuelTypes = [];
+		foreach($aHomeDomesticFuelTypes as $oItem){
+			array_push($this->mcontents['oHouseData']->aHomeDomesticFuelTypes, $oItem->id);
+		}
+		
+				
+		
+		// Home applicances
+		$this->db->select('FA.house_appliance_id as id');
+		$this->db->where('FA.family_id', $this->mcontents['oUserPersonalData']->family_id);
+		//$this->db->join('house_appliance HA', 'HA.id = FA.house_appliance_id');
+		$aFamilyAppliances = $this->db->get('family_appliance_map FA')->result();
+
+		$this->mcontents['oHouseData']->aHomeAppliances = [];
+		foreach($aFamilyAppliances AS $iItemId) {
+			array_push($this->mcontents['oHouseData']->aHomeAppliances, $iItemId->id);
+		}
+		
+		// Family vehicles
+		$this->db->select('FV.vehicle_type_id as id');
+		$this->db->where('FV.family_id', $this->mcontents['oUserPersonalData']->family_id);
+		$aFamilyAppliances = $this->db->get('family_vehicle_type_map FV')->result();
+		
+
+		$this->mcontents['oHouseData']->aFamilyVehicleType = [];
+		foreach($aFamilyAppliances AS $iItemId) {
+			array_push($this->mcontents['oHouseData']->aFamilyVehicleType, $iItemId->id);
+		}
+		
+		
+		
 		//p($this->mcontents['oUserPersonalData']);
 
 		// house types

@@ -9,8 +9,13 @@
         <h5><b>ജില്ല :</b> ആലപ്പുഴ </h5>
 		<h5><b>മുനിസിപ്പാലിറ്റി :</b> ആലപ്പുഴ</h5>
 		<h5><b>വാർഡ് നമ്പർ :</b> 45 (കടൽത്തീരം)</h5>
-        <h3 id="question-group-id"></h3>
-		<div id="survey_container">
+        <div class="row">
+        	<div class="col-md-12">
+                <h3 id="question-group-id" class="pull-left"></h3>
+                <h4 id="question-status" class="pull-right"></h4>
+            </div>
+        </div>
+		<div id="survey_container" class="clearfix">
 			<div class="row">
 				<div class="col-md-12">
 
@@ -21,23 +26,23 @@
 			</div>
 
 			<div class="row">
-				<div class="col-md-4">
-					<?php /*?>
-					<a href="#" id="previous_btn" class="btn btn-danger">Previous</a>
-					<?php */?>
+            	<div class="col-md-12">
+                    <div class="col-md-4">
+                     <?php /*?>
+                        <button id="previous_btn" class="btn btn-primary">Previous Question</button>
+						<?php */?>
+                    </div>
+    
+                    <div class="col-md-4">
+                        <?php /*?>
+                        <a href="#" id="skip_btn" class="btn btn-warning">Skip</a>
+                        <?php */?>
+                    </div>
+    
+                    <div class="col-md-4">
+                        <button id="next_btn" class="btn btn-primary pull-right">Next Question</button>
+                    </div>
 				</div>
-
-				<div class="col-md-4">
-					<?php /*?>
-					<a href="#" id="skip_btn" class="btn btn-warning">Skip</a>
-					<?php */?>
-				</div>
-
-				<div class="col-md-4">
-
-					<a href="#" id="next_btn" class="btn btn-primary">Next Question</a>
-				</div>
-
 			</div>
 		</div>
         <script>
@@ -83,4 +88,7 @@
 		</form>
 
 	</div>
+</div>
+<div id="overlay">
+    <span>Please wait...<img src="<?php echo base_url();?>/asset/img/spinner.gif"/></span>
 </div>

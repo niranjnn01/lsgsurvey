@@ -34,90 +34,103 @@
 		<table class="table">
 
 			<tr>
-				<td>പേര്:</td>
+				<td><?php echo getQuestionText('name');?>:</td>
 				<td><?php echo $oUserPersonalData->name;?></td>
 			</tr>
 			
             <tr>
-				<td>ആധാർ നം:</td>
+				<td><?php echo getQuestionText('aadhar_id');?>:</td>
 				<td><?php echo $oUserPersonalData->aadhar_id;?></td>
 			</tr>
             
 			<tr>
-				<td>ഇലക്ഷൻ ഐ.ഡി:</td>
+				<td><?php echo getQuestionText('election_id');?>:</td>
 				<td><?php echo $oUserPersonalData->election_id;?></td>
 			</tr>
 			
             <tr>
-				<td>മതം:</td>
+				<td><?php echo getQuestionText('belief_in_religion_id');?>:</td>
 				<td><?php echo getQuestionAnswer('belief_in_religion_id', $oUserPersonalData->belief_in_religion_id);?></td>
 			</tr>
             
             <tr>
-				<td>പട്ടികജാതി/വർഗം:</td>
+				<td><?php echo getQuestionText('is_scst');?>:</td>
 				<td><?php echo ($oUserPersonalData->is_scst) ? 'അതെ' : 'അല്ല';?></td>
 			</tr>
             
             <tr>
-				<td>പിന്നോക്ക സമുദായം:</td>
+				<td><?php echo getQuestionText('is_obc');?>:</td>
 				<td><?php echo ($oUserPersonalData->is_obc) ? 'അതെ' : 'അല്ല';?></td>
 			</tr>
             <tr>
-				<td>മൊബൈൽ ഫോൺ:</td>
+				<td><?php echo getQuestionText('mobile_number');?>:</td>
 				<td><?php echo $oUserPersonalData->mobile_number;?></td>
 			</tr>
             <tr>
-				<td>ഇമെയിൽ വിലാസം:</td>
+				<td><?php echo getQuestionText('email_id');?>:</td>
 				<td><?php echo $oUserPersonalData->email_id;?></td>
 			</tr>
             <tr>
-				<td>വാട്സപ്പ്‍ നമ്പർ:</td>
+				<td><?php echo getQuestionText('whatsapp_number');?>:</td>
 				<td><?php echo $oUserPersonalData->whatsapp_number;?></td>
 			</tr>
             <tr>
-				<td>ഫേസ്ബുക്ക് അക്കൗണ്ട്:</td>
+				<td><?php echo getQuestionText('facebook_link');?>:</td>
 				<td><?php echo $oUserPersonalData->facebook_link;?></td>
 			</tr>
             <tr>
-				<td>ഏതെങ്കിലും അയൽക്കൂട്ടം അംഗമാണോ?:</td>
+				<td><?php echo getQuestionText('is_member_ayalkoottam');?>:</td>
 				<td><?php echo getQuestionAnswer('is_member_ayalkoottam', $oUserPersonalData->is_member_ayalkoottam);?></td>
 			</tr>
             <tr>
-				<td>അയൽക്കൂട്ടം ഭാരവാഹിയാണോ?:</td>
+				<td><?php echo getQuestionText('is_office_bearer_ayalkoottam');?>:</td>
 				<td><?php echo getQuestionAnswer('is_office_bearer_ayalkoottam', $oUserPersonalData->is_office_bearer_ayalkoottam);?></td>
 			</tr>
             <tr>
-				<td>രാഷ്ട്രീയ പാർട്ടിയിൽ അംഗത്വമുണ്ടോ?:</td>
+				<td><?php echo getQuestionText('is_member_political_party');?>:</td>
 				<td><?php echo getQuestionAnswer('is_member_political_party', $oUserPersonalData->is_member_political_party);?></td>
 			</tr>
             <tr>
-				<td>സാമൂഹിക സാംസ്‌കാരിക സംഘടനകളിൽ അംഗത്വം ഉണ്ടോ?:</td>
+				<td><?php echo getQuestionText('is_memeber_socio_cultural_organization');?>:</td>
 				<td><?php echo getQuestionAnswer('is_memeber_socio_cultural_organization', $oUserPersonalData->is_memeber_socio_cultural_organization);?></td>
 			</tr>
             <tr>
-				<td>മതസംഘടനയിൽ ഭാരവാഹിയാണോ?:</td>
+				<td><?php echo getQuestionText('is_office_bearer_religious_organization');?>:</td>
 				<td><?php echo getQuestionAnswer('is_office_bearer_religious_organization', $oUserPersonalData->is_office_bearer_religious_organization);?></td>
 			</tr>
             <tr>
-				<td>ലൈബ്രറി അംഗത്വം ഉണ്ടോ?:</td>
+				<td><?php echo getQuestionText('is_member_library');?>:</td>
 				<td><?php echo getQuestionAnswer('is_member_library', $oUserPersonalData->is_member_library);?></td>
 			</tr>
             <tr>
-				<td>വാർഡ് സഭകളിൽ പങ്കെടുക്കാറുണ്ടോ?:</td>
-				<td><?php echo ($oUserPersonalData->aadhar_id) ? 'ഉണ്ട്' : 'ഇല്ല';?></td>
+				<td><?php echo getQuestionText('status');?>:</td>
+				<td><?php echo getQuestionAnswer('status', $oUserPersonalData->is_ward_sabha_participant);?></td>
 			</tr>
             <tr>
-				<td>ഇല്ലെങ്കിൽ എന്തുകൊണ്ട്?:</td>
-				<td></td>
+				<td><?php echo getQuestionText('reason');?>:</td>
+				<td><?php echo getQuestionAnswer('reason', $oUserPersonalData->not_participation_reason);?></td>
 			</tr>
             <tr>
-				<td>പങ്കെടുക്കുന്നുണ്ടെങ്കിൽ  വാർഡ് സഭകളിൽ സംതൃപ്തിയുണ്ടോ?:</td>
-				<td></td>
+				<td><?php echo getQuestionText('is_satisfied');?>:</td>
+				<td><?php echo getQuestionAnswer('is_satisfied', $oUserPersonalData->is_participant_satisfied);?></td>
 			</tr>
             <tr>
-				<td>വാർഡ് സഭകളിൽ പങ്കെടുക്കാറുണ്ടെങ്കിൽ വാർഡ് സഭകൾ മെച്ചപ്പെടുത്താനുള്ള നിർദേശങ്ങൾ ഉണ്ടോ?:</td>
-				<td></td>
+				<td><?php echo getQuestionText('have_suggestion');?>:</td>
+				<td><?php echo getQuestionAnswer('have_suggestion', $oUserPersonalData->have_ward_sabha_suggestion);?></td>
 			</tr>
+            <tr>
+				<td><?php echo getQuestionText('is_birth_same_ward');?>:</td>
+				<td><?php echo getQuestionAnswer('is_birth_same_ward', $oUserPersonalData->is_birth_same_ward);?></td>
+			</tr>            
+            <tr>
+				<td><?php echo getQuestionText('ifnot_birth_place');?>:</td>
+				<td><?php echo $oUserPersonalData->ifnot_birth_place;?></td>
+			</tr>            
+            <tr>
+				<td><?php echo getQuestionText('YEARS_OF_STAYING');?>:</td>
+				<td><?php echo $oUserPersonalData->sFamilyResidenceHistory;?></td>
+			</tr>
+            
 		</table>
 	</div>
 
@@ -190,22 +203,60 @@
             
             <tr>
 				<td>വാർഷിക കെട്ടിട നികുതി</td>
-				<td></td>
+				<td><?php echo $oHouseData->tax_amount;?> രൂപ</td>
+			</tr>
+            <tr>
+				<td><?php echo getQuestionText('largest_accessible_vehicle');?></td>
+				<td><?php echo getQuestionAnswer('largest_accessible_vehicle', $oHouseData->largest_accessible_vehicle);?></td>
+			</tr>
+            <tr>
+				<td><?php echo getQuestionText('road_type_id');?></td>
+				<td><?php echo getQuestionAnswer('road_type_id', $oHouseData->sHomeRoadMap);?></td>
+			</tr>
+            <tr>
+				<td><?php echo getQuestionText('proximity');?></td>
+				<td><?php echo isset($oHouseData->aHomeUtilityProximity[4]) ? $oHouseData->aHomeUtilityProximity[4] .' മീറ്റർ': '';?></td>
 			</tr>            
+            <tr>
+				<td><?php echo getQuestionText('public_utility_id');?></td>
+				<td><?php echo getQuestionAnswer('public_utility_id', $oHouseData->aHomeUtilityServices);?>
+                </td>
+			</tr>                        
+            <tr>
+				<td><?php echo getQuestionText('house_water_source_id');?></td>
+				<td><?php echo getQuestionAnswer('house_water_source_id', $oHouseData->aHomeWaterSources);?>
+                </td>
+			</tr>                        
+            <tr>
+				<td><?php echo getQuestionText('waste_management_solution_id');?></td>
+				<td><?php echo getQuestionAnswer('waste_management_solution_id', $oHouseData->aHomeWasteManagements);?>
+                </td>
+			</tr>
+            <tr>
+				<td><?php echo getQuestionText('is_electrified');?></td>
+				<td><?php echo getQuestionAnswer('is_electrified', $oHouseData->is_electrified);?>
+                </td>
+			</tr>                     
+            <tr>
+				<td><?php echo getQuestionText('domestic_fuel_type_id');?></td>
+				<td><?php echo getQuestionAnswer('domestic_fuel_type_id', $oHouseData->aHomeDomesticFuelTypes);?>
+                </td>
+			</tr>
+            
 		</table>
 	</div>
 
     <div class="col-md-4">
         <table class="table">
             <tr>
-                <td>വീട്ടുപകരണങ്ങൾ</td>
-                <td></td>
-            </tr>
-            
-            <tr>
 				<td>വാഹനങ്ങൾ</td>
-				<td></td>
+				<td><?php echo getQuestionAnswer('vehicle_type_id', $oHouseData->aFamilyVehicleType);?></td>
 			</tr>
+            <tr>
+                <td>വീട്ടുപകരണങ്ങൾ</td>
+                <td><?php echo getQuestionAnswer('house_appliance_id', $oHouseData->aHomeAppliances);?></td>
+            </tr>            
+            
         </table>
     </div>
 

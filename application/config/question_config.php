@@ -845,7 +845,7 @@ $config['questions_master_data'] = array(
 		'title' 		=> 'വീട്ടിൽ നിന്നും ഓട്ടോ സ്റ്റാന്റിലേക്കുള്ള ദൂരം',
 		'field_name' 	=> 'proximity',
 		'table_name'	=> 'house_public_utility_proximity',
-		'master_field'	=> 'house_id',		// need to hard code public_utility_id of autorikshaw stand
+		'master_field'	=> 'house_id',		// need to hard code public_utility_id = 4 of autorikshaw stand
 		'group_id'		=> 6,
 		'answer_type' 	=> $config['answer_types']['single_value_text'],
 		'answer_options'=> array(),
@@ -979,7 +979,7 @@ $config['questions_master_data'] = array(
 	49 => array(
 		'title' 		=> 'വീട്ടാവശ്യത്തിനുള്ള ഇന്ധനം',
 		'field_name' 	=> 'domestic_fuel_type_id',
-		'table_name'	=> 'house_domestic_fuel_type_map',
+		'table_name'	=> 'family_domestic_fuel_type_map',
 		'master_field'	=> 'house_id',
 		'group_id'		=> 9,
 		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
