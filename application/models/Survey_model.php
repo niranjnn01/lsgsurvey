@@ -250,16 +250,26 @@ function setTemporarySurveyAsCurrent($iTemporarySurveyId, $iEnumeratorAccountNo)
 				}
 				*/
 
-				// insert public utitlity Autorikshaw distance from house
+				// insert public utitlity 
 				if(isset($aRawData['house_public_utility_proximity']['public_utility_id'])
 					&& count($aRawData['house_public_utility_proximity']['public_utility_id']) > 0){
 
-					foreach($aRawData['house_public_utility_proximity']['public_utility_id'] as $iUtilityId){
+					foreach($aRawData['house_public_utility_proximity']['public_utility_id'] as $iUtilityId){						
 						$this->db->set('public_utility_id', $iUtilityId);
 						$this->db->set('house_id', $iHouseId);
 						$this->db->insert('house_public_utility_proximity');
 					}
 				}
+				
+				// Autorikshaw distance from house
+				if(isset($aRawData['house_public_utility_proximity']['proximity'])
+						&& $aRawData['house_public_utility_proximity']['proximity'] > 0){
+					$this->db->set('proximity', $aRawData['house_public_utility_proximity']['proximity']);
+					$this->db->set('public_utility_id', 4);
+					$this->db->set('house_id', $iHouseId);
+					$this->db->insert('house_public_utility_proximity');
+				}
+						
 
 				// insert water sources
 				if(isset($aRawData['house_water_source_map']['house_water_source_id'])
@@ -295,14 +305,13 @@ function setTemporarySurveyAsCurrent($iTemporarySurveyId, $iEnumeratorAccountNo)
 				}
 
 				// insert pet animals
-				if(	isset($aRawData['HAS_DOMESTIC_ANIMALS'])
-						&& TRUE == $aRawData['HAS_DOMESTIC_ANIMALS']
+				if(	isset($aRawData['TEMP']['HAS_DOMESTIC_ANIMALS'])
+						&& 1 == $aRawData['TEMP']['HAS_DOMESTIC_ANIMALS']
 						&& isset($aRawData['family_pet_map']['pet_id'])
-						&& count($aRawData['family_pet_map']['pet_id']) > 0) {
-
+						&& count($aRawData['family_pet_map']['pet_id']) > 0) {					
 					foreach($aRawData['family_pet_map']['pet_id'] as $iPetId){
-						if(1 == $iPetId && isset($aRawData['family_pet_map']['has_license'])){
-							$this->db->set('has_license', $aRawData['family_pet_map']['has_license']);
+						if(1 == $iPetId && isset($aRawData['family_pet_map']['has_license']) && 1 == $aRawData['family_pet_map']['has_license']){
+							$this->db->set('has_license', 1);
 						}
 						$this->db->set('pet_id', $iPetId);
 						$this->db->set('family_id', $iFamilyId);

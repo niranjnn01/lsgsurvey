@@ -239,7 +239,7 @@
 			</tr>                     
             <tr>
 				<td><?php echo getQuestionText('domestic_fuel_type_id');?></td>
-				<td><?php echo getQuestionAnswer('domestic_fuel_type_id', $oHouseData->aHomeDomesticFuelTypes);?>
+				<td><?php echo getQuestionAnswer('domestic_fuel_type_id', $oHouseData->aFamilyDomesticFuelTypes);?>
                 </td>
 			</tr>
             
@@ -247,6 +247,7 @@
 	</div>
 
     <div class="col-md-4">
+    	<h5>&nbsp;</h5>
         <table class="table">
             <tr>
 				<td>വാഹനങ്ങൾ</td>
@@ -256,6 +257,18 @@
                 <td>വീട്ടുപകരണങ്ങൾ</td>
                 <td><?php echo getQuestionAnswer('house_appliance_id', $oHouseData->aHomeAppliances);?></td>
             </tr>            
+            <tr>
+                <td><?php echo getQuestionText('HAS_DOMESTIC_ANIMALS');?></td>
+                <td><?php echo getQuestionAnswer('HAS_DOMESTIC_ANIMALS', $oHouseData->iHasPet);?></td>
+            </tr>            
+            <tr>
+                <td><?php echo getQuestionText('pet_id');?></td>
+                <td><?php echo getQuestionAnswer('pet_id', array_keys($oHouseData->aFamilyPets));?></td>
+            </tr>           
+            <tr>
+                <td><?php echo getQuestionText('has_license');?></td>
+                <td><?php echo ($oHouseData->iHasDog) ? getQuestionAnswer('has_license', $oHouseData->iHasDogLicense) : '';?></td>
+            </tr>
             
         </table>
     </div>

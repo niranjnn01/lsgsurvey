@@ -455,13 +455,33 @@ function purge_test_data() {
 		// Family Domestic Fuel Types
 		$this->db->select('FDF.domestic_fuel_type_id as id');
 		$this->db->where('FDF.family_id', $this->mcontents['oUserPersonalData']->family_id);
-		$aHomeDomesticFuelTypes = $this->db->get('family_domestic_fuel_type_map FDF')->result();
-		$this->mcontents['oHouseData']->aHomeDomesticFuelTypes = [];
-		foreach($aHomeDomesticFuelTypes as $oItem){
-			array_push($this->mcontents['oHouseData']->aHomeDomesticFuelTypes, $oItem->id);
+		$aFamilyDomesticFuelTypes = $this->db->get('family_domestic_fuel_type_map FDF')->result();
+		$this->mcontents['oHouseData']->aFamilyDomesticFuelTypes = [];
+		foreach($aFamilyDomesticFuelTypes as $oItem){
+			array_push($this->mcontents['oHouseData']->aFamilyDomesticFuelTypes, $oItem->id);
+		}
+		// Family Domestic Fuel Types
+		$this->db->select('FDF.domestic_fuel_type_id as id');
+		$this->db->where('FDF.family_id', $this->mcontents['oUserPersonalData']->family_id);
+		$aFamilyDomesticFuelTypes = $this->db->get('family_domestic_fuel_type_map FDF')->result();
+		$this->mcontents['oHouseData']->aFamilyDomesticFuelTypes = [];
+		foreach($aFamilyDomesticFuelTypes as $oItem){
+			array_push($this->mcontents['oHouseData']->aFamilyDomesticFuelTypes, $oItem->id);
 		}
 		
-				
+		// Family Pets
+		$this->db->select('FP.pet_id as id, FP.has_license');
+		$this->db->where('FP.family_id', $this->mcontents['oUserPersonalData']->family_id);
+		$aFamilyPets = $this->db->get('family_pet_map FP')->result();
+		$this->mcontents['oHouseData']->aFamilyPets = [];
+		foreach($aFamilyPets as $oItem){
+			$this->mcontents['oHouseData']->aFamilyPets[$oItem->id] = $oItem->has_license;
+		}
+		$this->mcontents['oHouseData']->iHasPet = (count($this->mcontents['oHouseData']->aFamilyPets) > 0) ? 1 : 0;
+		$this->mcontents['oHouseData']->iHasDog	= (isset($this->mcontents['oHouseData']->aFamilyPets[1])) ? 1 : 0 ;
+		$this->mcontents['oHouseData']->iHasDogLicense	= 
+		($this->mcontents['oHouseData']->iHasDog == 1 && 1 == $this->mcontents['oHouseData']->aFamilyPets[1]) ? 1 : 0;
+		
 		
 		// Home applicances
 		$this->db->select('FA.house_appliance_id as id');
@@ -532,7 +552,8 @@ function purge_test_data() {
 	}
 
 	function sync_demo_data() {
-		$this->db->where('pushed_to_main', 1);
+		$this->db->where('pushed_to_main', 0);
+		$this->db->where('id', 14);
 		foreach($this->db->get('temporary_survey')->result() AS $oItem) {
 			$this->survey_model->createSurvey($oItem->id);
 		}
