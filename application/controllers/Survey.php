@@ -369,7 +369,10 @@ function purge_test_data() {
 			WP.is_satisfied as is_participant_satisfied ,
 			WP.have_suggestion as have_ward_sabha_suggestion,
 			HTX.amount as house_tax,
-			FHM.family_id
+			FHM.family_id,
+			F.ration_card_no,
+			F.ration_card_type_id,
+			F.has_aquarium_fish
 			');
 		$this->db->join('surveyee_user_family_map SUFM', 'SU.id = SUFM.surveyee_user_id');
 		$this->db->join('families F', 'SUFM.family_id = F.id');
@@ -383,6 +386,10 @@ function purge_test_data() {
 		//p($this->mcontents['oUserPersonalData']);
 		
 		$this->mcontents['oHouseData']->largest_accessible_vehicle	= $this->mcontents['oUserPersonalData']->largest_accessible_vehicle;
+		
+		$this->mcontents['oHouseData']->has_aquarium_fish	= $this->mcontents['oUserPersonalData']->has_aquarium_fish;
+		$this->mcontents['oHouseData']->ration_card_no		= $this->mcontents['oUserPersonalData']->ration_card_no;
+		$this->mcontents['oHouseData']->ration_card_type_id	= $this->mcontents['oUserPersonalData']->ration_card_type_id;
 
 		if( $this->mcontents['oUserPersonalData']->residence_type_id == 1 ) {
 			//rented stay
@@ -497,15 +504,46 @@ function purge_test_data() {
 		// Family vehicles
 		$this->db->select('FV.vehicle_type_id as id');
 		$this->db->where('FV.family_id', $this->mcontents['oUserPersonalData']->family_id);
-		$aFamilyAppliances = $this->db->get('family_vehicle_type_map FV')->result();
+		$aFamilyVehicleType = $this->db->get('family_vehicle_type_map FV')->result();
 		
-
 		$this->mcontents['oHouseData']->aFamilyVehicleType = [];
-		foreach($aFamilyAppliances AS $iItemId) {
+		foreach($aFamilyVehicleType AS $iItemId) {
 			array_push($this->mcontents['oHouseData']->aFamilyVehicleType, $iItemId->id);
 		}
 		
+		// Family agriculture location
+		$this->db->select('FA.agriculture_location_id as id');
+		$this->db->where('FA.family_id', $this->mcontents['oUserPersonalData']->family_id);
+		//$this->db->join('house_appliance HA', 'HA.id = FA.house_appliance_id');
+		$aFamilyAgricultureLocations = $this->db->get('family_agriculture_location_map FA')->result();
+
+		$this->mcontents['oHouseData']->aFamilyAgricultureLocations = [];
+		foreach($aFamilyAgricultureLocations AS $iItemId) {
+			array_push($this->mcontents['oHouseData']->aFamilyAgricultureLocations, $iItemId->id);
+		}
 		
+		
+		// Family agriculture location
+		$this->db->select('FA.agricultural_produce_id as id');
+		$this->db->where('FA.family_id', $this->mcontents['oUserPersonalData']->family_id);
+		//$this->db->join('house_appliance HA', 'HA.id = FA.house_appliance_id');
+		$aFamilyAgricultureProduce = $this->db->get('family_agricultural_produce_map FA')->result();
+
+		$this->mcontents['oHouseData']->aFamilyAgricultureProduce = [];
+		foreach($aFamilyAgricultureProduce AS $iItemId) {
+			array_push($this->mcontents['oHouseData']->aFamilyAgricultureProduce, $iItemId->id);
+		}
+		
+		// surveyee_user_bank_account_type_map
+		$this->db->select('FA.bank_account_type_id as id');
+		$this->db->where('FA.surveyee_user_id', $this->mcontents['oUserPersonalData']->surveyee_user_id);
+		//$this->db->join('house_appliance HA', 'HA.id = FA.house_appliance_id');
+		$aBankAccountTypes = $this->db->get('surveyee_user_bank_account_type_map FA')->result();
+
+		$this->mcontents['oUserPersonalData']->aBankAccountTypes = [];
+		foreach($aBankAccountTypes AS $iItemId) {
+			array_push($this->mcontents['oUserPersonalData']->aBankAccountTypes, $iItemId->id);
+		}
 		
 		//p($this->mcontents['oUserPersonalData']);
 
@@ -553,7 +591,7 @@ function purge_test_data() {
 
 	function sync_demo_data() {
 		$this->db->where('pushed_to_main', 0);
-		$this->db->where('id', 14);
+		$this->db->where('id', 17);
 		foreach($this->db->get('temporary_survey')->result() AS $oItem) {
 			$this->survey_model->createSurvey($oItem->id);
 		}

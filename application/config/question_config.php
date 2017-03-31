@@ -1074,10 +1074,11 @@ $config['questions_master_data'] = array(
         		'title' => 'ഇല്ല',
       		)
 		),
-	)
-	/*,
-	54 => array(
+	),
+	53 => array(
 		'title' 		=> 'കൃഷി',
+		'field_name' 	=> 'agriculture_location_id',
+		'table_name'	=> 'family_agriculture_location_map',
 		'group_id'		=> 11,
 		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
 		'answer_options'=> array(
@@ -1095,8 +1096,10 @@ $config['questions_master_data'] = array(
       		)
 		)
 	),
-	55 => array(
+	54 => array(
 		'title' 		=> 'വിളകൾ',
+		'field_name' 	=> 'agricultural_produce_id',
+		'table_name'	=> 'family_agricultural_produce_map',
 		'group_id'		=> 12,
 		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
 		'answer_options'=> array(
@@ -1130,8 +1133,10 @@ $config['questions_master_data'] = array(
       		)
 		)
 	),
-	56 => array(
+	55 => array(
 		'title' 		=> 'അലങ്കാര മത്സ്യങ്ങൾ ഉണ്ടോ?',
+		'field_name' 	=> 'has_aquarium_fish',
+		'table_name'	=> 'families',		
 		'group_id'		=> 13,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
 		'answer_options'=> array(
@@ -1145,8 +1150,10 @@ $config['questions_master_data'] = array(
       		)
 		),
 	),
-	57 => array(
+	56 => array(
 		'title' 		=> 'ബാങ്ക് അക്കൗണ്ട്',
+		'field_name' 	=> 'bank_account_type_id',
+		'table_name'	=> 'surveyee_user_bank_account_type_map',
 		'group_id'		=> 13,
 		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
 		'answer_options'=> array(
@@ -1164,8 +1171,27 @@ $config['questions_master_data'] = array(
       		)
 		),
 	),
-	58 => array(
+	57 => array(
 		'title' 		=> 'ക്രെഡിറ്റ് / ഡെബിറ്റ് കാർഡ്',
+		'field_name' 	=> 'has_credit_or_debit_card',
+		'table_name'	=> 'surveyee_users',
+		'group_id'		=> 13,
+		'answer_type' 	=> $config['answer_types']['single_value_radio'],
+		'answer_options'=> array(
+			array(
+        		'value' => TRUE,
+        		'title' => 'ഉണ്ട്',
+      		),
+			array(
+        		'value' => FALSE,
+        		'title' => 'ഇല്ല',
+      		)
+		),
+	),
+	58 => array(
+		'title' 		=> 'ഇന്റർനെറ്റ് ബാംങ്കിംഗ്',
+		'field_name' 	=> 'has_internet_banking',
+		'table_name'	=> 'surveyee_users',
 		'group_id'		=> 13,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
 		'answer_options'=> array(
@@ -1180,7 +1206,9 @@ $config['questions_master_data'] = array(
 		),
 	),
 	59 => array(
-		'title' 		=> 'ഇന്റർനെറ്റ് ബാംങ്കിംഗ്',
+		'title' 		=> 'മൊബൈൽ ബാംങ്കിംഗ്',
+		'field_name' 	=> 'has_mobile_banking',
+		'table_name'	=> 'surveyee_users',
 		'group_id'		=> 13,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
 		'answer_options'=> array(
@@ -1195,22 +1223,9 @@ $config['questions_master_data'] = array(
 		),
 	),
 	60 => array(
-		'title' 		=> 'മൊബൈൽ ബാംങ്കിംഗ്',
-		'group_id'		=> 13,
-		'answer_type' 	=> $config['answer_types']['single_value_radio'],
-		'answer_options'=> array(
-			array(
-        		'value' => TRUE,
-        		'title' => 'ഉണ്ട്',
-      		),
-			array(
-        		'value' => FALSE,
-        		'title' => 'ഇല്ല',
-      		)
-		),
-	),
-	61 => array(
 		'title' 		=> 'വൈദ്യുതി, വെള്ളം, ട്രെയിൻ, ബസ്, സിനിമ തുടങ്ങിയവ',
+		'field_name' 	=> 'surveyee_user_id',
+		'table_name'	=> 'surveyee_user_payment_type_map',
 		'group_id'		=> 13,
 		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
 		'answer_options'=> array(
@@ -1224,8 +1239,10 @@ $config['questions_master_data'] = array(
       		)
 		),
 	),
-	62 => array(
+	61 => array(
 		'title' 		=> 'ഇൻഷുറൻസ്',
+		'field_name' 	=> 'has_insurance',
+		'table_name'	=> 'surveyee_users',
 		'group_id'		=> 13,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
 		'answer_options'=> array(
@@ -1239,8 +1256,10 @@ $config['questions_master_data'] = array(
       		)
 		)
 	),
-	63 => array(
+	62 => array(
 		'title' 		=> 'നിക്ഷേപം',
+		'field_name' 	=> 'investment_type_id',
+		'table_name'	=> 'surveyee_user_investment_type_map',
 		'group_id'		=> 13,
 		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
 		'answer_options'=> array(
@@ -1271,8 +1290,10 @@ $config['questions_master_data'] = array(
 
 		)
 	),
-	64 => array(
+	63 => array(
 		'title' 		=> 'കടബാധ്യത',
+		'field_name' 	=> 'debit_type_id',
+		'table_name'	=> 'surveyee_user_debit_type_map',
 		'group_id'		=> 13,
 		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
 		'answer_options'=> array(
@@ -1295,8 +1316,10 @@ $config['questions_master_data'] = array(
 
 		)
 	),
-	65 => array(
+	64 => array(
 		'title' 		=> 'കടമെടുത്തിട്ടുള്ളത്',
+		'field_name' 	=> 'debit_debit_bank_type_id',
+		'table_name'	=> 'surveyee_user_debit_bank_type_map',
 		'group_id'		=> 13,
 		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
 		'answer_options'=> array(
@@ -1327,7 +1350,6 @@ $config['questions_master_data'] = array(
 
 		)
 	)
-	*/
 
 
 

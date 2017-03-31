@@ -151,6 +151,14 @@
 				<td>ലാൻറ് ഫോൺ:</td>
 				<td><?php echo $oUserPersonalData->landline_number;?></td>
 			</tr>
+            <tr>
+				<td><?php echo getQuestionText('ration_card_no');?></td>
+				<td><?php echo $oHouseData->ration_card_no;?></td>
+			</tr>
+            <tr>
+				<td><?php echo getQuestionText('ration_card_type_id');?></td>
+				<td><?php echo getQuestionAnswer('ration_card_type_id', $oHouseData->ration_card_type_id);?></td>
+			</tr>
 			<tr>
 				<td>വീടിൻ്റെ ഉടമസ്ഥത:</td>
 				<td><?php echo $oHouseData->sResidenceType?></td>
@@ -268,6 +276,22 @@
             <tr>
                 <td><?php echo getQuestionText('has_license');?></td>
                 <td><?php echo ($oHouseData->iHasDog) ? getQuestionAnswer('has_license', $oHouseData->iHasDogLicense) : '';?></td>
+            </tr>
+            <tr>
+                <td><?php echo getQuestionText('agriculture_location_id');?></td>
+                <td><?php echo getQuestionAnswer('agriculture_location_id', $oHouseData->aFamilyAgricultureLocations);?></td>
+            </tr>
+            <tr>
+                <td><?php echo getQuestionText('agricultural_produce_id');?></td>
+                <td><?php echo getQuestionAnswer('agricultural_produce_id', $oHouseData->aFamilyAgricultureProduce);?></td>
+            </tr>
+            <tr>
+                <td><?php echo getQuestionText('has_aquarium_fish');?></td>
+                <td><?php echo getQuestionAnswer('has_aquarium_fish', $oHouseData->has_aquarium_fish);?></td>
+            </tr>
+            <tr>
+                <td><?php echo getQuestionText('bank_account_type_id');?></td>
+                <td><?php echo getQuestionAnswer('bank_account_type_id', $oUserPersonalData->aBankAccountTypes);?></td>
             </tr>
             
         </table>

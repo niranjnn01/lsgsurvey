@@ -82,12 +82,12 @@ function setTemporarySurveyAsCurrent($iTemporarySurveyId, $iEnumeratorAccountNo)
 
 				$aRawData	= unserialize($oSurveyData->raw_data);
 				$iWardId 	= $oSurveyData->ward_id;
-/*
 
-								echo '<pre>';
+
+								/*echo '<pre>';
 								print_r($aRawData);
-								exit;
-*/
+								exit;*/
+
 				$this->db->trans_start();
 
 				// create the user entity
@@ -318,19 +318,103 @@ function setTemporarySurveyAsCurrent($iTemporarySurveyId, $iEnumeratorAccountNo)
 						$this->db->insert('family_pet_map');
 					}
 				}
+				
+				// insert gricultural produce
+				if(isset($aRawData['family_agricultural_produce_map']['agricultural_produce_id'])
+					&& count($aRawData['family_agricultural_produce_map']['agricultural_produce_id']) > 0){
 
+					foreach($aRawData['family_agricultural_produce_map']['agricultural_produce_id'] as $iAgricultureTypeId){
+						$this->db->set('agricultural_produce_id', $iAgricultureTypeId);
+						$this->db->set('family_id', $iFamilyId);
+						$this->db->insert('family_agricultural_produce_map');
+					}
+				}
+				
+				// insert user payement type
+				if(isset($aRawData['surveyee_user_payment_type_map']['payment_type_id'])
+					&& count($aRawData['surveyee_user_payment_type_map']['payment_type_id']) > 0){
 
+					foreach($aRawData['surveyee_user_payment_type_map']['payment_type_id'] as $iPaymentTypeId){
+						$this->db->set('payment_type_id', $iPaymentTypeId);
+						$this->db->set('surveyee_user_id', $iSurveyeeUserId);
+						$this->db->insert('surveyee_user_payment_type_map');
+					}
+				}
+				
+				// insert user payement type
+				if(isset($aRawData['surveyee_user_investment_type_map']['investment_type_id'])
+					&& count($aRawData['surveyee_user_investment_type_map']['investment_type_id']) > 0){
+
+					foreach($aRawData['surveyee_user_investment_type_map']['investment_type_id'] as $iInvestmentTypeId){
+						$this->db->set('investment_type_id', $iInvestmentTypeId);
+						$this->db->set('surveyee_user_id', $iSurveyeeUserId);
+						$this->db->insert('surveyee_user_investment_type_map');
+					}
+				}
+				
+				
+				// insert user debit type
+				if(isset($aRawData['surveyee_user_debit_type_map']['debit_type_id'])
+					&& count($aRawData['surveyee_user_debit_type_map']['debit_type_id']) > 0){
+
+					foreach($aRawData['surveyee_user_debit_type_map']['debit_type_id'] as $iDebitTypeId){
+						$this->db->set('debit_type_id', $iDebitTypeId);
+						$this->db->set('surveyee_user_id', $iSurveyeeUserId);
+						$this->db->insert('surveyee_user_debit_type_map');
+					}
+				}
+				
+				// insert user debit bank type
+				if(isset($aRawData['surveyee_user_debit_bank_type_map']['debit_bank_type_id'])
+					&& count($aRawData['surveyee_user_debit_bank_type_map']['debit_bank_type_id']) > 0){
+
+					foreach($aRawData['surveyee_user_debit_bank_type_map']['debit_bank_type_id'] as $iDebitBankTypeId){
+						$this->db->set('debit_bank_type_id', $iDebitBankTypeId);
+						$this->db->set('surveyee_user_id', $iSurveyeeUserId);
+						$this->db->insert('surveyee_user_debit_bank_type_map');
+					}
+				}	
+				
+				// insert user debit bank type
+				if(isset($aRawData['surveyee_user_bank_account_type_map']['bank_account_type_id'])
+					&& count($aRawData['surveyee_user_bank_account_type_map']['bank_account_type_id']) > 0){
+
+					foreach($aRawData['surveyee_user_bank_account_type_map']['bank_account_type_id'] as $iBankAccountTypeId){
+						$this->db->set('bank_account_type_id', $iBankAccountTypeId);
+						$this->db->set('surveyee_user_id', $iSurveyeeUserId);
+						$this->db->insert('surveyee_user_bank_account_type_map');
+					}
+				}			
+				
+				// insert user debit bank type
+				if(isset($aRawData['family_agriculture_location_map']['agriculture_location_id'])
+					&& count($aRawData['family_agriculture_location_map']['agriculture_location_id']) > 0){
+
+					foreach($aRawData['family_agriculture_location_map']['agriculture_location_id'] as $iLocationId){
+						$this->db->set('agriculture_location_id', $iLocationId);
+						$this->db->set('family_id', $iFamilyId);
+						$this->db->insert('family_agriculture_location_map');
+					}
+				}			
+				
+				
 				// create survey
 				$this->db->set('enumerator_account_no', $oSurveyData->enumerator_account_no);
 				$this->db->set('house_id', $iHouseId);
 				$this->db->insert('surveys');
 				$iSurveyeId = $this->db->insert_id();
-
+				
+				
 				// mark the survey item in the temporary_survey as not current
 				$this->survey_model->unmarkAsCurrentSurvey($iTemporarySurveyNumber);
 
 
 				$this->db->trans_complete();
+				
+				$this->db->set('pushed_to_main', 1);
+				$this->db->where('id', $iTemporarySurveyId);
+				$this->db->update('temporary_survey');
+				
 				return $iSurveyeId;
 			}
 		}
