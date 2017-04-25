@@ -3,21 +3,28 @@ var base_url = '<?php echo $base_url;?>';
 var dont_confirm_leave = 1; //set dont_confirm_leave to 1 when you want the user to be able to leave withou confirmation
 $(document).ready(function(){
 
-	console.log(question_groups[1]);
+	//console.log(question_groups[1]);
   if (storageAvailable('localStorage')) {
 
 		var temporary_survey_number = null;
 		var temporary_survey_current_question = 0;
 		var temporary_survey_last_processed_question = 0;
 		var temporary_survey_is_last_question = false;
+    var current_temporary_survey_status = null;
+
 
 
 		if($('#current_temporary_survey_number').val()) {
+
 			temporary_survey_number = $('#current_temporary_survey_number').val();
 			temporary_survey_current_question = $('#current_temporary_survey_next_question').val();
 			temporary_survey_last_procesed_question = $('#current_temporary_survey_last_procesed_question').val();
-
 			temporary_survey_is_last_question = $('#current_temporary_survey_is_last_question').val() == 1 ? true : false;
+
+      current_temporary_survey_status = $('#current_temporary_survey_status').val();
+
+			// not to be used in production
+			displayTemporarySurveyNumber(temporary_survey_number);
 
 		}
 
@@ -31,38 +38,22 @@ $(document).ready(function(){
         type:"GET",
         success:function (data) {
 
-
           // store survey information locally.
           localStorage.setItem('temporary_survey_number', data.temporary_survey_number);
           localStorage.setItem('current_question', data.current_question);
           localStorage.setItem('last_question', 'false');
 
+
+					// not to be used in production
+					displayTemporarySurveyNumber(data.temporary_survey_number);
+
+
 					if(data.temporary_survey_number != 0) {
 						//contact the server for first question
-	        			fetchNextQuestion('');
+	        	fetchNextQuestion();
 					} else {
 						alert("Error: No Survey found");
 					}
-
-          /*
-          $.ajax({
-            url: base_url + "question/get/" + data.temporary_survey_number + "/" + data.current_question,
-            type:"GET",
-            success:function (data) {
-
-              //console.log('success called');
-
-              localStorage.setItem('answer_type', data.answer_type);
-
-              appendQuestion(data);
-
-						  $('#survey_container').addClass('animated fadeInLeft');
-						  $('#survey_container').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function (){$('#survey_container').addClass('animated fadeInLeft');});
-
-            },
-            dataType : "json"
-          });
-					*/
 
         },
         dataType : "json"
@@ -70,14 +61,27 @@ $(document).ready(function(){
 
     } else {
 
+      console.log(current_temporary_survey_status);
 
 			// store survey information locally.
 			localStorage.setItem('temporary_survey_number', temporary_survey_number);
 			localStorage.setItem('current_question', temporary_survey_last_procesed_question); // TO Do : fetchNextQuestion() should use "last_processed_question" instead of current_question. for more clarity in code
 			localStorage.setItem('last_question', temporary_survey_is_last_question);
 
-			//contact the server for next question
-			fetchNextQuestion('');
+      localStorage.setItem('current_temporary_survey_status', current_temporary_survey_status);
+
+      switch(current_temporary_survey_status) {
+
+        case '1':
+          //contact the server for next question
+          fetchNextQuestion();
+          break;
+
+        case '2':
+          surveyCompleteRoutines();
+          break;
+      }
+
 		}
 
   }
@@ -91,13 +95,14 @@ $(document).ready(function(){
 
   $('#next_btn').click(function (event) {
 
-	showOverlay();
-    event.preventDefault();
+		showOverlay();
+
+		event.preventDefault();
 
     // handle the current answer
     handleCurrentAnswer('next');
   });
-  
+
   $('#previous_btn').click(function (event) {
 
 
@@ -108,45 +113,60 @@ $(document).ready(function(){
   });
 
 });
+
+
+function displayTemporarySurveyNumber(temporary_survey_number) {
+
+	$('#survey_no_display_counter').html(temporary_survey_number);
+}
+
 function showOverlay(){
 	$('#overlay').show();
 }
 function hideOverlay(){
 	$('#overlay').hide();
 }
-function fetchNextQuestion(direction) {
-	direction = 'next';//currently only have next button 
+
+function defaultFor(arg, val) {
+	return typeof arg !== 'undefined' ? arg : val;
+}
+
+function defaultForInteger(arg, val) {
+	return typeof arg !== NaN ? arg : val;
+}
+
+function fetchNextQuestion(question_id) {
+
   //clear the container
   $('#question_container').html('');
 
   var temporary_survey_number = localStorage.getItem('temporary_survey_number');
   var current_question = localStorage.getItem('current_question');
 
-  
-  
-  if(direction == 'prev'){
-	  var next_question_id = (parseInt(current_question) - 1);
-  }else if(direction == 'next'){
-	  var next_question_id = (parseInt(current_question) + 1);
-  }else{
-	  var next_question_id = parseInt(current_question);
-  }
-  
+	var next_question_id = (parseInt(current_question) + 1);
+
+	// see if a question id is specified. else, we default to the next question WRT current_question.
+	next_question_id = defaultFor(question_id, next_question_id);
+
+
   //contact the server for next question
   $.ajax({
     url:base_url + "question/get/" + temporary_survey_number + "/" + next_question_id,
     type:"GET",
     success:function (data) {
 
-
       localStorage.setItem('current_question', next_question_id);
       localStorage.setItem('last_question', data.last_question);
-      localStorage.setItem('answer_type', data.answer_type);	  
-      appendQuestion(data);
-	  $('#survey_container').removeClass('animated fadeInLeft');
-	  $('#survey_container').addClass('animated fadeInLeft');
-			  $('#survey_container').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function (){$('#survey_container').removeClass('animated fadeInLeft');});
-	  hideOverlay();
+      localStorage.setItem('answer_type', data.answer_type);
+			localStorage.setItem('question_type', data.question_type);
+
+			// append the question to the viewing area.
+			appendQuestion(data);
+
+		  $('#survey_container').removeClass('animated fadeInLeft');
+		  $('#survey_container').addClass('animated fadeInLeft');
+			$('#survey_container').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function (){$('#survey_container').removeClass('animated fadeInLeft');});
+		  hideOverlay();
     },
     dataType : "json"
   });
@@ -161,13 +181,44 @@ function handleCurrentAnswer(direction) {
   if($('#question_container').html() != '') {
 
     var answer_type = localStorage.getItem('answer_type');
+		var question_type = localStorage.getItem('question_type');
     var current_question = localStorage.getItem('current_question');
 
 
 
     var oDataObject = new Object();
 
-      switch(answer_type) {
+		if( question_type == 2 ) { //question type = group
+
+			switch(current_question) {
+
+				case "1" :
+					// name and family details
+					oDataObject.name = $('#question_container .answer_block .q_uid_2 input[name="single_value_text"]').val();
+					oDataObject.gender = $('#question_container .answer_block .q_uid_3 select[name="single_value_select"]').val();
+					oDataObject.election_id = $('#question_container .answer_block .q_uid_4 input[name="single_value_text"]').val();
+					oDataObject.aadhaar_no = $('#question_container .answer_block .q_uid_5 input[name="single_value_text"]').val();
+					oDataObject.reservation = $('#question_container .answer_block .q_uid_6 input[name="single_value_select"]').val();
+					oDataObject.mobile_no = $('#question_container .answer_block .q_uid_7 input[name="single_value_text"]').val();
+					oDataObject.email = $('#question_container .answer_block .q_uid_8 input[name="single_value_text"]').val();
+					oDataObject.whatsapp_no = $('#question_container .answer_block .q_uid_9 input[name="single_value_text"]').val();
+					oDataObject.is_head_of_house = $('#question_container .answer_block .q_uid_10 input[name="multi_value_checkbox"]:checked').val();
+					oDataObject.relationship_to_head_of_house = $('#question_container .answer_block .q_uid_11 select[name="single_value_select"]').val();
+					oDataObject.educational_qualification = $('#question_container .answer_block .q_uid_12 select[name="single_value_select"]').val();
+					oDataObject.employment_category = $('#question_container .answer_block .q_uid_13 select[name="single_value_select"]').val();
+					break;
+
+				case "2" :
+					oDataObject.address_house_no = $('#question_container .answer_block .q_uid_15 input[name="single_value_text"]').val();
+					oDataObject.address_house_name = $('#question_container .answer_block .q_uid_16 input[name="single_value_text"]').val();
+					oDataObject.address_street_name = $('#question_container .answer_block .q_uid_17 input[name="single_value_text"]').val();
+					oDataObject.address_pincode = $('#question_container .answer_block .q_uid_18 input[name="single_value_text"]').val();
+					break;
+			}
+
+		} else { //question type = individual
+
+			switch(answer_type) {
 
         case "1":
           var input = $('#question_container .answer_block input[name="single_value_text"]').val();
@@ -191,7 +242,18 @@ function handleCurrentAnswer(direction) {
           oDataObject.single_value_textarea = input;
           break;
 
+				case "5":
+					var input = $('#question_container .answer_block select[name="single_value_select"]').val();
+
+					oDataObject.single_value_select = input;
+					break;
       }
+		}
+
+/*
+console.log(JSON.stringify(oDataObject));
+return false;
+*/
 
     //Submit data back to server
     $.ajax({
@@ -202,16 +264,16 @@ function handleCurrentAnswer(direction) {
 
         if(data.error == '') {
 
-
           var last_question = localStorage.getItem('last_question');
 
-
-
           if(last_question == "true") {
+
             surveyCompleteRoutines();
+
           } else {
-			dont_confirm_leave = 0;
-            fetchNextQuestion(direction);			
+
+						dont_confirm_leave = 0;
+            fetchNextQuestion();
           }
 
         }
@@ -259,7 +321,8 @@ function surveyCompleteRoutines() {
       if(data.error == '') {
 
         showSurveyCompleteView(data.survey_id);
-		dont_confirm_leave = 1;
+	      dont_confirm_leave = 1;
+
       } else {
 
         alert("There was some problem completing the survey.");
@@ -271,61 +334,173 @@ function surveyCompleteRoutines() {
 
 }
 
+
+function constructAnswerFormParts(data, bProvideWrapper){
+
+
+//console.log(data.uid + ' , ' + data.answer_type);
+
+	var answer_html = '';
+  bProvideWrapper = defaultFor(bProvideWrapper, true);
+
+	var q_uid_class_name = 'q_uid_' + data.uid;
+
+	switch(data.answer_type) {
+
+		case 1:
+
+			answer_html += bProvideWrapper ? '<div class="form-group">' : '';
+			answer_html += '<span class="'+ q_uid_class_name +'"><input type="text" name="single_value_text" class="form-control"/></span>';
+			answer_html += bProvideWrapper ? '</div>' : '';
+			break;
+
+		case 2:
+
+			answer_html += bProvideWrapper ? '<div class="radio">' : '';
+
+			answer_html +=
+			'<span class="'+ q_uid_class_name +'">';
+
+			$.each(data.answer_options, function (index, answer_option){
+				// name="'+ data.field_name +'"
+				answer_html += bProvideWrapper ? '<label class="radio-inline">' : '';
+				answer_html += '<input type="radio" name="single_value_radio" value="'+ answer_option.value +'"/> ' + answer_option.title;
+				answer_html += bProvideWrapper ? '</label>' : '';
+			});
+
+			answer_html += '</span>';
+
+			answer_html += bProvideWrapper ? '</div>' : '';
+			break;
+
+		case 3:
+
+			answer_html += bProvideWrapper ? '<div class="radio">' : '';
+
+			answer_html += '<span class="'+ q_uid_class_name +'">';
+
+			$.each(data.answer_options, function (index, answer_option){
+				answer_html +=
+				'<label class="checkbox-inline">' +
+					'<input type="checkbox" name="multi_value_checkbox" value="'+ answer_option.value +'"/> ' +
+					((answer_option.title == undefined) ? '' : answer_option.title)  +
+				'</label>';
+			});
+
+			answer_html += '</span>';
+
+			answer_html += bProvideWrapper ? '</div>' : '';
+			break;
+
+		case 4:
+
+			answer_html += bProvideWrapper ? '<div class="form-group">' : '';
+			answer_html +=
+			'<span class="'+ q_uid_class_name +'">'+
+			'<textarea name="single_value_textarea" class="form-control" rows="4"></textarea>' +
+			'</span>';
+			answer_html += bProvideWrapper ? '</div>' : '';
+			break;
+
+		case 5:
+
+			answer_html += bProvideWrapper ? '<div class="form-group">' : '';
+			answer_html +=
+			'<span class="'+ q_uid_class_name +'">'+
+			'<select name="single_value_select" class="form-control">';
+			//console.log(JSON.stringify(data.answer_options));
+				$.each(data.answer_options, function (index, answer_option){
+
+					answer_html +=
+					'<option value="'+ answer_option.value +'">' +
+					 ((answer_option.title == undefined) ? '' : answer_option.title) +
+					'</option>';
+				});
+			answer_html += '</select>' + '</span>';
+			answer_html += bProvideWrapper ? '</div>' : '';
+			break;
+
+	}
+
+	return answer_html;
+}
+
 function appendQuestion(data) {
 
   var answer_html = '';
 
-  //console.log(JSON.stringify(data));
-
-  switch(data.answer_type) {
-    case 1:
-      answer_html =
-      '<div class="form-group">'+
-      '<input type="text" name="single_value_text" class="form-control"/>' +
-      '</div>'
-      break;
-    case 2:
-
-      answer_html =
-      '<div class="radio">';
-
-      $.each(data.answer_options, function (index, answer_option){
-		// name="'+ data.field_name +'"
-        answer_html +=
-        '<label class="radio-inline">' +
-          '<input type="radio" name="single_value_radio" value="'+ answer_option.value +'"/> ' + answer_option.title +
-        '</label>';
-
-      });
-
-      answer_html += '</div>';
-      break;
-
-    case 3:
-
-      answer_html =
-      '<div class="radio">';
-
-      $.each(data.answer_options, function (index, answer_option){
-		// name="'+ data.field_name
-        answer_html +=
-        '<label class="checkbox-inline">' +
-          '<input type="checkbox" name="multi_value_checkbox" value="'+ answer_option.value +'"/> ' + answer_option.title +
-        '</label>';
-
-      });
-
-      answer_html += '</div>';
-      break;
-    case 4:
-      answer_html =
-      '<div class="form-group">'+
-      '<textarea name="single_value_textarea" class="form-control" rows="4"></textarea>' +
-      '</div>'
-      break;
 
 
-  }
+	if(data.question_type == 1) {
+
+		answer_html = constructAnswerFormParts(data);
+
+	} else if(data.question_type == 2) {
+
+var wrapping = 'table';
+//var wrapping = 'two-row-table';
+
+//var wrapping = 'bootstrap-form-groups';
+
+		switch(wrapping) {
+			case 'table':
+					answer_html = '<table>';
+
+						answer_html += '<tr>';
+						$.each(data.questions, function (index, question_data){
+
+							answer_html += '<th class="text-center">' + question_data.title + '</th>';
+
+						});
+						answer_html += '</tr>';
+
+
+						answer_html += '<tr>';
+						$.each(data.questions, function (index, question_data){
+
+							answer_html += '<td class="text-center">';
+							answer_html += constructAnswerFormParts(question_data, false);
+							answer_html += '</td>';
+						});
+						answer_html += '</tr>';
+
+					answer_html += '</table>';
+					break;
+
+			case 'bootstrap-form-groups':
+					answer_html = '<form class="form-inline">';
+
+
+					$.each(data.questions, function (index, question_data){
+
+						var class_name = (question_data.answer_type == 2 || question_data.answer_type == 3) ? 'radio' : 'form-group';
+
+						answer_html += '<div class="' + class_name + '">';
+
+							if((question_data.answer_type == 2 || question_data.answer_type == 3)) {
+								answer_html += constructAnswerFormParts(question_data, true);
+							} else {
+								answer_html += '<label class="">' + question_data.title + '</label>';
+								answer_html += constructAnswerFormParts(question_data, false);
+								answer_html += '</div>';
+							}
+
+						answer_html += '</div>';
+					});
+
+
+					answer_html += '</form>';
+					break;
+		}
+	}
+
+
+
+
+
+
+	// --- Handle the display of controls (buttons etc)
+
   //$('#previous_btn').prop('disabled', false);
   if(data.question_no == data.question_count){
   	$('#next_btn').text('Save & Complete Survey');
@@ -334,17 +509,23 @@ function appendQuestion(data) {
   }else{
 	  $('#next_btn').text('Next Question');
   }
-  $('#question-status').text(data.question_no+' of '+data.question_count);
+
+
+
+	// update question number to the display
+	$('#question-status').text(data.question_no+' of '+data.question_count);
+
+	// update the group information of the question
   $('#question-group-id').text(question_groups[data.group_id].title);
+
+	// place question in its container
   $('#question_container').html(
     $(
       '<h3>'+
       data.title +
       '</h3>'+
       '<div class="answer_block">'+
-
-      answer_html +
-
+      	answer_html +
       '</div>'
     )
   );

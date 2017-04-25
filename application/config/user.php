@@ -39,9 +39,76 @@ $config['date_picker_user_format'] 	= 'd F Y'; // calendar date format as seen b
 
 
 $config['genders'] = array(
-						'female' 	=> 1,
+						'female'	=> 1,
 						'male' 		=> 2,
+						'other'		=> 3
 					);
+
+$config['genders_title'] = array(
+						1 => 'സ്ത്രീ',
+						2 => 'പുരുഷൻ',
+						3 => 'മറ്റുള്ളവ',
+					);
+
+$config['family_relationships'] = array(
+	'father'			=> 1,
+	'mother' 			=> 2,
+	'grandfather'	=> 3,
+	'grandmother'	=> 4,
+	'sister'			=> 5,
+	'brother'			=> 6,
+	'son'					=> 7,
+	'daughter'		=> 8
+);
+
+$config['family_relationships_title'] = array(
+		1 => 'അച്ഛൻ',
+		2 => 'അമ്മ',
+		3 => 'അപ്പൂപ്പൻ',
+		4 => 'അമ്മൂമ്മാ',
+		5 => 'സഹോദരി',
+		6 => 'സഹോദരൻ',
+		7 => 'മകൻ',
+		8 => 'മകൾ'
+);
+
+$config['educational_qualifications'] = array(
+		'below_tenth' => 1,
+		'tenth' 			=> 2,
+		'plus_two' 		=> 3,
+		'iti' 				=> 4,
+		'poly' 				=> 5,
+		'diploma' 		=> 6,
+		'degree' 			=> 7,
+
+);
+
+$config['educational_qualifications_title'] = array(
+	1 => '10 - ൽ താഴെ',
+	2 => '10 വരെ',
+	3 => 'Plus Two',
+	4 => 'ITI',
+	5 => 'Poly',
+	6 => 'Diploma',
+	7 => 'Degree',
+);
+
+$config['employment_categories'] = array(
+		'unemployed' 						=> 1,
+		'government_job' 				=> 2,
+		'semi_government_job' 	=> 3,
+		'private_job' 					=> 4,
+		'business' 							=> 5,
+		'expatriate_emploment' => 6,
+);
+$config['employment_categories_title'] = array(
+		1 => 'തൊഴിൽ ഇല്ലാ',
+		2 => 'സർക്കാർ ജോലി',
+		3 => 'അർദ്ധ സർക്കാർ ജോലി',
+		4 => 'സ്വകാര്യ സ്ഥാപനത്തിൽ',
+		5 => 'ബിസിനസ്',
+		6 => 'വിദേശത്തു തൊഴിൽ',
+);
 
 
 $config['online_status'] = array(

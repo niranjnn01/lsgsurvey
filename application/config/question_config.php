@@ -6,11 +6,18 @@ $CI = & get_instance();
 
 //$CI->config->config['base_url']
 
+
+$config['question_types'] = array(
+  'individual' => 1,
+  'group' => 2,
+);
+
 $config['answer_types'] = array(
   'single_value_text' => 1,
   'single_value_radio' => 2,
   'multi_value_checkbox' => 3,
   'single_value_textarea' => 4,
+  'single_value_select' => 5,
 );
 
 $config['answer_types_details'] = array(
@@ -26,6 +33,10 @@ $config['answer_types_details'] = array(
   4 => array(
       'field_name' => 'single_value_textarea'
     ),
+
+  5 => array(
+      'field_name' => 'single_value_select'
+  ),
 );
 
 $config['question_groups'] = array(
@@ -77,56 +88,305 @@ $config['question_groups'] = array(
 
 $config['questions_master_data'] = array(
 
-  1 => array(
-		'title' 		=> 'പേര്',
+  array(
+		'title' 		=> '',
 		'field_name' 	=> 'name',
 		'table_name'	=> 'surveyee_users',
 		'group_id'		=> 1,
 		'answer_type' 	=> $config['answer_types']['single_value_text'],
 		'answer_options'=> array(),
+    'uid' => 1,
+    'question_type' => $config['question_types']['group'],
+    'questions' => array(
+      array(
+    		'title' 		=> 'പേര്',
+    		'field_name' 	=> 'name',
+    		'table_name'	=> 'surveyee_users',
+    		'group_id'		=> 1,
+        'uid' => 2,
+    		'answer_type' 	=> $config['answer_types']['single_value_text'],
+    	),
+      array(
+    		'title' 		=> 'സ്ത്രീ / പുരുഷൻ ',
+    		'field_name' 	=> 'gender',
+    		'table_name'	=> 'surveyee_users',
+    		'group_id'		=> 1,
+        'uid' => 3,
+    		'answer_type' 	=> $config['answer_types']['single_value_select'],
+    		'answer_options'=> array(
+            array(
+              'value' => 1,
+              'title' => 'സ്ത്രീ',
+            ),
+            array(
+              'value' => 2,
+              'title' => 'പുരുഷൻ',
+            ),
+        ),
+    	),
+      array(
+    		'title' 		=> 'ഇലക്ഷൻ ഐ. ഡി.',
+    		'field_name' 	=> 'election_id',
+    		'table_name'	=> 'surveyee_users',
+    		'group_id'		=> 1,
+        'uid' => 4,
+    		'answer_type' 	=> $config['answer_types']['single_value_text'],
+    		'answer_options'=> array(),
+    	),
+      array(
+        	'title' 		=> 'ആധാർ നം',
+    		'field_name' 	=> 'aadhar_id',
+    		'table_name'	=> 'surveyee_users',
+    		'group_id'		=> 1,
+        'uid' => 5,
+        	'answer_type' 	=> $config['answer_types']['single_value_text'],
+        	'answer_options'=> array(),
+      ),
+      array(
+    		'title' 		=> 'സംവരണം',
+    		'field_name' 	=> 'reservation',
+    		'table_name'	=> 'surveyee_users',
+    		'group_id'		=> 2,
+        'uid' => 6,
+    		'answer_type' 	=> $config['answer_types']['single_value_select'],
+    		'answer_options'=> array(
+    			array(
+            		'value' => 0,
+            		'title' => 'ഇല്ലാ',
+          		),
+    			array(
+            		'value' => 1,
+            		'title' => 'പട്ടികജാതി/വർഗം',
+          		),
+    			array(
+            		'value' => 2,
+            		'title' => 'പിന്നോക്ക സമുദായം',
+          		),
+    		),
+    	),
+      array(
+    		'title' 		=> 'മൊബൈൽ നമ്പർ',
+    		'field_name' 	=> 'mobile_number',
+    		'table_name'	=> 'surveyee_users',
+    		'group_id'		=> 2,
+        'uid' => 7,
+    		'answer_type' 	=> $config['answer_types']['single_value_text'],
+    		'answer_options'=> array(),
+    	),
+      array(
+    		'title' 		=> 'ഇമെയിൽ വിലാസം',
+    		'field_name' 	=> 'email_id',
+    		'table_name'	=> 'surveyee_users',
+    		'group_id'		=> 2,
+        'uid' => 8,
+    		'answer_type' 	=> $config['answer_types']['single_value_text'],
+    		'answer_options'=> array(),
+    	),
+      array(
+    		'title' 		=> 'വാട്സപ്പ്‍ നമ്പർ',
+    		'field_name' 	=> 'whatsapp_number',
+    		'table_name'	=> 'surveyee_users',
+    		'group_id'		=> 2,
+        'uid' => 9,
+    		'answer_type' 	=> $config['answer_types']['single_value_text'],
+    		'answer_options'=> array(),
+    	),
+
+
+      array(
+        'title' 		=> 'ഗൃഹനാഥൻ / നാഥയാണോ',
+        'field_name' 	=> 'is_head_of_house',
+        'table_name'	=> '',
+        'group_id'		=> 2,
+        'uid' => 10,
+        'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
+        'answer_options'=> array(
+          array(
+            'value' => 1,
+            'title' => '',
+          )
+        ),
+      ),
+
+      array(
+        'title' 		=> 'ഗൃഹനാഥൻ / നാഥ യുമായുള്ള ബന്ധം',
+        'field_name' 	=> 'relationship_to_head_of_house',
+        'table_name'	=> '',
+        'group_id'		=> 2,
+        'uid' => 11,
+        'answer_type' 	=> $config['answer_types']['single_value_select'],
+        'answer_options'=> array(
+          array(
+  				'value' => 0,
+  				'title' => 'ബാധകമല്ലാ',
+  			  ),
+          array(
+  				'value' => 1,
+  				'title' => 'അച്ഛൻ',
+  			  ),
+          array(
+  				'value' => 2,
+  				'title' => 'അമ്മ',
+  			  ),
+          array(
+  				'value' => 3,
+  				'title' => 'അപ്പൂപ്പൻ',
+  			  ),
+          array(
+  				'value' => 4,
+  				'title' => 'അമ്മൂമ്മാ',
+  			  ),
+          array(
+  				'value' => 5,
+  				'title' => 'സഹോദരി',
+  			  ),
+          array(
+  				'value' => 6,
+  				'title' => 'സഹോദരൻ',
+  			  ),
+          array(
+  				'value' => 7,
+  				'title' => 'മകൻ',
+  			  ),
+          array(
+  				'value' => 8,
+  				'title' => 'മകൾ',
+  			  ),
+
+        ),
+      ),
+
+      array(
+        'title' 		=> 'വിദ്യാഭ്യാസ യോഗ്യത',
+        'field_name' 	=> 'educational_qualification',
+        'table_name'	=> '',
+        'group_id'		=> 2,
+        'uid' => 12,
+        'answer_type' 	=> $config['answer_types']['single_value_select'],
+        'answer_options'=> array(
+          array(
+          'value' => 1,
+          'title' => '10 - ൽ താഴെ',
+          ),
+          array(
+          'value' => 2,
+          'title' => '10 വരെ',
+          ),
+          array(
+          'value' => 3,
+          'title' => 'Plus Two',
+          ),
+          array(
+          'value' => 4,
+          'title' => 'ITI',
+          ),
+          array(
+          'value' => 5,
+          'title' => 'Poly',
+          ),
+          array(
+          'value' => 6,
+          'title' => 'Diploma',
+          ),
+          array(
+          'value' => 7,
+          'title' => 'Degree',
+          ),
+        ),
+      ),
+
+      array(
+        'title' 		  => 'തൊഴിൽ മേഖല',
+        'field_name' 	=> 'employment_category',
+        'table_name'	=> '',
+        'group_id'		=> 2,
+        'uid' => 13,
+        'answer_type' 	=> $config['answer_types']['single_value_select'],
+        'answer_options'=> array(
+          array(
+          'value' => 1,
+          'title' => 'തൊഴിൽ ഇല്ലാ',
+          ),
+          array(
+          'value' => 2,
+          'title' => 'സർക്കാർ ജോലി',
+          ),
+          array(
+          'value' => 3,
+          'title' => 'അർദ്ധ സർക്കാർ ജോലി',
+          ),
+          array(
+          'value' => 4,
+          'title' => 'സ്വകാര്യ സ്ഥാപനത്തിൽ',
+          ),
+          array(
+          'value' => 5,
+          'title' => 'ബിസിനസ്',
+          ),
+          array(
+          'value' => 6,
+          'title' => 'വിദേശത്തു തൊഴിൽ',
+          ),
+        ),
+      ),
+    ),
+
 	),
 
-  2 => array(
+  array(
 		'title' 		=> 'വിലാസം',
 		'field_name' 	=> 'address',
 		'table_name'	=> 'houses',
 		'group_id'		=> 1,
+    'uid' => 14,
 		'answer_type' 	=> $config['answer_types']['single_value_textarea'],
 		'answer_options'=> array(),
+    'question_type' => $config['question_types']['group'],
+    'questions' => array(
+      array(
+    		'title' 		=> 'കെട്ടിട നമ്പർ',
+    		'field_name' 	=> 'address_house_no',
+    		'table_name'	=> '',
+    		'group_id'		=> 1,
+        'uid' => 15,
+    		'answer_type' 	=> $config['answer_types']['single_value_text'],
+    	),
+      array(
+    		'title' 		=> 'വീട്ട്  പേര്',
+    		'field_name' 	=> 'address_house_name',
+    		'table_name'	=> '',
+    		'group_id'		=> 1,
+        'uid' => 16,
+    		'answer_type' 	=> $config['answer_types']['single_value_text'],
+    	),
+
+      array(
+    		'title' 		=> 'തെരുവ് (Street Name)',
+    		'field_name' 	=> 'address_street_name',
+    		'table_name'	=> '',
+    		'group_id'		=> 1,
+        'uid' => 17,
+    		'answer_type' 	=> $config['answer_types']['single_value_text'],
+    	),
+
+      array(
+    		'title' 		=> 'പിൻകോഡ്',
+    		'field_name' 	=> 'address_pincode',
+    		'table_name'	=> '',
+    		'group_id'		=> 1,
+        'uid' => 18,
+    		'answer_type' 	=> $config['answer_types']['single_value_text'],
+    	),
+    )
 	),
 
-  3 => array(
-		'title' 		=> 'കെട്ടിട നമ്പർ',
-		'field_name' 	=> 'house_number',
-		'table_name'	=> 'houses',
-		'group_id'		=> 1,
-		'answer_type' 	=> $config['answer_types']['single_value_text'],
-		'answer_options'=> array(),
-	),
 
-  4 => array(
-    	'title' 		=> 'ആധാർ നം',
-		'field_name' 	=> 'aadhar_id',
-		'table_name'	=> 'surveyee_users',
-		'group_id'		=> 1,
-    	'answer_type' 	=> $config['answer_types']['single_value_text'],
-    	'answer_options'=> array(),
-  ),
-
-  5 => array(
-		'title' 		=> 'ഇലക്ഷൻ ഐ. ഡി.',
-		'field_name' 	=> 'election_id',
-		'table_name'	=> 'surveyee_users',
-		'group_id'		=> 1,
-		'answer_type' 	=> $config['answer_types']['single_value_text'],
-		'answer_options'=> array(),
-	),
-
-  6 => array(
+  array(
 		'title' 		=> 'വീടിൻ്റെ ഉടമസ്ഥത',
 		'field_name' 	=> 'HOUSE_OWNERSHIP',
 		'table_name'	=> 'TEMP',
 		'group_id'		=> 1,
+    'uid' => 19,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
     	'answer_options'=> array(
 			  array(
@@ -140,11 +400,12 @@ $config['questions_master_data'] = array(
 	   ),
   ),
 
-  7 => array(
+  array(
 		'title' 		=> 'സ്ഥലത്തിൻ്റെ ഉടമസ്ഥത',
 		'group_id'		=> 1,
 		'field_name' 	=> 'LAND_OWNERSHIP',
 		'table_name'	=> 'TEMP',
+    'uid' => 20,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
 		'answer_options'=> array(
 			  array(
@@ -155,18 +416,35 @@ $config['questions_master_data'] = array(
 				'value' => 2,
 				'title' => 'പാട്ടം',
 			  ),
-			  array(
-				'value' => 3,
-				'title' => 'പാരമ്പര്യമായി  കിട്ടിയത്',
-			  ),
 	    ),
 	),
 
-  8 => array(
+
+  array(
+  		'title' 		=> 'പാരമ്പര്യമായി കിട്ടിയ ഭൂമിയാണോ ?',
+  		'group_id'		=> 1,
+  		'field_name' 	=> 'IS_LEGACY_LAND',
+  		'table_name'	=> 'TEMP',
+      'uid' => 21,
+  		'answer_type' 	=> $config['answer_types']['single_value_radio'],
+      'answer_options'=> array(
+  			array(
+          		'value' => 1,
+          		'title' => 'അതെ',
+        		),
+  			array(
+          		'value' => 2,
+          		'title' => 'അല്ല',
+        		),
+  		),
+  	),
+
+  array(
 		'title' 		=> 'വീടിന്റെ വിസ്തീർണം',
 		'field_name' 	=> 'house_area_range_id',
 		'table_name'	=> 'houses',
 		'group_id'		=> 1,
+    'uid' => 22,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
 		'answer_options'=> array(
 			  array(
@@ -188,12 +466,13 @@ $config['questions_master_data'] = array(
 		),
 	),
 
-  9 => array(
+  array(
 		'title' 		=> 'വീട് നിൽക്കുന്ന സ്ഥലത്തിന്റെ വിസ്തീർണം',
 		'field_name' 	=> 'area_range',
 		'table_name'	=> 'lands',
 		'master_field'	=> 'owner_user_id',
 		'group_id'		=> 1,
+    'uid' => 23,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
 		'answer_options'=> array(
 			  array(
@@ -215,12 +494,13 @@ $config['questions_master_data'] = array(
 		),
 	),
 
-  10 => array(
+  array(
 		'title' 		=> 'വീടിന്റെ തരം',
 		'field_name' 	=> 'house_type_id',
 		'table_name'	=> 'house_house_type_map',
 		'master_field'	=> 'house_id',
 		'group_id'		=> 1,
+    'uid' => 24,
 		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
 		'answer_options'=> array(
 			  array(
@@ -258,29 +538,41 @@ $config['questions_master_data'] = array(
 		),
 	),
 
-  11 => array(
-  		'title' 		=> 'നിലകളുടെ എണ്ണം(ഒന്നിൽ കൂടുതൽ ഉണ്ടെങ്കിൽ)',
+  array(
+  		'title' 		=> 'വീടിന്റെ നിലകളുടെ എണ്ണം',
 		'field_name' 	=> 'num_floors',
 		'table_name'	=> 'houses',
 		'group_id'		=> 1,
+    'uid' => 25,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
     	'answer_options'=> array(
       		array(
         		'value' => 1,
-        		'title' => 'ഇരുനില',
+        		'title' => 'ഒരു നില',
       		),
 			array(
         		'value' => 2,
-        		'title' => 'ഇരുനിലയ്ക്ക് മുകളിൽ', // should we need to 2, 3, 4
+        		'title' => 'ഇരുനില',
+      		),
+			array(
+        		'value' => 3,
+        		'title' => 'മൂന്നു നിലകൾ',
+      		),
+			array(
+        		'value' => 4,
+        		'title' => 'മൂന്നിൽ കൂടുതൽ നിലകൾ',
       		),
 	  	)
   ),
-  12 => array(
+
+  array(
   		'title' 		=> 'വീടിൻ്റെ തറ',
 		'field_name' 	=> 'floor_type_id',
-		'table_name'	=> 'houses',
+		'table_name'	=> 'house_floor_type_map',
+		'master_field'	=> 'house_id',
 		'group_id'		=> 1,
-		'answer_type' 	=> $config['answer_types']['single_value_radio'], //is that multiple choice
+    'uid' => 26,
+		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'], //is that multiple choice
     	'answer_options'=> array(
       		array(
         		'value' => 1,
@@ -308,16 +600,21 @@ $config['questions_master_data'] = array(
       		),
 			array(
         		'value' => 7,
+        		'title' => 'വിട്രിഫൈഡ് ടൈൽസ്',
+      		),
+			array(
+        		'value' => 8,
         		'title' => 'മറ്റുള്ളവ',
       		),
 
 	  	)
   ),
-  13 => array(
+  array(
   		'title' 		=> 'മുറികളുടെ എണ്ണം',
 		'field_name' 	=> 'num_rooms',
 		'table_name'	=> 'houses',
 		'group_id'		=> 1,
+    'uid' => 27,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
     	'answer_options'=> array(
       		array(
@@ -342,23 +639,26 @@ $config['questions_master_data'] = array(
       		),
 			array(
         		'value' => 6,
-        		'title' => '6 ൽ  കൂടുതൽ',
+        		'title' => '5 ൽ  കൂടുതൽ',
       		),
 		)
 	),
-	14 => array(
+	array(
 		'title' 		=> 'വാർഷിക കെട്ടിട നികുതി',
 		'field_name' 	=> 'amount',
 		'table_name'	=> 'house_tax',
 		'group_id'		=> 1,
+    'uid' => 28,
 		'answer_type' 	=> $config['answer_types']['single_value_text'],
 		'answer_options'=> array(),
 	),
-	15 => array(
+
+	array(
 		'title' 		=> 'ഗൃഹനാഥൻ്റെ മതം',
 		'field_name' 	=> 'belief_in_religion_id',
 		'table_name'	=> 'surveyee_users',
 		'group_id'		=> 2,
+    'uid' => 29,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
 		'answer_options'=> array(
  			array(
@@ -383,110 +683,59 @@ $config['questions_master_data'] = array(
       		),
 		),
 	),
-	16 => array(
-		'title' 		=> 'പട്ടികജാതി/വർഗം',
-		'field_name' 	=> 'is_scst',
-		'table_name'	=> 'surveyee_users',
-		'group_id'		=> 2,
-		'answer_type' 	=> $config['answer_types']['single_value_radio'],
-		'answer_options'=> array(
-			array(
-        		'value' => 1,
-        		'title' => 'അതെ',
-      		),
-			array(
-        		'value' => 2,
-        		'title' => 'അല്ല',
-      		),
-		),
-	),
-	17 => array(
-		'title' 		=> 'പിന്നോക്ക സമുദായം',
-		'field_name' 	=> 'is_obc',
-		'table_name'	=> 'surveyee_users',
-		'group_id'		=> 2,
-		'answer_type' 	=> $config['answer_types']['single_value_radio'],
-		'answer_options'=> array(
-			array(
-        		'value' => 1,
-        		'title' => 'അതെ',
-      		),
-			array(
-        		'value' => 2,
-        		'title' => 'അല്ല',
-      		),
-		),
-	),
-	18 => array(
+
+	array(
 		'title' 		=> 'ലാൻറ്  ഫോൺ',
 		'field_name' 	=> 'landline_number',
 		'table_name'	=> 'surveyee_users',
 		'group_id'		=> 2,
+    'uid' => 30,
 		'answer_type' 	=> $config['answer_types']['single_value_text'],
 		'answer_options'=> array(),
 	),
-	19 => array(
-		'title' 		=> 'മൊബൈൽ ഫോൺ',
-		'field_name' 	=> 'mobile_number',
-		'table_name'	=> 'surveyee_users',
-		'group_id'		=> 2,
-		'answer_type' 	=> $config['answer_types']['single_value_text'],
-		'answer_options'=> array(),
-	),
-	20 => array(
+
+
+  array(
 		'title' 		=> 'റേഷൻ കാർഡ് നമ്പർ',
 		'field_name' 	=> 'ration_card_no',
 		'table_name'	=> 'families',
 		'group_id'		=> 2,
+    'uid' => 31,
 		'answer_type' 	=> $config['answer_types']['single_value_text'],
 		'answer_options'=> array(),
 	),
-	21 => array(
+	array(
 		'title' 		=> 'റേഷൻ കാർഡ് തരം',
 		'field_name' 	=> 'ration_card_type_id',
 		'table_name'	=> 'families',
 		'group_id'		=> 2,
+    'uid' => 32,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
 		'answer_options'=> array(
 			array(
         		'value' => 1,
-        		'title' => 'എ.പി.ൽ',
+        		'title' => 'Non Priority(എ.പി.ൽ)',
       		),
 			array(
         		'value' => 2,
-        		'title' => 'ബി.പി.ൽ',
+        		'title' => 'മുൻഗണന (ബി.പി.ൽ)',
+      		),
+			array(
+        		'value' => 3,
+        		'title' => 'AAY',
+      		),
+			array(
+        		'value' => 4,
+        		'title' => 'APL SS',
       		)
 		),
 	),
-	22 => array(
-		'title' 		=> 'ഇമെയിൽ വിലാസം',
-		'field_name' 	=> 'email_id',
-		'table_name'	=> 'surveyee_users',
-		'group_id'		=> 2,
-		'answer_type' 	=> $config['answer_types']['single_value_text'],
-		'answer_options'=> array(),
-	),
-	23 => array(
-		'title' 		=> 'വാട്സപ്പ്‍ നമ്പർ',
-		'field_name' 	=> 'whatsapp_number',
-		'table_name'	=> 'surveyee_users',
-		'group_id'		=> 2,
-		'answer_type' 	=> $config['answer_types']['single_value_text'],
-		'answer_options'=> array(),
-	),
-	24 => array(
-		'title' 		=> 'ഫേസ്ബുക്ക് അക്കൗണ്ട്',
-		'field_name' 	=> 'facebook_link',
-		'table_name'	=> 'surveyee_users',
-		'group_id'		=> 2,
-		'answer_type' 	=> $config['answer_types']['single_value_text'],
-		'answer_options'=> array(),
-	),
-	25 => array(
+  array(
 		'title' 		=> 'ഏതെങ്കിലും അയൽക്കൂട്ടം അംഗമാണോ?',
 		'field_name' 	=> 'is_member_ayalkoottam',
 		'table_name'	=> 'surveyee_users',
 		'group_id'		=> 2,
+    'uid' => 33,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
 		'answer_options'=> array(
 			array(
@@ -499,11 +748,12 @@ $config['questions_master_data'] = array(
       		),
 		),
 	),
-	26 => array(
+	array(
 		'title' 		=> 'അയൽക്കൂട്ടം ഭാരവാഹിയാണോ?',
 		'field_name' 	=> 'is_office_bearer_ayalkoottam',
 		'table_name'	=> 'surveyee_users',
 		'group_id'		=> 2,
+    'uid' => 34,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
 		'answer_options'=> array(
 			array(
@@ -516,11 +766,12 @@ $config['questions_master_data'] = array(
       		),
 		),
 	),
-	27 => array(
+	array(
 		'title' 		=> 'രാഷ്ട്രീയ പാർട്ടിയിൽ അംഗത്വമുണ്ടോ?',
 		'field_name' 	=> 'is_member_political_party',
 		'table_name'	=> 'surveyee_users',
 		'group_id'		=> 2,
+    'uid' => 35,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
 		'answer_options'=> array(
 			array(
@@ -533,11 +784,12 @@ $config['questions_master_data'] = array(
       		)
 		),
 	),
-	28 => array(
+	array(
 		'title' 		=> 'സാമൂഹിക സാംസ്‌കാരിക സംഘടനകളിൽ അംഗത്വം ഉണ്ടോ?',
 		'field_name' 	=> 'is_memeber_socio_cultural_organization',
 		'table_name'	=> 'surveyee_users',
 		'group_id'		=> 2,
+    'uid' => 36,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
 		'answer_options'=> array(
 			array(
@@ -550,11 +802,12 @@ $config['questions_master_data'] = array(
       		)
 		),
 	),
-	29 => array(
+	array(
 		'title' 		=> 'മതസംഘടനയിൽ ഭാരവാഹിയാണോ?',
 		'field_name' 	=> 'is_office_bearer_religious_organization',
 		'table_name'	=> 'surveyee_users',
 		'group_id'		=> 2,
+    'uid' => 37,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
 		'answer_options'=> array(
 			array(
@@ -567,11 +820,12 @@ $config['questions_master_data'] = array(
       		)
 		),
 	),
-	30 => array(
+	array(
 		'title' 		=> 'ലൈബ്രറി അംഗത്വം ഉണ്ടോ?',
 		'field_name' 	=> 'is_member_library',
 		'table_name'	=> 'surveyee_users',
 		'group_id'		=> 2,
+    'uid' => 38,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
 		'answer_options'=> array(
 			array(
@@ -584,12 +838,13 @@ $config['questions_master_data'] = array(
       		)
 		),
 	),
-	31 => array(
+	array(
 		'title' 		=> 'വാർഡ് സഭകളിൽ പങ്കെടുക്കാറുണ്ടോ?',
 		'field_name' 	=> 'status',
 		'table_name'	=> 'ward_sabha_participation',
 		'master_field'	=> 'surveyee_user_id',
 		'group_id'		=> 2,
+    'uid' => 39,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
 		'answer_options'=> array(
 			array(
@@ -602,12 +857,13 @@ $config['questions_master_data'] = array(
       		)
 		),
 	),
-	32 => array(
+	array(
 		'title' 		=> 'ഇല്ലെങ്കിൽ എന്തുകൊണ്ട്?',
 		'field_name' 	=> 'reason',
 		'table_name'	=> 'ward_sabha_participation',
 		'master_field'	=> 'surveyee_user_id',
 		'group_id'		=> 2,
+    'uid' => 40,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
 		'answer_options'=> array(
 			array(
@@ -624,12 +880,13 @@ $config['questions_master_data'] = array(
       		)
 		),
 	),
-	33 => array(
+	array(
 		'title' 		=> 'പങ്കെടുക്കുന്നുണ്ടെങ്കിൽ  വാർഡ് സഭകളിൽ സംതൃപ്തിയുണ്ടോ',
 		'field_name' 	=> 'is_satisfied',
 		'table_name'	=> 'ward_sabha_participation',
 		'master_field'	=> 'surveyee_user_id',
 		'group_id'		=> 2,
+    'uid' => 41,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
 		'answer_options'=> array(
 			array(
@@ -641,13 +898,15 @@ $config['questions_master_data'] = array(
         		'title' => 'ഇല്ല',
       		)
 		),
+    'default_value' => null
 	),
-	34 => array(
+  array(
 		'title' 		=> 'വാർഡ് സഭകളിൽ പങ്കെടുക്കാറുണ്ടെങ്കിൽ വാർഡ് സഭകൾ മെച്ചപ്പെടുത്താനുള്ള നിർദേശങ്ങൾ ഉണ്ടോ?',
 		'field_name' 	=> 'have_suggestion',
 		'table_name'	=> 'ward_sabha_participation',
 		'master_field'	=> 'surveyee_user_id',
 		'group_id'		=> 2,
+    'uid' => 42,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
 		'answer_options'=> array(
 			array(
@@ -660,12 +919,13 @@ $config['questions_master_data'] = array(
       		)
 		),
 	),
-	35 => array(
+	array(
 		'title' 		=> 'വീട്ടിൽ സ്വന്തമായുള്ള വാഹനങ്ങൾ',
 		'field_name' 	=> 'vehicle_type_id',
 		'table_name'	=> 'family_vehicle_type_map',
 		'master_field'	=> 'family_id',
 		'group_id'		=> 3,
+    'uid' => 43,
 		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
 		'answer_options'=> array(
 			array(
@@ -682,16 +942,21 @@ $config['questions_master_data'] = array(
       		),
 			array(
         		'value' => 4,
-        		'title' => 'നാലുചക്രവാഹനം/മറ്റുള്ളവ',
+        		'title' => 'നാല് ചക്ര വാഹനം',
+      		),
+			array(
+        		'value' => 5,
+        		'title' => 'ആറ് ചക്ര വാഹനം',
       		)
 		),
 	),
-	36 => array(
+	array(
 		'title' 		=> 'താഴെ പറയുന്നവ വീട്ടിൽ ഉപയോഗിക്കുന്നുണ്ടോ?',
 		'field_name' 	=> 'house_appliance_id',
 		'table_name'	=> 'family_appliance_map',
 		'master_field'	=> 'family_id',
 		'group_id'		=> 4,
+    'uid' => 44,
 		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
 		'answer_options'=> array(
 			array(
@@ -748,11 +1013,12 @@ $config['questions_master_data'] = array(
       		)
 		),
 	),
-	37 => array(
+	array(
 		'title' 		=> 'ജനനസ്ഥലം ഈ വാർഡ് തന്നെയാണോ?',
 		'field_name' 	=> 'is_birth_same_ward',
 		'table_name'	=> 'surveyee_users',
 		'group_id'		=> 5,
+    'uid' => 45,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
 		'answer_options'=> array(
 			array(
@@ -765,62 +1031,67 @@ $config['questions_master_data'] = array(
       		)
 		),
 	),
-	38 => array(
-		'title' 		=> 'അല്ലെങ്കിൽ സ്ഥലത്തിന്റെ പേര്',
+	array(
+		'title' 		=> 'ജനനസ്ഥലം  ഈ വാർഡ് അല്ലെങ്കിൽ, ജനനസ്ഥലത്തിന്റെ പേര്',
 		'field_name' 	=> 'ifnot_birth_place',
 		'table_name'	=> 'surveyee_users',
 		'group_id'		=> 5,
+    'uid' => 46,
 		'answer_type' 	=> $config['answer_types']['single_value_text'],
 		'answer_options'=> array(),
 	),
-	39 => array(
+	array(
 		'title' 		=> 'എത്ര വർഷമായി ഈ വാർഡിൽ താമസമായിട്ട്',
 		'field_name' 	=> 'YEARS_OF_STAYING',
 		'table_name'	=> 'TEMP',
 		'master_field'	=> 'family_id|ward_id',
 		'group_id'		=> 5,
+    'uid' => 47,
 		'answer_type' 	=> $config['answer_types']['single_value_text'],
 		'answer_options'=> array(),
 	),
-	40 => array(
+	array(
 		'title' 		=> 'വീട്ടിനുള്ളിൽ  എത്തിച്ചേരുന്ന വാഹനത്തിന്റെ തരം',
 		'field_name' 	=> 'largest_accessible_vehicle',
 		'table_name'	=> 'houses',
 		'group_id'		=> 6,
+    'uid' => 48,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
 		'answer_options'=> array(
-			array(
+
+      array(
         		'value' => 1,
-        		'title' => 'സൈക്കിൾ',
+        		'title' => 'നടവഴി മാത്രം',
       		),
 			array(
         		'value' => 2,
-        		'title' => 'ഇരുചക്രവാഹനം',
+        		'title' => 'സൈക്കിൾ',
       		),
 			array(
         		'value' => 3,
-        		'title' => 'മുച്ചക്രവാഹനം',
+        		'title' => 'ഇരുചക്രവാഹനം',
       		),
 			array(
         		'value' => 4,
-        		'title' => 'നാലുചക്രവാഹനം',
+        		'title' => 'മുച്ചക്രവാഹനം',
       		),
 			array(
         		'value' => 5,
-        		'title' => 'ലോറി',
+        		'title' => 'നാലുചക്രവാഹനം',
       		),
 			array(
         		'value' => 6,
-        		'title' => 'ബസ്സ്',
-      		)
+        		'title' => 'ലോറി',
+      		),
 		),
 	),
-	41 => array(
+	array(
 		'title' 		=> 'വീടിന് തൊട്ടടുത്തുള്ള പൊതു ഗതാഗത സൗകര്യം',
 		'field_name' 	=> 'road_type_id',
 		'table_name'	=> 'house_road_map',
 		'master_field'	=> 'house_id',
 		'group_id'		=> 6,
+    'uid' => 49,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
 		'answer_options'=> array(
 			array(
@@ -841,21 +1112,36 @@ $config['questions_master_data'] = array(
       		)
 		)
 	),
-	42 => array(
-		'title' 		=> 'വീട്ടിൽ നിന്നും ഓട്ടോ സ്റ്റാന്റിലേക്കുള്ള ദൂരം',
-		'field_name' 	=> 'proximity',
-		'table_name'	=> 'house_public_utility_proximity',
+	array(
+		'title' 		=> 'അടുത്തുള്ള ഓട്ടോ സ്റ്റാൻദിലേക്ക്  എത്താൻ എടുക്കുന്ന സമയം',
+		'field_name' 	=> 'time_to_get_to_autostand',
+		'table_name'	=> 'TEMP',
 		'master_field'	=> 'house_id',		// need to hard code public_utility_id = 4 of autorikshaw stand
 		'group_id'		=> 6,
-		'answer_type' 	=> $config['answer_types']['single_value_text'],
-		'answer_options'=> array(),
+    'uid' => 50,
+		'answer_type' 	=> $config['answer_types']['single_value_radio'],
+		'answer_options'=> array(
+      array(
+        		'value' => 1,
+        		'title' => 'പെട്ടെന്ന് എത്താം',
+      		),
+      array(
+        		'value' => 2,
+        		'title' => 'സമയം എടുക്കും',
+      		),
+      array(
+        		'value' => 3,
+        		'title' => 'ഒരുപാട് സമയം എടുക്കും',
+      		),
+    ),
 	),
-	43 => array(
+	array(
 		'title' 		=> 'നഗരസഭാ സേവനങ്ങളുടെ സാമീപ്യം',
 		'field_name' 	=> 'public_utility_id',
 		'table_name'	=> 'house_public_utility_proximity',
 		'master_field'	=> 'house_id',
 		'group_id'		=> 7,
+    'uid' => 51,
 		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
 		'answer_options'=> array(
 			array(
@@ -869,15 +1155,28 @@ $config['questions_master_data'] = array(
 			array(
         		'value' => 3,
         		'title' => 'മാലിന്യ നിക്ഷേപ സ്ഥലം',
-      		)
+      		),
+			array(
+        		'value' => 4,
+        		'title' => 'അംഗനവാടി',
+      		),
+			array(
+        		'value' => 5,
+        		'title' => 'വയോ മിത്രാ ആശുപത്രി',
+      		),
+			array(
+        		'value' => 6,
+        		'title' => 'ലൈബ്രറി',
+      		),
 		)
 	),
-	44 => array(
-		'title' 		=> 'ജലം',
+	array(
+		'title' 		=> 'വീട്ടാവശ്യത്തിനുള്ള വെള്ളം എവിടുന്നു എടുക്കുന്നു',
 		'field_name' 	=> 'house_water_source_id',
 		'table_name'	=> 'house_water_source_map',
 		'master_field'	=> 'house_id',
 		'group_id'		=> 8,
+    'uid' => 52,
 		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
 		'answer_options'=> array(
 			array(
@@ -890,36 +1189,46 @@ $config['questions_master_data'] = array(
       		),
 			array(
         		'value' => 3,
-        		'title' => 'സ്വന്തം ടാപ്പ്',
+        		'title' => 'സ്വന്തം വാട്ടർ കണക്ഷൻ',
       		),
 			array(
         		'value' => 4,
         		'title' => 'കുഴൽക്കിണർ',
+      		),
+			array(
+        		'value' => 5,
+        		'title' => 'കുളം',
       		)
 		)
 	),
-	45 => array(
-		'title' 		=> 'കക്കൂസ്',
-		'field_name' 	=> 'toilet_type',
+	array(
+		'title' 		=> 'വീട്ടിലെ കക്കൂസുകൾ സെപ്റ്റിക് ടാങ്കുമായി ബന്ധിപ്പിച്ചിട്ടുണ്ടോ',
+		'field_name' 	=> 'connection_type_to_septic_tank',
 		'table_name'	=> 'houses',
 		'group_id'		=> 8,
+    'uid' => 53,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
 		'answer_options'=> array(
 			array(
         		'value' => 1,
-        		'title' => 'സെപ്റ്റിക് ടാങ്ക്',
+        		'title' => 'ബന്ധിപ്പിച്ചിട്ടുണ്ട്',
       			),
 			array(
         		'value' => 2,
-        		'title' => 'കുഴി കക്കൂസ്',
-      		)
+        		'title' => 'ബന്ധിപ്പിച്ചിട്ടില്ലാ',
+      		),
+      array(
+          'value' => 3,
+          'title' => 'ഭാഗികമായി ബന്ധിപ്പിച്ചുണ്ട്',
+        )
 		)
 	),
-	46 => array(
+	array(
 		'title' 		=> 'കക്കൂസിന്റെ എണ്ണം',
 		'field_name' 	=> 'toilet_count',
 		'table_name'	=> 'houses',
 		'group_id'		=> 8,
+    'uid' => 54,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
 		'answer_options'=> array(
 			array(
@@ -937,51 +1246,86 @@ $config['questions_master_data'] = array(
 			array(
         		'value' => 4,
         		'title' => 'നാല്',
+      		),
+			array(
+        		'value' => 5,
+        		'title' => 'അഞ്ച്',
+      		),
+			array(
+        		'value' => 6,
+        		'title' => 'അഞ്ചിന് മുകളിൽ',
       		)
+
 
 		)
 	),
-	47 => array(
-		'title' 		=> 'ഖരമാലിന്യം നീക്കം ചെയ്യുന്നത് എവിടേക്കാണ്',
-		'field_name' 	=> 'waste_management_solution_id',
-		'table_name'	=> 'house_waste_management_solution_map',
+	array(
+		'title' 		=> 'അഴുകിച്ചേരുന്ന ഖരമാലിന്യം എന്ത് ചെയ്യുന്നു',
+		'field_name' 	=> 'solution_id',
+		'table_name'	=> 'house_biodegradable_waste_management_solution_map',
 		'master_field'	=> 'house_id',
 		'group_id'		=> 8,
+    'uid' => 55,
 		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
 		'answer_options'=> array(
 			array(
         		'value' => 1,
-        		'title' => 'സ്വന്തം പറമ്പിൽ',
+        		'title' => 'സ്വന്തം പറമ്പിൽ സംസ്കരിക്കുന്നു',
       		),
 			array(
         		'value' => 2,
-        		'title' => 'മാലിന്യ സംസ്കരണകേന്ദ്രത്തിൽ',
+        		'title' => 'മാലിന്യ സംസ്കരണകേന്ദ്രത്തിൽ കൊടുക്കുന്നു',
       		)
 		)
 	),
-	48 => array(
+  array(
+		'title' 		=> 'അഴുകി ചേരാത്ത മാലിന്യങ്ങൾ എന്ത് ചെയ്യുന്നു',
+		'field_name' 	=> 'solution_id',
+		'table_name'	=> 'house_nonbiodegradable_waste_management_solution_map',
+		'master_field'	=> 'house_id',
+		'group_id'		=> 8,
+    'uid' => 55,
+		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
+		'answer_options'=> array(
+			array(
+        		'value' => 1,
+        		'title' => 'കത്തിച്ചു കളയുന്നു',
+      		),
+			array(
+        		'value' => 2,
+        		'title' => 'സർക്കാരിന്റെ മാലിന്യ സംസ്കരണകേന്ദ്രത്തിൽ കൊടുക്കുന്നു',
+      		),
+			array(
+        		'value' => 3,
+        		'title' => 'ആക്രിക്കാർക്ക് കൊടുക്കുന്നു',
+      		)
+		)
+	),
+	array(
 		'title' 		=> 'വീട് വൈദ്യുതീകരിച്ചതാണോ?',
 		'field_name' 	=> 'is_electrified',
 		'table_name'	=> 'houses',
 		'group_id'		=> 9,
+    'uid' => 56,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
 		'answer_options'=> array(
 			array(
         		'value' => 1,
-        		'title' => 'ആണ്',
+        		'title' => 'അതെ',
       		),
 			array(
         		'value' => 2,
-        		'title' => 'അല്ല',
+        		'title' => 'അല്ലാ',
       		)
 		),
 	),
-	49 => array(
-		'title' 		=> 'വീട്ടാവശ്യത്തിനുള്ള ഇന്ധനം',
+	array(
+		'title' 		=> 'പാചകത്തിന് ഉപയോഗിക്കുന്ന ഇന്ധനം ഏതൊക്കെ ?',
 		'field_name' 	=> 'domestic_fuel_type_id',
 		'table_name'	=> 'family_domestic_fuel_type_map',
 		'master_field'	=> 'house_id',
 		'group_id'		=> 9,
+    'uid' => 57,
 		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
 		'answer_options'=> array(
 			array(
@@ -1006,155 +1350,199 @@ $config['questions_master_data'] = array(
       		)
 		),
 	),
-	50 => array(
-		'title' 		=> 'വളർത്തു മൃഗങ്ങൾ ഉണ്ടോ?',
-		'field_name' 	=> 'HAS_DOMESTIC_ANIMALS',
-		'table_name'	=> 'TEMP',
-		'group_id'		=> 10,
-		'answer_type' 	=> $config['answer_types']['single_value_radio'],
-		'answer_options'=> array(
-			array(
-        		'value' => 1,
-        		'title' => 'ഉണ്ട്',
-      		),
-			array(
-        		'value' => 0,
-        		'title' => 'ഇല്ല',
-      		)
-		),
-	),
-	51 => array(
-		'title' 		=> 'താഴെ പറയുന്നവയിൽ ഏതെല്ലാമാണ് ഉള്ളത്?',
-		'field_name' 	=> 'pet_id',
-		'table_name'	=> 'family_pet_map',
+
+  array(
+    'title' 		=> 'ഏതൊക്കെ അരുമ വളർത്തുമൃഗങ്ങൾ (Pets) ഉണ്ട്',
+    'field_name' 	=> 'pet_id',
+    'table_name'	=> 'family_pet_map',
+    'master_field'	=> 'family_id',
+    'group_id'		=> 10,
+    'uid' => 58,
+    'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
+    'answer_options'=> array(
+      array(
+            'value' => 1,
+            'title' => 'നായ',
+          ),
+      array(
+            'value' => 2,
+            'title' => 'പൂച്ച',
+          ),
+      array(
+            'value' => 3,
+            'title' => 'അലങ്കാര മൽസ്യങ്ങൾ',
+          ),
+    ),
+  ),
+
+  array(
+    'title' 		=> 'വളർത്ത നായയ്‌ക്കു ലൈസൻസ് ഉണ്ടോ ?',
+    'field_name' 	=> 'has_license',
+    'table_name'	=> 'family_pet_map',
+    'master_field'	=> 'family_id|pet_id',
+    'group_id'		=> 10,
+    'uid' => 59,
+    'answer_type' 	=> $config['answer_types']['single_value_select'],
+    'answer_options'=> array(
+      array(
+            'value' => 1,
+            'title' => 'ഉണ്ട്',
+          ),
+      array(
+            'value' => 0,
+            'title' => 'ഇല്ല',
+          )
+    ),
+  ),
+
+  array(
+		'title' 		=> 'ഉപജീവനത്തിനായി ഉപയോഗിക്കുന്ന മൃഗങ്ങൾ (Live Stock )?',
+		'field_name' 	=> 'livestock_id',
+		'table_name'	=> 'family_livestock_map',
 		'master_field'	=> 'family_id',
 		'group_id'		=> 10,
+    'uid' => 60,
 		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
 		'answer_options'=> array(
 			array(
         		'value' => 1,
-        		'title' => 'നായ',
-      		),
-			array(
-        		'value' => 2,
         		'title' => 'പശു',
       		),
 			array(
-        		'value' => 3,
+        		'value' => 2,
         		'title' => 'ആട്',
       		),
 			array(
-        		'value' => 4,
+        		'value' => 3,
         		'title' => 'കോഴി',
       		),
 			array(
-        		'value' => 5,
+        		'value' => 4,
         		'title' => 'താറാവ്',
       		),
-			array(
-        		'value' => 5,
+      array(
+            'value' => 5,
+            'title' => 'മൽസ്യം',
+          ),
+      array(
+        		'value' => 6,
         		'title' => 'മറ്റുള്ളവ',
       		)
 		)
 	),
-	52 => array(
-		'title' 		=> 'നായയ്‌ക്ക് ലൈസൻസ് ഉണ്ടോ?',
-		'field_name' 	=> 'has_license',
-		'table_name'	=> 'family_pet_map',
-		'master_field'	=> 'family_id|pet_id',
-		'group_id'		=> 10,
-		'answer_type' 	=> $config['answer_types']['single_value_radio'],
+
+	array(
+		'title' 		=> 'കൃഷി ഉണ്ടോ ?',
+		'field_name' 	=> 'has_agriculture',
+		'table_name'	=> 'families',
+		'group_id'		=> 11,
+    'uid' => 61,
+		'answer_type' 	=> $config['answer_types']['single_value_select'],
 		'answer_options'=> array(
 			array(
         		'value' => 1,
         		'title' => 'ഉണ്ട്',
       		),
 			array(
-        		'value' => 0,
-        		'title' => 'ഇല്ല',
-      		)
-		),
-	),
-	53 => array(
-		'title' 		=> 'കൃഷി',
-		'field_name' 	=> 'agriculture_location_id',
-		'table_name'	=> 'family_agriculture_location_map',
-		'group_id'		=> 11,
-		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
-		'answer_options'=> array(
-			array(
-        		'value' => 1,
-        		'title' => 'മട്ടുപ്പാവ്',
-      		),
-			array(
         		'value' => 2,
-        		'title' => 'പറമ്പിൽ',
+        		'title' => 'ഇല്ലാ',
       		),
-			array(
-        		'value' => 3,
-        		'title' => 'കൃഷി ഇല്ല',
-      		)
 		)
 	),
-	54 => array(
-		'title' 		=> 'വിളകൾ',
-		'field_name' 	=> 'agricultural_produce_id',
-		'table_name'	=> 'family_agricultural_produce_map',
+
+  	array(
+  		'title' 		=> 'കൃഷി ഇടം ?',
+  		'field_name' 	=> 'agriculture_location_id',
+  		'table_name'	=> 'family_agriculture_location_map',
+  		'group_id'		=> 11,
+      'uid' => 62,
+  		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
+  		'answer_options'=> array(
+  			array(
+          		'value' => 1,
+          		'title' => 'മട്ടുപ്പാവിൽ',
+        		),
+  			array(
+          		'value' => 2,
+          		'title' => 'പറമ്പിൽ',
+        		),
+  		)
+  	),
+
+	array(
+		'title' 		=> 'ഭലവൃക്ഷങ്ങൾ ഏതെല്ലാം ഉണ്ട് ?',
+		'field_name' 	=> 'fruit_tree_id',
+		'table_name'	=> 'land_fruit_tree_map',
+    'master_field'	=> 'land_id',
 		'group_id'		=> 12,
+    'uid' => 63,
 		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
 		'answer_options'=> array(
+
 			array(
         		'value' => 1,
-        		'title' => 'തെങ്ങ്',
-      		),
-			array(
-        		'value' => 2,
-        		'title' => 'കവുങ്ങ്',
-      		),
-			array(
-        		'value' => 3,
         		'title' => 'മാവ്',
       		),
 			array(
-        		'value' => 4,
+        		'value' => 2,
         		'title' => 'പേര',
       		),
 			array(
-        		'value' => 5,
+        		'value' => 3,
         		'title' => 'പ്ലാവ്',
       		),
 			array(
-        		'value' => 6,
-        		'title' => 'പച്ചക്കറി',
-      		),
-			array(
-        		'value' => 7,
+        		'value' => 4,
         		'title' => 'മറ്റുള്ളവ',
       		)
 		)
 	),
-	55 => array(
-		'title' 		=> 'അലങ്കാര മത്സ്യങ്ങൾ ഉണ്ടോ?',
-		'field_name' 	=> 'has_aquarium_fish',
-		'table_name'	=> 'families',		
-		'group_id'		=> 13,
-		'answer_type' 	=> $config['answer_types']['single_value_radio'],
-		'answer_options'=> array(
-			array(
-        		'value' => TRUE,
-        		'title' => 'ഉണ്ട്',
-      		),
-			array(
-        		'value' => FALSE,
-        		'title' => 'ഇല്ല',
-      		)
-		),
-	),
-	56 => array(
+
+
+
+
+  array(
+  'title' 		=> 'നാണ്യ വിളകൾ ഏതെല്ലാം ഉണ്ട് ?',
+  'field_name' 	=> 'cash_crop_id',
+  'table_name'	=> 'land_cash_crop_map',
+  'master_field'	=> 'land_id',
+  'group_id'		=> 12,
+  'uid' => 64,
+  'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
+  'answer_options'=> array(
+
+    array(
+          'value' => 1,
+          'title' => 'തെങ്ങ്',
+        ),
+    array(
+          'value' => 2,
+          'title' => 'കവുങ്ങ്',
+        ),
+    array(
+          'value' => 3,
+          'title' => 'റബ്ബർ',
+        ),
+    array(
+          'value' => 4,
+          'title' => 'കുരുമുളക്',
+        ),
+    array(
+          'value' => 5,
+          'title' => 'വാനില',
+        )
+  )
+  ),
+
+
+
+
+	array(
 		'title' 		=> 'ബാങ്ക് അക്കൗണ്ട്',
 		'field_name' 	=> 'bank_account_type_id',
 		'table_name'	=> 'surveyee_user_bank_account_type_map',
 		'group_id'		=> 13,
+    'uid' => 65,
 		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
 		'answer_options'=> array(
 			array(
@@ -1171,96 +1559,67 @@ $config['questions_master_data'] = array(
       		)
 		),
 	),
-	57 => array(
+	array(
 		'title' 		=> 'ക്രെഡിറ്റ് / ഡെബിറ്റ് കാർഡ്',
 		'field_name' 	=> 'has_credit_or_debit_card',
 		'table_name'	=> 'surveyee_users',
 		'group_id'		=> 13,
+    'uid' => 66,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
 		'answer_options'=> array(
 			array(
-        		'value' => TRUE,
+        		'value' => 1,
         		'title' => 'ഉണ്ട്',
       		),
 			array(
-        		'value' => FALSE,
+        		'value' => 0,
         		'title' => 'ഇല്ല',
       		)
 		),
 	),
-	58 => array(
+	array(
 		'title' 		=> 'ഇന്റർനെറ്റ് ബാംങ്കിംഗ്',
 		'field_name' 	=> 'has_internet_banking',
 		'table_name'	=> 'surveyee_users',
 		'group_id'		=> 13,
+    'uid' => 67,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
 		'answer_options'=> array(
 			array(
-        		'value' => TRUE,
+        		'value' => 1,
         		'title' => 'ഉണ്ട്',
       		),
 			array(
-        		'value' => FALSE,
+        		'value' => 0,
         		'title' => 'ഇല്ല',
       		)
 		),
 	),
-	59 => array(
+	array(
 		'title' 		=> 'മൊബൈൽ ബാംങ്കിംഗ്',
 		'field_name' 	=> 'has_mobile_banking',
 		'table_name'	=> 'surveyee_users',
 		'group_id'		=> 13,
+    'uid' => 68,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
-		'answer_options'=> array(
-			array(
-        		'value' => TRUE,
-        		'title' => 'ഉണ്ട്',
-      		),
-			array(
-        		'value' => FALSE,
-        		'title' => 'ഇല്ല',
-      		)
-		),
-	),
-	60 => array(
-		'title' 		=> 'വൈദ്യുതി, വെള്ളം, ട്രെയിൻ, ബസ്, സിനിമ തുടങ്ങിയവ',
-		'field_name' 	=> 'surveyee_user_id',
-		'table_name'	=> 'surveyee_user_payment_type_map',
-		'group_id'		=> 13,
-		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
 		'answer_options'=> array(
 			array(
         		'value' => 1,
-        		'title' => 'നേരിട്ടടയ്ക്കുന്നു',
-      		),
-			array(
-        		'value' => 2,
-        		'title' => 'ഓൺലൈൻ വഴി',
-      		)
-		),
-	),
-	61 => array(
-		'title' 		=> 'ഇൻഷുറൻസ്',
-		'field_name' 	=> 'has_insurance',
-		'table_name'	=> 'surveyee_users',
-		'group_id'		=> 13,
-		'answer_type' 	=> $config['answer_types']['single_value_radio'],
-		'answer_options'=> array(
-			array(
-        		'value' => TRUE,
         		'title' => 'ഉണ്ട്',
       		),
 			array(
-        		'value' => FALSE,
+        		'value' => 0,
         		'title' => 'ഇല്ല',
       		)
-		)
+		),
 	),
-	62 => array(
+
+	array(
 		'title' 		=> 'നിക്ഷേപം',
 		'field_name' 	=> 'investment_type_id',
 		'table_name'	=> 'surveyee_user_investment_type_map',
 		'group_id'		=> 13,
+    'uid' => 69,
 		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
 		'answer_options'=> array(
 			array(
@@ -1290,11 +1649,12 @@ $config['questions_master_data'] = array(
 
 		)
 	),
-	63 => array(
-		'title' 		=> 'കടബാധ്യത',
-		'field_name' 	=> 'debit_type_id',
-		'table_name'	=> 'surveyee_user_debit_type_map',
+	array(
+		'title' 		=> 'കടബാധ്യതയ്ക്ക് കാരണം',
+		'field_name' 	=> 'loan_purpose_id',
+		'table_name'	=> 'family_loan_purpose_map',
 		'group_id'		=> 13,
+    'uid' => 70,
 		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
 		'answer_options'=> array(
 			array(
@@ -1316,11 +1676,12 @@ $config['questions_master_data'] = array(
 
 		)
 	),
-	64 => array(
+	array(
 		'title' 		=> 'കടമെടുത്തിട്ടുള്ളത്',
-		'field_name' 	=> 'debit_debit_bank_type_id',
-		'table_name'	=> 'surveyee_user_debit_bank_type_map',
+		'field_name' 	=> 'loan_source_id',
+		'table_name'	=> 'surveyee_user_loan_sources_map',
 		'group_id'		=> 13,
+    'uid' => 71,
 		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
 		'answer_options'=> array(
 			array(
@@ -1350,9 +1711,5 @@ $config['questions_master_data'] = array(
 
 		)
 	)
-
-
-
-
 
 );

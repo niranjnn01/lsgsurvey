@@ -8,6 +8,7 @@ class Question extends CI_Controller {
 		parent::__construct();
 
 		$this->load->model('survey_model');
+		$this->load->model('question_model');
 
 		$this->aErrorTypes = c('error_types');
 
@@ -16,6 +17,8 @@ class Question extends CI_Controller {
 		$this->aAnswerTypes = $this->config->item('answer_types');
 
 		$this->aAnswerTypesDetails = $this->config->item('answer_types_details');
+
+		$this->mcontents['aQuestionTypes'] = $this->config->item('question_types');
 
 	}
 
@@ -32,7 +35,10 @@ class Question extends CI_Controller {
 
 		$aQuestionData = array();
 		$sJsonData = '{}';
-		$questions_master_data	= $this->config->item('questions_master_data');
+
+
+		$questions_master_data	= $this->question_model->getQuestionMasterData();
+
 		$iTotalQuestionCount = count($questions_master_data);
 		$bProceed = TRUE;
 
@@ -75,14 +81,14 @@ class Question extends CI_Controller {
 		// all ok. we can proceed
 		if($bProceed) {
 
-			$aQuestionsMasterData = $this->config->item('questions_master_data');
-			
+			$aQuestionsMasterData = $this->question_model->getQuestionMasterData();
+
 			/*
 			$oTemporarySurvey = $this->survey_model->getCurrentTemporarySurvey();
 
 			$iTemporarySurveyNumber = $oTemporarySurvey->id;
 			$this->db->where('id', $iTemporarySurveyNumber);
-			
+
 			if($oSurveyData = $this->db->get('temporary_survey')->row()) {
 
 				$aRawData	= unserialize($oSurveyData->raw_data);
@@ -90,7 +96,7 @@ class Question extends CI_Controller {
 				print_r($aRawData[$aQuestionsMasterData[$iQuestionNo]['table_name']][$aQuestionsMasterData[$iQuestionNo]['field_name']]);
 				exit;
 			}
-			
+
 			*/
 	/*
 				$aQuestionsMasterData = array(
@@ -128,7 +134,8 @@ class Question extends CI_Controller {
 					$aQuestionData = $aQuestionsMasterData[$iQuestionNo];
 
 					// normalize the question data
-					$aQuestionData = $this->_normalizeQuestion($aQuestionData);
+					$this->load->model('question_model');
+					$aQuestionData = $this->question_model->normalizeQuestion($aQuestionData);
 
 					// add custom fields
 					$aQuestionData['question_count']	= count($aQuestionsMasterData);
@@ -157,18 +164,7 @@ class Question extends CI_Controller {
 
 
 
-	function _normalizeQuestion($aQuestion) {
 
-
-		$aNormalizedQuestionStructure = array(
-			'title' 			=> '',
-			'answer_type' 		=> $aQuestion['answer_type'],
-			'answer_options' 	=> array(),
-			'field_name' 		=> $this->aAnswerTypesDetails[$aQuestion['answer_type']]['field_name'],
-		);
-
-		return array_merge($aNormalizedQuestionStructure, $aQuestion);
-	}
 
 }
 

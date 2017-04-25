@@ -7,7 +7,10 @@ class Survey extends CI_Controller {
 
 		parent::__construct();
 
+		$this->load->config('survey_config');
 		$this->load->model('survey_model');
+
+		$this->load->model('question_model');
 
 		$this->aErrorTypes = c('error_types');
 
@@ -23,6 +26,8 @@ class Survey extends CI_Controller {
 
 		$this->authentication->is_user_logged_in(true, 'user/login');
 
+
+		$this->load->config('question_config');
 //exit('locked');
 		// Initialize stuff
 		$this->mcontents['iCurrentTemporarySurveyNumber']	= 0;
@@ -39,14 +44,33 @@ class Survey extends CI_Controller {
 		p($oCurrentSurvey);
 		exit;
 	*/
+	$this->mcontents['aSurveyStatus'] = $this->config->item('survey_status');
+
 		if( $oCurrentSurvey ) {
+
+			//p('HERE');
+
+
+			$aQuestionsMasterData = $this->question_model->getQuestionMasterData();
+			//p($aQuestionsMasterData);
+			//p(count($aQuestionsMasterData));
+			//p($oCurrentSurvey->last_processed_question);
+			//exit;
+			if( count($aQuestionsMasterData) == $oCurrentSurvey->last_processed_question ) {
+				$this->mcontents['iSurveyStatus'] = $this->mcontents['aSurveyStatus']['processed_last_question'];
+			} else {
+				$this->mcontents['iSurveyStatus'] = $this->mcontents['aSurveyStatus']['in_progress'];
+			}
 
 			$this->mcontents['iCurrentTemporarySurveyNumber']	= $oCurrentSurvey->id;
 			$this->mcontents['iNextQuestion']	= $oCurrentSurvey->last_processed_question + 1;
 			$this->mcontents['iLastProcessedQuestion']	= $oCurrentSurvey->last_processed_question;
 			$this->mcontents['bIsLastQuestion']	= $this->survey_model->isLastQuestion($this->mcontents['iNextQuestion']);
+//exit;
 
 		} else {
+
+			$this->mcontents['iSurveyStatus'] = $this->mcontents['aSurveyStatus']['in_progress'];
 
 			$oNewTemporarySurveyId = $this->survey_model->createTemporarySurvey();
 			$this->survey_model->setTemporarySurveyAsCurrent($oNewTemporarySurveyId, s('ACCOUNT_NO'));
@@ -80,35 +104,45 @@ function accept_answer($iQuestionNo=0) {
 	// get answer_type for the question
 	$iAnswerType = 1;
 
-	$this->load->model('ProcessAnswer_model');
-
-	$sFunctionName = 'processAnswerForQuestion_' . $iQuestionNo;
-
-	//list($iAnswerProcessingStatus, $sError) = $this->ProcessAnswer_model->$sFunctionName();
-	list($iAnswerProcessingStatus, $sError) = $this->ProcessAnswer_model->processAnswerForQuestion($iQuestionNo);
-
-
-if(! $sError) {
-
-	// set this question as last_processed_question
-
 	$iEnumeratorAccountNo = s('ACCOUNT_NO');
+	$sError = '';
+	$bProceed = TRUE;
 
-	//$bIsLastQuestion = $this->survey_model->isLastQuestion($iQuestionNo);
-
-	if( $iEnumeratorAccountNo ) {
-
-		if( $oRow = $this->survey_model->getCurrentSurvey( $iEnumeratorAccountNo ) ) {
-			$this->db->where('enumerator_account_no', $iEnumeratorAccountNo);
-			$this->db->where('id', $oRow->id);
-			$this->db->set('last_processed_question', $iQuestionNo);
-			$this->db->update('temporary_survey');
-		}
+	if(! $oCurrentTemporarySurvey = $this->survey_model->getCurrentTemporarySurvey($iEnumeratorAccountNo)) {
+		$bProceed = FALSE;
+		$sError = 'Survey was not found';
 	}
 
 
 
-}
+	$this->load->model('ProcessAnswer_model');
+
+
+
+	if($iQuestionNo == 1) { // people details (family details)
+		list($iAnswerProcessingStatus, $sError) = $this->ProcessAnswer_model->process_Answers_FamilyQuestion($oCurrentTemporarySurvey->id);
+	} elseif ($iQuestionNo == 2) { // house address
+		list($iAnswerProcessingStatus, $sError) = $this->ProcessAnswer_model->process_Answers_Address_Question($oCurrentTemporarySurvey->id);
+	} else {
+		list($iAnswerProcessingStatus, $sError) = $this->ProcessAnswer_model->processAnswerForQuestion($iQuestionNo);
+	}
+
+
+
+	if(! $sError) {
+
+		// set this question as last_processed_question
+		if( $iEnumeratorAccountNo ) {
+
+			if( $oRow = $this->survey_model->getCurrentSurvey( $iEnumeratorAccountNo ) ) {
+				$this->db->where('enumerator_account_no', $iEnumeratorAccountNo);
+				$this->db->where('id', $oRow->id);
+				$this->db->set('last_processed_question', $iQuestionNo);
+				$this->db->update('temporary_survey');
+			}
+		}
+
+	}
 
 	$aJsonData = array(
 									'error' => $sError,
@@ -121,17 +155,48 @@ if(! $sError) {
 	$this->load->view('output', array('output' => $sJsonData));
 }
 
-function preview_data($iTemporarySurveyId) {
 
-	$this->db->where('id', $iTemporarySurveyId);
-	$this->mcontents['oRow'] = $this->db->get('temporary_survey')->row();
 
-	loadTemplate('survey/preview_data');
-	//p( unserialize($oRow->general_data) );
+
+/**
+ *
+ * Cancel the temporary survey
+ *
+ * @param  integer $iTemporarySurveyNumber [description]
+ * @return [type]                          [description]
+ */
+function cancel($iTemporarySurveyNumber=0){
+
+			$aJsonData = array(
+										'error' => '',
+										'success' => ''
+									);
+			if(	$this->authentication->is_user_logged_in(false) ) {
+
+				$this->db->where('id', $iTemporarySurveyNumber);
+				if($this->db->get('temporary_survey')) {
+
+					$this->db->where('id', $iTemporarySurveyNumber);
+					$this->db->delete('temporary_survey');
+
+					$aJsonData['success'] = 'Survey cancelled';
+
+				} else {
+
+					$aJsonData['error'] = 'Survey not found';
+				}
+
+
+			} else {
+				$aJsonData['error'] = 'User not logged in';
+			}
+
+			$sJsonData = json_encode($aJsonData);
+
+			$this->output->set_header('Content-type: application/json');
+			$this->load->view('output', array('output' => $sJsonData));
+
 }
-
-
-
 
 
 
@@ -216,33 +281,40 @@ function purge_test_data() {
 		$sErrorMessage = '';
 		$aJsonData = array('error' => '');
 
-/*
+
 		if(! $this->authentication->is_user_logged_in(FALSE)) {
 			$aJsonData['error'] = 'Not logged In';
 			$bProceed = FALSE;
 		}
-*/
+
 		// do verification of input data
 
 
 		// if all ok, then proceed to save Survey Data.
 		if($bProceed) {
 
-
-			$oTemporarySurvey = $this->survey_model->getCurrentTemporarySurvey();
-
+			$iEnumeratorAccountNo = s('ACCOUNT_NO');
+			$oTemporarySurvey = $this->survey_model->getCurrentTemporarySurvey($iEnumeratorAccountNo);
+//p($iEnumeratorAccountNo);
 
 			$iTemporarySurveyNumber = $oTemporarySurvey->id;
 
+			//p('survey complete routines');exit;
 /*
 						p($this->db->last_query());
 						p($oTemporarySurvey);
 						exit;
 						*/
-			$aJsonData['survey_id'] = $this->survey_model->createSurvey($iTemporarySurveyNumber);
+
+			$this->load->model('survey_model_new');
+			list($iSurveyId, $sErrorMessage) = $this->survey_model_new->createSurvey($iTemporarySurveyNumber);
+
+
+			$aJsonData['survey_id'] = $iSurveyId;
 
 			if($sErrorMessage) {
 				$aJsonData['error'] = $sErrorMessage;
+				$aJsonData['survey_id'] = $iSurveyId;
 			} else {
 				$aJsonData['success'] = '1';
 			}
@@ -314,7 +386,7 @@ function purge_test_data() {
 
 		$this->load->config('question_config');
 		//$this->mcontents['questions_master_data']	= $this->config->item('questions_master_data');
-		
+
 		// get basic details
 		$this->db->select("
 			CONCAT(U.first_name, ' ', U.last_name) as enumerator_name,
@@ -336,17 +408,21 @@ function purge_test_data() {
 			SU.id surveyee_user_id,
 			SU.aadhar_id,
 			SU.election_id,
+			SU.gender,
+			SU.reservation,
 			FHM.residence_type_id,
 			H.id house_id,
 			H.house_number,
-			H.address,
+			H.address_house_name,
+			H.address_street_name,
+			H.address_pincode,
 			H.num_floors,
 			H.num_rooms,
 			H.floor_type_id,
 			H.largest_accessible_vehicle,
-			H.toilet_type,
+			H.connection_type_to_septic_tank,
 			H.toilet_count,
-			H.is_electrified,						
+			H.is_electrified,
 			H.house_area_range_id,
 			SU.belief_in_religion_id,
 			SU.is_scst,
@@ -354,8 +430,7 @@ function purge_test_data() {
 			SU.mobile_number,
 			SU.landline_number,
 			SU.email_id,
-			SU.whatsapp_number,	
-			SU.facebook_link,
+			SU.whatsapp_number,
 			SU.is_member_ayalkoottam,
 			SU.is_member_political_party,
 			SU.is_memeber_socio_cultural_organization,
@@ -372,7 +447,6 @@ function purge_test_data() {
 			FHM.family_id,
 			F.ration_card_no,
 			F.ration_card_type_id,
-			F.has_aquarium_fish
 			');
 		$this->db->join('surveyee_user_family_map SUFM', 'SU.id = SUFM.surveyee_user_id');
 		$this->db->join('families F', 'SUFM.family_id = F.id');
@@ -382,42 +456,52 @@ function purge_test_data() {
 		$this->db->join('ward_sabha_participation WP', 'WP.surveyee_user_id = SU.id', 'left');
 		$this->db->join('house_tax HTX', 'HTX.house_id= H.id', 'left');
 		$this->db->where('S.id', $iSurveyId);
+		$this->db->where('SUFM.is_head', 1);
+
 		$this->mcontents['oUserPersonalData'] = $this->db->get('surveyee_users SU')->row();
 		//p($this->mcontents['oUserPersonalData']);
-		
+
+
+
 		$this->mcontents['oHouseData']->largest_accessible_vehicle	= $this->mcontents['oUserPersonalData']->largest_accessible_vehicle;
-		
-		$this->mcontents['oHouseData']->has_aquarium_fish	= $this->mcontents['oUserPersonalData']->has_aquarium_fish;
+
+
 		$this->mcontents['oHouseData']->ration_card_no		= $this->mcontents['oUserPersonalData']->ration_card_no;
 		$this->mcontents['oHouseData']->ration_card_type_id	= $this->mcontents['oUserPersonalData']->ration_card_type_id;
 
+
+
 		if( $this->mcontents['oUserPersonalData']->residence_type_id == 1 ) {
+
 			//rented stay
 			$this->mcontents['oHouseData']->sResidenceType = $this->mcontents['aResidenceTypes'][1];
+
 		} elseif( $this->mcontents['oUserPersonalData']->residence_type_id == null ) {
-		
-			// see if is_owner
-			if( $this->mcontents['oUserPersonalData']->surveyee_user_id == $this->mcontents['oHouseData']->owner_id ) {
-				$this->mcontents['oHouseData']->sResidenceType = $this->mcontents['aHouseOwnershipTypes'][1];
-			}
+
+				// see if is_owner
+				if( $this->mcontents['oUserPersonalData']->surveyee_user_id == $this->mcontents['oHouseData']->owner_id ) {
+					$this->mcontents['oHouseData']->sResidenceType = $this->mcontents['aHouseOwnershipTypes'][1];
+				}
+
 		}
-		
-		
+
+
+
 		//House tax
 		$this->mcontents['oHouseData']->tax_amount = $this->mcontents['oUserPersonalData']->house_tax;
-		
+
 		// Ward Residence history
 		$this->db->select('FR.from, FR.to');
 		$this->db->where('FR.family_id', $this->mcontents['oUserPersonalData']->family_id);
 		$aFamilyResidence = $this->db->get('family_residence_history_map FR')->row();
 		$this->mcontents['oUserPersonalData']->sFamilyResidenceHistory	= '';
 		if(isset($aFamilyResidence->from)){
-			$this->mcontents['oUserPersonalData']->sFamilyResidenceHistory = 
+			$this->mcontents['oUserPersonalData']->sFamilyResidenceHistory =
 				date('Y', strtotime($aFamilyResidence->to)) - date('Y', strtotime($aFamilyResidence->from)) . ' വർഷം ' . '('.
 				date('Y', strtotime($aFamilyResidence->from)).' - '.
 				date('Y', strtotime($aFamilyResidence->to)).')';
 		}
-		
+
 		// House Road Type
 		$this->db->select('HRM.road_type_id as id');
 		$this->db->where('HRM.house_id', $this->mcontents['oUserPersonalData']->house_id);
@@ -427,20 +511,17 @@ function purge_test_data() {
 		if(isset($this->mcontents['oHouseData']->sHomeRoadMap)){
 			$this->mcontents['oHouseData']->sHomeRoadMap = $aHomeRoadMap->id;
 		}
-		
+
 		// House Public Utility Proximity
 		$this->db->select('HPU.public_utility_id as id, HPU.proximity');
 		$this->db->where('HPU.house_id', $this->mcontents['oUserPersonalData']->house_id);
 		$aHomeUtilityProximity = $this->db->get('house_public_utility_proximity HPU')->result();
-		$this->mcontents['oHouseData']->aHomeUtilityProximity = [];
+		//$this->mcontents['oHouseData']->aHomeUtilityProximity = [];
 		$this->mcontents['oHouseData']->aHomeUtilityServices = [];
 		foreach($aHomeUtilityProximity as $oUtility){
-			$this->mcontents['oHouseData']->aHomeUtilityProximity[$oUtility->id] = $oUtility->proximity;
-			if(4 != $oUtility->id){
-				array_push($this->mcontents['oHouseData']->aHomeUtilityServices, $oUtility->id);
-			}
+			array_push($this->mcontents['oHouseData']->aHomeUtilityServices, $oUtility->id);
 		}
-		
+
 		// House Water Sources
 		$this->db->select('HWS.house_water_source_id as id');
 		$this->db->where('HWS.house_id', $this->mcontents['oUserPersonalData']->house_id);
@@ -449,47 +530,73 @@ function purge_test_data() {
 		foreach($aHomeWaterSources as $oItem){
 			array_push($this->mcontents['oHouseData']->aHomeWaterSources, $oItem->id);
 		}
-		
-		// House Waste Management
-		$this->db->select('HWM.waste_management_solution_id as id');
-		$this->db->where('HWM.house_id', $this->mcontents['oUserPersonalData']->house_id);
-		$aHomeWasteManagements = $this->db->get('house_waste_management_solution_map HWM')->result();
-		$this->mcontents['oHouseData']->aHomeWasteManagements = [];
-		foreach($aHomeWaterSources as $oItem){
-			array_push($this->mcontents['oHouseData']->aHomeWasteManagements, $oItem->id);
+
+		// Biodegrabale Waste Management
+		$this->db->select('H_BDWM_SM.solution_id as id');
+		$this->db->where('H_BDWM_SM.house_id', $this->mcontents['oUserPersonalData']->house_id);
+		$aSolutions = $this->db->get('house_biodegradable_waste_management_solution_map H_BDWM_SM')->result();
+		$this->mcontents['oHouseData']->aHomeBioDegradableWasteManagementSolutions = [];
+		foreach($aSolutions as $oItem){
+			array_push($this->mcontents['oHouseData']->aHomeBioDegradableWasteManagementSolutions, $oItem->id);
 		}
-		
+
+		// get details of family
+		$this->db->select('FAM.*');
+		$this->db->where('id', $this->mcontents['oUserPersonalData']->family_id);
+		$this->mcontents['oFamily'] = $this->db->get('families FAM')->row();
+
+
+
+		// Non Biodegrabale Waste Management
+		$this->db->select('H_NBDWM_SM.solution_id as id');
+		$this->db->where('H_NBDWM_SM.house_id', $this->mcontents['oUserPersonalData']->house_id);
+		$aSolutions = $this->db->get('house_nonbiodegradable_waste_management_solution_map H_NBDWM_SM')->result();
+
+		$this->mcontents['oHouseData']->aHomeNonBioDegradableWasteManagementSolutions = [];
+		foreach($aSolutions as $oItem){
+			array_push($this->mcontents['oHouseData']->aHomeNonBioDegradableWasteManagementSolutions, $oItem->id);
+		}
+
+
+
 		// Family Domestic Fuel Types
 		$this->db->select('FDF.domestic_fuel_type_id as id');
 		$this->db->where('FDF.family_id', $this->mcontents['oUserPersonalData']->family_id);
 		$aFamilyDomesticFuelTypes = $this->db->get('family_domestic_fuel_type_map FDF')->result();
-		$this->mcontents['oHouseData']->aFamilyDomesticFuelTypes = [];
+
+		$this->mcontents['oFamily']->aFamilyDomesticFuelTypes = [];
 		foreach($aFamilyDomesticFuelTypes as $oItem){
-			array_push($this->mcontents['oHouseData']->aFamilyDomesticFuelTypes, $oItem->id);
+			array_push($this->mcontents['oFamily']->aFamilyDomesticFuelTypes, $oItem->id);
 		}
+
+
+
 		// Family Domestic Fuel Types
 		$this->db->select('FDF.domestic_fuel_type_id as id');
 		$this->db->where('FDF.family_id', $this->mcontents['oUserPersonalData']->family_id);
 		$aFamilyDomesticFuelTypes = $this->db->get('family_domestic_fuel_type_map FDF')->result();
-		$this->mcontents['oHouseData']->aFamilyDomesticFuelTypes = [];
+		$this->mcontents['oFamily']->aFamilyDomesticFuelTypes = [];
 		foreach($aFamilyDomesticFuelTypes as $oItem){
-			array_push($this->mcontents['oHouseData']->aFamilyDomesticFuelTypes, $oItem->id);
+			array_push($this->mcontents['oFamily']->aFamilyDomesticFuelTypes, $oItem->id);
 		}
-		
+
+
+
 		// Family Pets
 		$this->db->select('FP.pet_id as id, FP.has_license');
 		$this->db->where('FP.family_id', $this->mcontents['oUserPersonalData']->family_id);
 		$aFamilyPets = $this->db->get('family_pet_map FP')->result();
-		$this->mcontents['oHouseData']->aFamilyPets = [];
+		$this->mcontents['oFamily']->aPets = [];
 		foreach($aFamilyPets as $oItem){
-			$this->mcontents['oHouseData']->aFamilyPets[$oItem->id] = $oItem->has_license;
+			$this->mcontents['oFamily']->aPets[$oItem->id] = array('has_license' => $oItem->has_license);
 		}
-		$this->mcontents['oHouseData']->iHasPet = (count($this->mcontents['oHouseData']->aFamilyPets) > 0) ? 1 : 0;
-		$this->mcontents['oHouseData']->iHasDog	= (isset($this->mcontents['oHouseData']->aFamilyPets[1])) ? 1 : 0 ;
-		$this->mcontents['oHouseData']->iHasDogLicense	= 
-		($this->mcontents['oHouseData']->iHasDog == 1 && 1 == $this->mcontents['oHouseData']->aFamilyPets[1]) ? 1 : 0;
-		
-		
+
+		$this->mcontents['oFamily']->iHasPet = (count($this->mcontents['oFamily']->aPets) > 0) ? 1 : 0;
+		$this->mcontents['oFamily']->iHasDog	= (isset($this->mcontents['oFamily']->aPets[1])) ? 1 : 0 ;
+		$this->mcontents['oFamily']->iHasDogLicense	=
+		($this->mcontents['oFamily']->iHasDog == 1 && 1 == $this->mcontents['oFamily']->aPets[1]) ? 1 : 0;
+
+
 		// Home applicances
 		$this->db->select('FA.house_appliance_id as id');
 		$this->db->where('FA.family_id', $this->mcontents['oUserPersonalData']->family_id);
@@ -500,17 +607,17 @@ function purge_test_data() {
 		foreach($aFamilyAppliances AS $iItemId) {
 			array_push($this->mcontents['oHouseData']->aHomeAppliances, $iItemId->id);
 		}
-		
+
 		// Family vehicles
 		$this->db->select('FV.vehicle_type_id as id');
 		$this->db->where('FV.family_id', $this->mcontents['oUserPersonalData']->family_id);
 		$aFamilyVehicleType = $this->db->get('family_vehicle_type_map FV')->result();
-		
+
 		$this->mcontents['oHouseData']->aFamilyVehicleType = [];
 		foreach($aFamilyVehicleType AS $iItemId) {
 			array_push($this->mcontents['oHouseData']->aFamilyVehicleType, $iItemId->id);
 		}
-		
+
 		// Family agriculture location
 		$this->db->select('FA.agriculture_location_id as id');
 		$this->db->where('FA.family_id', $this->mcontents['oUserPersonalData']->family_id);
@@ -521,8 +628,8 @@ function purge_test_data() {
 		foreach($aFamilyAgricultureLocations AS $iItemId) {
 			array_push($this->mcontents['oHouseData']->aFamilyAgricultureLocations, $iItemId->id);
 		}
-		
-		
+
+
 		// Family agriculture location
 		$this->db->select('FA.agricultural_produce_id as id');
 		$this->db->where('FA.family_id', $this->mcontents['oUserPersonalData']->family_id);
@@ -533,7 +640,7 @@ function purge_test_data() {
 		foreach($aFamilyAgricultureProduce AS $iItemId) {
 			array_push($this->mcontents['oHouseData']->aFamilyAgricultureProduce, $iItemId->id);
 		}
-		
+
 		// surveyee_user_bank_account_type_map
 		$this->db->select('FA.bank_account_type_id as id');
 		$this->db->where('FA.surveyee_user_id', $this->mcontents['oUserPersonalData']->surveyee_user_id);
@@ -544,7 +651,7 @@ function purge_test_data() {
 		foreach($aBankAccountTypes AS $iItemId) {
 			array_push($this->mcontents['oUserPersonalData']->aBankAccountTypes, $iItemId->id);
 		}
-		
+
 		//p($this->mcontents['oUserPersonalData']);
 
 		// house types
@@ -578,6 +685,29 @@ function purge_test_data() {
 			$this->mcontents['oLandData']->sLandOwnershipType = $this->mcontents['aLandOwnershipTypes'][1];
 		}
 
+		// get the fruit trees on the land
+		$this->db->where('LFTM.land_id', $this->mcontents['oLandData']->id);
+		$aFruitTrees = $this->db->get('land_fruit_tree_map LFTM')->result();
+		$this->mcontents['oLandData']->aFruitTrees = [];
+		if($aFruitTrees) {
+			foreach($aFruitTrees AS $oRow) {
+				$this->mcontents['oLandData']->aFruitTrees[] = $oRow->fruit_tree_id;
+			}
+		}
+
+
+		// get the cash crops on the land
+		$this->db->where('LCCM.land_id', $this->mcontents['oLandData']->id);
+		$aCashCrops = $this->db->get('land_cash_crop_map LCCM')->result();
+		$this->mcontents['oLandData']->aCashCrops = [];
+		if($aCashCrops) {
+			foreach($aFruitTrees AS $oRow) {
+				$this->mcontents['oLandData']->aCashCrops[] = $oRow->cash_crop_id;
+			}
+		}
+
+
+
 
 		if( safeText('p', false, 'get') == 'iframe' ) {
 			$this->load->view('iframe_header', $this->mcontents);
@@ -587,14 +717,6 @@ function purge_test_data() {
 			loadTemplate('survey/data');
 		}
 
-	}
-
-	function sync_demo_data() {
-		$this->db->where('pushed_to_main', 0);
-		$this->db->where('id', 17);
-		foreach($this->db->get('temporary_survey')->result() AS $oItem) {
-			$this->survey_model->createSurvey($oItem->id);
-		}
 	}
 
 }

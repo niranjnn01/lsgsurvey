@@ -11,98 +11,62 @@ class Developer extends CI_Controller {
 		$this->load->model('common_model');
 	}
 
+	function complete_survey() {
 
-	public function temporary_data_to_delete() {
 
-		$this->db->where('id', 6);
-		$aRow = $this->db->get('temporary_survey')->row();
 
-		$aData = unserialize($aRow->raw_data);
+				$bProceed = TRUE;
 
-		$aData['surveyee_users']['is_member_political_party'] = 0;
-		$aData['surveyee_users']['is_memeber_socio_cultural_organization'] = 0;
-		$aData['surveyee_users']['is_member_library'] = 0;
+				$sErrorMessage = '';
+				$aJsonData = array('error' => '');
 
-		$aData['TEMP']['HAS_DOMESTIC_ANIMALS'] = 0;
-		$aData['ward_sabha_participation']['status'] = 0;
-		$aData['ward_sabha_participation']['is_satisfied'] = 0;
+				// if all ok, then proceed to save Survey Data.
+				if($bProceed) {
 
-		$aData['family_pet_map']['has_license'] = 0;
 
-/*
-		p($aData);
-		exit;
-*/
+					$iTemporarySurveyNumber = 1;
 
-		$this->db->where('id', 6);
-		$this->db->set('raw_data', serialize($aData));
-		$aRow = $this->db->update('temporary_survey');
+					$this->load->model('survey_model_new');
 
-//		p($aData);
+					$aJsonData['survey_id'] = $this->survey_model_new->createSurvey($iTemporarySurveyNumber);
+
+					if($sErrorMessage) {
+						$aJsonData['error'] = $sErrorMessage;
+					} else {
+						$aJsonData['success'] = '1';
+					}
+
+				}
+
+
+
+
 	}
 
+	function preview_data($iTemporarySurveyId) {
 
+		$this->db->where('id', $iTemporarySurveyId);
+		$this->mcontents['oRow'] = $this->db->get('temporary_survey')->row();
 
-
-	function clear_uploads() {
-
-		$this->load->helper('upload_queue');
-		clearUploadQueue();
+		loadTemplate('survey/preview_data');
+		//p( unserialize($oRow->general_data) );
 	}
 
-	function upload() {
-
-		log_message('error', p($_POST, true));
-	}
-
-	function incoming_file() {
-
-		log_message('error', p($_POST, true));
-	}
-
-
-	function address_test() {
-
-		$this->load->helper('address');
-		$this->load->config('address_config');
-
-
-		$this->mcontents['page_heading'] = $this->mcontents['page_title'] 		= '';
-
-		$this->load->model('address_model');
-		$this->mcontents['oAddressItemForEdit'] = $this->address_model->get_address_and_contact_numbers(28614764);
-
-		if( isset($_POST) && ! empty($_POST) ) {
-
-			//p($_POST);
-
-
-
-			$this->address_model->update_address_and_contact_numbers($this->mcontents['oAddressItemForEdit']);
-
+	function sync_demo_data() {
+		$this->db->where('pushed_to_main', 0);
+		$this->db->where('id', 17);
+		foreach($this->db->get('temporary_survey')->result() AS $oItem) {
+			$this->survey_model->createSurvey($oItem->id);
 		}
-
-		$this->mcontents['sAddressCreateForm'] = getAddressCreateForm();
-
-		//$this->mcontents['oAddressDetails'] = $this->address_model->getAddressDetails(28614764);
-
-
-
-
-
-		//p($this->mcontents['oAddressItemForEdit']);
-
-		$this->mcontents['sAddressUpdateForm'] = getAddressUpdateForm(28614764);
-
-		loadTemplate('developer/address_test');
 	}
 
 
-	function google_maps(){
+function question_master_data() {
 
+	
+	p($this->question_model->getQuestionMasterData());
+}
 
-		$this->load->view('developer/google_maps');
-	}
 
 
 	function show_log() {
@@ -123,9 +87,6 @@ class Developer extends CI_Controller {
 		redirect('developer/show_log');
 	}
 
-    function phpinfo() {
-        phpinfo();
-    }
 }
 
 /* End of file developer.php */

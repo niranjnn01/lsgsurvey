@@ -1706,12 +1706,16 @@
 		}
 
 	}
-	
-	
-	function getQuestionAnswer($field_name, $aAnswerIds){
+
+
+	function getQuestionAnswer($field_name, $aAnswerIds, $sSearchBy='field_name'){
 		$CI = & get_instance();
-		$questions_master_data = $CI->config->item('questions_master_data');
-		$aQuestionId = array_column($questions_master_data, 'field_name');
+
+		$CI->load->model('question_model');
+
+		$questions_master_data = $CI->question_model->getQuestionMasterData();
+
+		$aQuestionId = array_column($questions_master_data, $sSearchBy);
 		$iQuestionId = array_search( $field_name, $aQuestionId) + 1;
 		$aAnswers	= [];
 		if(!is_array($aAnswerIds)){
@@ -1725,12 +1729,16 @@
 		}
 		return implode(', ', $aAnswers);
 	}
-	
-	function getQuestionText($field_name){
+
+	function getQuestionText($field_name, $sSearchBy='field_name', $bTesting = false){
 		$CI = & get_instance();
-		$questions_master_data = $CI->config->item('questions_master_data');
-		$aQuestionId = array_column($questions_master_data, 'field_name');
+		$CI->load->model('question_model');
+
+		$questions_master_data = $CI->question_model->getQuestionMasterData();
+
+		$aQuestionId = array_column($questions_master_data, $sSearchBy);
+		if($bTesting) {p($aQuestionId);}
 		$iQuestionId = array_search( $field_name, $aQuestionId) + 1;
-		
+
 		return $questions_master_data[$iQuestionId]['title'];
 	}
