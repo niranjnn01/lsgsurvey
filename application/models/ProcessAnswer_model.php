@@ -1,5 +1,5 @@
 <?php
-class Processanswer_model extends CI_Model{
+class ProcessAnswer_model extends CI_Model{
 
 	function __construct(){
 		parent::__construct();
