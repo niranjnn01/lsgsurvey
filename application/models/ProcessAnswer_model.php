@@ -27,7 +27,7 @@ class Processanswer_model extends CI_Model{
 
 		$this->load->model('question_model');
 
-		$questions_master_data = $CI->question_model->getQuestionMasterData();
+		$questions_master_data = $this->question_model->getQuestionMasterData();
 
 		//$questions_master_data 	= $this->config->item('questions_master_data');
 		$answer_types_details	= $this->config->item('answer_types_details');
@@ -40,66 +40,84 @@ class Processanswer_model extends CI_Model{
 
 			$aData = unserialize($oTemporarySurvey->raw_data);
 
-			$aInput = array();
-			// populate user data
-			$aInput['name'] 						= safeText('name');
-			$aInput['gender'] 					= safeText('gender');
-			$aInput['aadhar_id'] 			= safeText('aadhaar_no');
-			$aInput['election_id'] 		= safeText('election_id');
-			$aInput['mobile_number'] 	= safeText('mobile_no');
-			$aInput['email_id'] 				= safeText('email');
-			$aInput['whatsapp_number'] = safeText('whatsapp_no');
-			$aInput['employment_category'] = safeText('employment_category');
-			$aInput['educational_qualification'] = safeText('educational_qualification');
+			//log_message('error', print_r($_POST, true));
+			//exit;
 
-			// reservation
-			if(safeText('reservation') == $this->aReservationCategories['scst']) {
-				$aInput['is_scst'] = 1;
-			} elseif(safeText('reservation') == $this->aReservationCategories['obc']) {
-				$aInput['is_obc'] = 1;
+			//log_message('error', 'surveyee_users_new : ' . print_r($aData['surveyee_users_new'], true));
+
+			$aNewDataSet = [];
+
+			foreach($_POST AS $aItem) {
+
+
+				$aInput = array();
+				// populate user data
+				$aInput['name'] 						= safeText($aItem['name'], false, '', TRUE);
+				$aInput['gender'] 					= safeText($aItem['gender'], false, '', TRUE);
+				$aInput['aadhar_id'] 			= safeText($aItem['aadhaar_no'], false, '', TRUE);
+				$aInput['election_id'] 		= safeText($aItem['election_id'], false, '', TRUE);
+				$aInput['mobile_number'] 	= safeText($aItem['mobile_no'], false, '', TRUE);
+				$aInput['email_id'] 				= safeText($aItem['email'], false, '', TRUE);
+				$aInput['whatsapp_number'] = safeText($aItem['whatsapp_no'], false, '', TRUE);
+				$aInput['employment_category'] = safeText($aItem['employment_category'], false, '', TRUE);
+				$aInput['educational_qualification'] = safeText($aItem['educational_qualification'], false, '', TRUE);
+
+				// reservation
+				if(safeText($aItem['reservation'], false, '', TRUE) == $this->aReservationCategories['scst']) {
+					$aInput['is_scst'] = 1;
+				} elseif(safeText($aItem['reservation'], false, '', TRUE) == $this->aReservationCategories['obc']) {
+					$aInput['is_obc'] = 1;
+				}
+
+				// head of family
+				$aInput['is_head_of_house'] = safeText($aItem['is_head_of_house'], false, '', TRUE) == 1 ? 1 : 0;
+
+				//relationship with head of family
+				if( ! $aInput['is_head_of_house'] ) {
+					$aInput['relationship_to_head_of_house'] = safeText($aItem['relationship_to_head_of_house'], false, '', TRUE);
+				}
+
+
+							//to do
+				/*
+							$aInput['date_of_birth'] = safeText('date_of_birth');
+							$aInput['marital_status'] = safeText('marital_status');
+							$aInput['has_passport'] = safeText('has_passport');
+							$aInput['has_bank_account'] = safeText('has_bank_account');
+							$aInput['has_driving_license'] = safeText('has_driving_license');
+							$aInput['blood_group'] = safeText('blood_group');
+							$aInput['has_pension'] = safeText('has_pension');
+							$aInput['has_insurance'] = safeText('has_insurance');
+				*/
+
+				$aNormalizedInput = array(
+					'name' => '',
+					'gender' => NULL,
+					'aadhar_id' => '',
+					'election_id' => '',
+					'mobile_number' => '',
+					'email_id' => '',
+					'whatsapp_number' => '',
+					'employment_category' => NULL,
+					'educational_qualification' => NULL,
+					'is_head_of_house' => NULL,
+					'relationship_to_head_of_house' => NULL,
+					'reservation' => NULL,
+				);
+
+				$aInput = array_merge($aNormalizedInput, $aInput);
+
+				$aNewDataSet[] = $aInput;
 			}
 
-			// head of family
-			$aInput['is_head_of_house'] = safeText('is_head_of_house') == 1 ? 1 : 0;
 
-			//relationship with head of family
-			if( ! $aInput['is_head_of_house'] ) {
-				$aInput['relationship_to_head_of_house'] = safeText('relationship_to_head_of_house');
-			}
+			//log_message('error', 'aNewDataSet : ' . print_r($aNewDataSet, true));
 
+			// overwirite any existing data and store the new set of informations.
+			$aData['surveyee_users_new'] = $aNewDataSet;
 
-			$aNormalizedInput = array(
-				'name' => '',
-			  'gender' => NULL,
-			  'aadhar_id' => '',
-			  'election_id' => '',
-			  'mobile_number' => '',
-			  'email_id' => '',
-			  'whatsapp_number' => '',
-			  'employment_category' => NULL,
-			  'educational_qualification' => NULL,
-			  'is_head_of_house' => NULL,
-			  'relationship_to_head_of_house' => NULL,
-				'reservation' => NULL,
-			);
+			// verify, that there is a head of family, and that there is only one head of family
 
-			$aInput = array_merge($aNormalizedInput, $aInput);
-
-
-
-			//to do
-/*
-			$aInput['date_of_birth'] = safeText('date_of_birth');
-			$aInput['marital_status'] = safeText('marital_status');
-			$aInput['has_passport'] = safeText('has_passport');
-			$aInput['has_bank_account'] = safeText('has_bank_account');
-			$aInput['has_driving_license'] = safeText('has_driving_license');
-			$aInput['blood_group'] = safeText('blood_group');
-			$aInput['has_pension'] = safeText('has_pension');
-			$aInput['has_insurance'] = safeText('has_insurance');
-*/
-
-			$aData['surveyee_users_new'][] = $aInput;
 
 			$this->updateTemporaryTable($this->iEnumeratorAccountNo, $aData, 'raw_data' );
 

@@ -83,72 +83,35 @@ class Question extends CI_Controller {
 
 			$aQuestionsMasterData = $this->question_model->getQuestionMasterData();
 
-			/*
-			$oTemporarySurvey = $this->survey_model->getCurrentTemporarySurvey();
+			// Is this the last question ?
+			//$bIsLastQuestion = $iQuestionNo == count($aQuestionsMasterData) ? TRUE : FALSE;
+			$bIsLastQuestion = $this->survey_model->isLastQuestion($iQuestionNo);
 
-			$iTemporarySurveyNumber = $oTemporarySurvey->id;
-			$this->db->where('id', $iTemporarySurveyNumber);
+			if(isset($aQuestionsMasterData[$iQuestionNo])) {
 
-			if($oSurveyData = $this->db->get('temporary_survey')->row()) {
+				//get the question data
+				$aQuestionData = $aQuestionsMasterData[$iQuestionNo];
 
-				$aRawData	= unserialize($oSurveyData->raw_data);
-				echo '<pre>';
-				print_r($aRawData[$aQuestionsMasterData[$iQuestionNo]['table_name']][$aQuestionsMasterData[$iQuestionNo]['field_name']]);
-				exit;
-			}
+				// normalize the question data
+				$this->load->model('question_model');
+				$aQuestionData = $this->question_model->normalizeQuestion($aQuestionData);
 
-			*/
-	/*
-				$aQuestionsMasterData = array(
-					1 => array(
-						'title' => 'Name of Head of Family',
-						'answer_type' => $this->aAnswerTypes['single_value_text'],
-						'answer_options' => array(),
-					),
-					2 => array(
-						'title' => 'Nature of ownership of house',
-						'answer_type' => $this->aAnswerTypes['single_value_radio'],
-						'answer_options' => array(
-							array(
-								'value' => 1,
-								'title' => 'Own House'
-							),
-							array(
-								'value' => 2,
-								'title' => 'Rental'
-							),
-						),
-					),
+				// add custom fields
+				$aQuestionData['question_count']	= count($aQuestionsMasterData);
+				$aQuestionData['question_no']		= $iQuestionNo;
+				$aQuestionData['end_of_section']	= false;
+				$aQuestionData['last_question'] 	= $bIsLastQuestion;
 
-				);
-*/
-
-				// Is this the last question ?
-				//$bIsLastQuestion = $iQuestionNo == count($aQuestionsMasterData) ? TRUE : FALSE;
-				$bIsLastQuestion = $this->survey_model->isLastQuestion($iQuestionNo);
-
-
-				if(isset($aQuestionsMasterData[$iQuestionNo])) {
-
-					//get the question data
-					$aQuestionData = $aQuestionsMasterData[$iQuestionNo];
-
-					// normalize the question data
-					$this->load->model('question_model');
-					$aQuestionData = $this->question_model->normalizeQuestion($aQuestionData);
-
-					// add custom fields
-					$aQuestionData['question_count']	= count($aQuestionsMasterData);
-					$aQuestionData['question_no']		= $iQuestionNo;
-					$aQuestionData['end_of_section']	= false;
-					$aQuestionData['last_question'] 	= $bIsLastQuestion;
-
-					// encode the data
-					$sJsonData = json_encode($aQuestionData);
-
-				} else {
-					$sError = 'question not found';
+				if( isset($aQuestionData['question_template']) && !empty($aQuestionData['question_template']) ) {
+					$aQuestionData['question_form_body'] = $this->load->view($aQuestionData['question_template'], $aQuestionData, TRUE);
 				}
+
+				// encode the data
+				$sJsonData = json_encode($aQuestionData);
+
+			} else {
+				$sError = 'question not found';
+			}
 
 		}
 

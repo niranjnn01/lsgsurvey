@@ -328,7 +328,6 @@ class User extends CI_Controller {
 
 		    if (!empty($_POST)) {
 
-
 				$this->form_validation->set_rules('username', 'Username', 'trim|required');
 				$this->form_validation->set_rules('password','Password', 'trim|required');
 				if ($this->form_validation->run() == TRUE) {
@@ -336,12 +335,6 @@ class User extends CI_Controller {
 					$post_data['password']	= $this->authentication->encryptPassword(safeText ('password'));
 					$login_details			= $this->authentication->process_login ($post_data);
 
-					/*
-					p($login_details);
-					echo "<br/>";
-					var_dump($login_details);
-					exit;
-					*/
 
 					if('' == $login_details['error']) {
 
@@ -357,16 +350,17 @@ class User extends CI_Controller {
 							sf('success_message', $login_details['message']);
 						}
 
-
+/*
 						if($this->authentication->is_admin_logged_in()){
 
-								redirect('user/listing');
+								redirect('admin');
 
 						}else{
-							
+
 								redirect('survey');
-								
+
 						}
+*/
 
 						// See if the user needs to be redirected to a previous page he was seeying
 						// redirect the users to the link which they were trying to access
@@ -443,7 +437,7 @@ class User extends CI_Controller {
 				$aConfig = array(
 								'table' => 'users',
 								'field' => 'account_no',
-							);																	
+							);
 				$post_data['mobile_number'] = safeText('mobile_number');
 				$post_data['username'] 		= safeText('mobile_number');
 				$post_data['account_no']	= $this->common_model->generateUniqueNumber($aConfig);
@@ -455,7 +449,7 @@ class User extends CI_Controller {
 				$post_data['type']			= $this->aUserTypes['enumerator'];
 				$post_data['joined_on']		= date('Y-m-d H:i:s');
 				$post_data['mobile_verification_status']		= $this->mcontents['aUserMobileVerificationStatus']['no_sms_verification_done'];
-				$post_data['initial_setup_complete']	= 1; 
+				$post_data['initial_setup_complete']	= 1;
 
 
 
@@ -476,7 +470,7 @@ class User extends CI_Controller {
 
 						//Assign default profile image for user
 						$this->account_model->createProfilePicture($oUser);
-						
+
 						/*
 						// create address and contact number
 						$bByPassAddressValidation = TRUE;
@@ -513,7 +507,7 @@ class User extends CI_Controller {
 
 
 		$this->mcontents['aGenders'] 	= $this->aGenders;//array_flip($this->aGenders);
-		
+
 		loadAdminTemplate('user/create', $this->mcontents);
 	}
 
@@ -750,7 +744,7 @@ function register() {
 
 
 	function _validate_create_user() {
-		$this->form_validation->set_rules ('mobile_number','Mobile Number', 'trim|required');		
+		$this->form_validation->set_rules ('mobile_number','Mobile Number', 'trim|required');
 		$this->form_validation->set_rules ('first_name','First Name', 'trim|required');
 		$this->form_validation->set_rules ('last_name','Last Name', 'trim');
 		$this->form_validation->set_rules ('gender','Gender', 'trim|required');

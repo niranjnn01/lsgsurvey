@@ -97,6 +97,8 @@ $config['questions_master_data'] = array(
 		'answer_options'=> array(),
     'uid' => 1,
     'question_type' => $config['question_types']['group'],
+    'question_template' => 'question/tpl_family_member_details',
+    'multiple_answer_sets' => TRUE,
     'questions' => array(
       array(
     		'title' 		=> 'പേര്',
@@ -107,7 +109,7 @@ $config['questions_master_data'] = array(
     		'answer_type' 	=> $config['answer_types']['single_value_text'],
     	),
       array(
-    		'title' 		=> 'സ്ത്രീ / പുരുഷൻ ',
+    		'title' 		=> 'സ്ത്രീ / പുരുഷൻ',
     		'field_name' 	=> 'gender',
     		'table_name'	=> 'surveyee_users',
     		'group_id'		=> 1,
@@ -194,17 +196,23 @@ $config['questions_master_data'] = array(
 
 
       array(
-        'title' 		=> 'ഗൃഹനാഥൻ / നാഥയാണോ',
+        'title' 		=> 'ഗൃഹനാഥൻ / ഗൃഹനാഥയാണോ',
         'field_name' 	=> 'is_head_of_house',
         'table_name'	=> '',
         'group_id'		=> 2,
         'uid' => 10,
-        'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
+        'answer_type' 	=> $config['answer_types']['single_value_select'],
         'answer_options'=> array(
-          array(
-            'value' => 1,
-            'title' => '',
-          )
+          'answer_options'=> array(
+              array(
+                'value' => 1,
+                'title' => 'അതെ',
+              ),
+              array(
+                'value' => 2,
+                'title' => 'അല്ലാ',
+              ),
+          ),
         ),
       ),
 
@@ -252,7 +260,14 @@ $config['questions_master_data'] = array(
   				'value' => 8,
   				'title' => 'മകൾ',
   			  ),
-
+          array(
+          'value' => 9,
+          'title' => 'ഭാര്യ',
+          ),
+          array(
+          'value' => 10,
+          'title' => 'ഭർത്താവ്',
+          ),
         ),
       ),
 
@@ -858,7 +873,7 @@ $config['questions_master_data'] = array(
 		),
 	),
 	array(
-		'title' 		=> 'ഇല്ലെങ്കിൽ എന്തുകൊണ്ട്?',
+		'title' 		=> 'വാർഡ് സഭകളിൽ പങ്കെടുക്കാറില്ല എങ്കില്‍ എന്തുകൊണ്ട്?',
 		'field_name' 	=> 'reason',
 		'table_name'	=> 'ward_sabha_participation',
 		'master_field'	=> 'surveyee_user_id',
@@ -1114,8 +1129,8 @@ $config['questions_master_data'] = array(
 	),
 	array(
 		'title' 		=> 'അടുത്തുള്ള ഓട്ടോ സ്റ്റാൻദിലേക്ക്  എത്താൻ എടുക്കുന്ന സമയം',
-		'field_name' 	=> 'time_to_get_to_autostand',
-		'table_name'	=> 'TEMP',
+		'field_name' 	=> 'nearest_auto_stand_access_time',
+		'table_name'	=> 'houses',
 		'master_field'	=> 'house_id',		// need to hard code public_utility_id = 4 of autorikshaw stand
 		'group_id'		=> 6,
     'uid' => 50,
@@ -1261,7 +1276,7 @@ $config['questions_master_data'] = array(
 	),
 	array(
 		'title' 		=> 'അഴുകിച്ചേരുന്ന ഖരമാലിന്യം എന്ത് ചെയ്യുന്നു',
-		'field_name' 	=> 'solution_id',
+		'field_name' 	=> 'biodegradable_solution_id',
 		'table_name'	=> 'house_biodegradable_waste_management_solution_map',
 		'master_field'	=> 'house_id',
 		'group_id'		=> 8,
@@ -1280,11 +1295,11 @@ $config['questions_master_data'] = array(
 	),
   array(
 		'title' 		=> 'അഴുകി ചേരാത്ത മാലിന്യങ്ങൾ എന്ത് ചെയ്യുന്നു',
-		'field_name' 	=> 'solution_id',
+		'field_name' 	=> 'nonbiodegradable_solution_id',
 		'table_name'	=> 'house_nonbiodegradable_waste_management_solution_map',
 		'master_field'	=> 'house_id',
 		'group_id'		=> 8,
-    'uid' => 55,
+    'uid' => 56,
 		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
 		'answer_options'=> array(
 			array(
@@ -1306,7 +1321,7 @@ $config['questions_master_data'] = array(
 		'field_name' 	=> 'is_electrified',
 		'table_name'	=> 'houses',
 		'group_id'		=> 9,
-    'uid' => 56,
+    'uid' => 57,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
 		'answer_options'=> array(
 			array(
@@ -1325,7 +1340,7 @@ $config['questions_master_data'] = array(
 		'table_name'	=> 'family_domestic_fuel_type_map',
 		'master_field'	=> 'house_id',
 		'group_id'		=> 9,
-    'uid' => 57,
+    'uid' => 58,
 		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
 		'answer_options'=> array(
 			array(
@@ -1357,7 +1372,7 @@ $config['questions_master_data'] = array(
     'table_name'	=> 'family_pet_map',
     'master_field'	=> 'family_id',
     'group_id'		=> 10,
-    'uid' => 58,
+    'uid' => 59,
     'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
     'answer_options'=> array(
       array(
@@ -1381,7 +1396,7 @@ $config['questions_master_data'] = array(
     'table_name'	=> 'family_pet_map',
     'master_field'	=> 'family_id|pet_id',
     'group_id'		=> 10,
-    'uid' => 59,
+    'uid' => 60,
     'answer_type' 	=> $config['answer_types']['single_value_select'],
     'answer_options'=> array(
       array(
@@ -1401,7 +1416,7 @@ $config['questions_master_data'] = array(
 		'table_name'	=> 'family_livestock_map',
 		'master_field'	=> 'family_id',
 		'group_id'		=> 10,
-    'uid' => 60,
+    'uid' => 61,
 		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
 		'answer_options'=> array(
 			array(
@@ -1436,8 +1451,8 @@ $config['questions_master_data'] = array(
 		'field_name' 	=> 'has_agriculture',
 		'table_name'	=> 'families',
 		'group_id'		=> 11,
-    'uid' => 61,
-		'answer_type' 	=> $config['answer_types']['single_value_select'],
+    'uid' => 62,
+		'answer_type' 	=> $config['answer_types']['single_value_radio'],
 		'answer_options'=> array(
 			array(
         		'value' => 1,
@@ -1455,7 +1470,7 @@ $config['questions_master_data'] = array(
   		'field_name' 	=> 'agriculture_location_id',
   		'table_name'	=> 'family_agriculture_location_map',
   		'group_id'		=> 11,
-      'uid' => 62,
+      'uid' => 63,
   		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
   		'answer_options'=> array(
   			array(
@@ -1475,7 +1490,7 @@ $config['questions_master_data'] = array(
 		'table_name'	=> 'land_fruit_tree_map',
     'master_field'	=> 'land_id',
 		'group_id'		=> 12,
-    'uid' => 63,
+    'uid' => 64,
 		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
 		'answer_options'=> array(
 
@@ -1507,7 +1522,7 @@ $config['questions_master_data'] = array(
   'table_name'	=> 'land_cash_crop_map',
   'master_field'	=> 'land_id',
   'group_id'		=> 12,
-  'uid' => 64,
+  'uid' => 65,
   'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
   'answer_options'=> array(
 
@@ -1542,7 +1557,7 @@ $config['questions_master_data'] = array(
 		'field_name' 	=> 'bank_account_type_id',
 		'table_name'	=> 'surveyee_user_bank_account_type_map',
 		'group_id'		=> 13,
-    'uid' => 65,
+    'uid' => 66,
 		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
 		'answer_options'=> array(
 			array(
@@ -1564,7 +1579,7 @@ $config['questions_master_data'] = array(
 		'field_name' 	=> 'has_credit_or_debit_card',
 		'table_name'	=> 'surveyee_users',
 		'group_id'		=> 13,
-    'uid' => 66,
+    'uid' => 67,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
 		'answer_options'=> array(
 			array(
@@ -1582,7 +1597,7 @@ $config['questions_master_data'] = array(
 		'field_name' 	=> 'has_internet_banking',
 		'table_name'	=> 'surveyee_users',
 		'group_id'		=> 13,
-    'uid' => 67,
+    'uid' => 68,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
 		'answer_options'=> array(
 			array(
@@ -1600,7 +1615,7 @@ $config['questions_master_data'] = array(
 		'field_name' 	=> 'has_mobile_banking',
 		'table_name'	=> 'surveyee_users',
 		'group_id'		=> 13,
-    'uid' => 68,
+    'uid' => 69,
 		'answer_type' 	=> $config['answer_types']['single_value_radio'],
 		'answer_options'=> array(
 			array(
@@ -1619,7 +1634,7 @@ $config['questions_master_data'] = array(
 		'field_name' 	=> 'investment_type_id',
 		'table_name'	=> 'surveyee_user_investment_type_map',
 		'group_id'		=> 13,
-    'uid' => 69,
+    'uid' => 70,
 		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
 		'answer_options'=> array(
 			array(
@@ -1654,7 +1669,7 @@ $config['questions_master_data'] = array(
 		'field_name' 	=> 'loan_purpose_id',
 		'table_name'	=> 'family_loan_purpose_map',
 		'group_id'		=> 13,
-    'uid' => 70,
+    'uid' => 71,
 		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
 		'answer_options'=> array(
 			array(
@@ -1679,9 +1694,9 @@ $config['questions_master_data'] = array(
 	array(
 		'title' 		=> 'കടമെടുത്തിട്ടുള്ളത്',
 		'field_name' 	=> 'loan_source_id',
-		'table_name'	=> 'surveyee_user_loan_sources_map',
+		'table_name'	=> 'family_loan_sources_map',
 		'group_id'		=> 13,
-    'uid' => 71,
+    'uid' => 72,
 		'answer_type' 	=> $config['answer_types']['multi_value_checkbox'],
 		'answer_options'=> array(
 			array(

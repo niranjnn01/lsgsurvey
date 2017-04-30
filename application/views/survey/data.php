@@ -1,16 +1,16 @@
 
 <h4>സർവ്വേ വിവരങ്ങൾ</h4>
-<div class="row">
+<div class="row" style="font-size:11px;">
 
 	<div class="col-md-4">
 
 		<h5><b>സ്ഥലം</b></h5>
 		<table class="table">
-			<!--<tr>
+			<tr>
 				<td>Survey ID :</td>
 				<td><?php echo $oSurveyData->id;?></td>
 			</tr>
-            -->
+
 			<tr>
 				<td>വിവരശേഖരണം:</td>
 				<td><?php echo $oSurveyData->enumerator_name;?></td>
@@ -34,10 +34,15 @@
 		<table class="table">
 
 			<tr>
-				<td>പേര്:</td>
-				<td>
+				<td class="col-xs-4">പേര്:</td>
+				<td class="col-xs-8">
 						<?php echo $oUserPersonalData->name;?>
-						(<?php echo getQuestionAnswer('gender', $oUserPersonalData->gender);?>)
+
+						(<?php
+							$aGenders = array(1=> 'സ്ത്രീ', 2=> 'പുരുഷൻ');
+							echo $aGenders[$oUserPersonalData->gender];
+						?>)
+
 				</td>
 			</tr>
 
@@ -165,9 +170,22 @@
 				<td><?php echo getQuestionText('ration_card_type_id');?></td>
 				<td><?php echo getQuestionAnswer('ration_card_type_id', $oHouseData->ration_card_type_id);?></td>
 			</tr>
+
 			<tr>
 				<td>വീടിൻ്റെ ഉടമസ്ഥത:</td>
-				<td><?php echo $oHouseData->sResidenceType?></td>
+				<td><?php
+				if($oHouseData->owner_id) {
+					echo 'സ്വന്തം';
+				} else {
+					echo 'സ്വന്തം അല്ലാ';
+				}?>
+				</td>
+			</tr>
+
+			<tr>
+				<td>വീട്ടിലെ താമസം:</td>
+				<td>
+					<?php echo $oHouseData->sResidenceType?></td>
 			</tr>
 
 			<tr>
@@ -197,7 +215,10 @@
 
 			<tr>
 				<td>വീടിൻ്റെ തറ</td>
-				<td><?php echo getQuestionAnswer('floor_type_id', $oHouseData->floor_type_id);?></td>
+				<td>
+					<?php //p($oHouseData);?>
+					<?php echo getQuestionAnswer('floor_type_id', $oHouseData->aFloorTypes);?>
+				</td>
 			</tr>
 
             <tr>
@@ -227,15 +248,8 @@
 				<td><?php echo getQuestionText('road_type_id');?></td>
 				<td><?php echo getQuestionAnswer('road_type_id', $oHouseData->sHomeRoadMap);?></td>
 			</tr>
-      <tr>
 
-				<td><?php echo getQuestionText('public_utility_id');?></td>
-				<td>
-					<?php echo isset($oHouseData->aHomeUtilityProximity[4]) ? $oHouseData->aHomeUtilityProximity[4] .' മീറ്റർ': '';?>
-					<?php echo getQuestionAnswer('public_utility_id', array_values($oHouseData->aHomeUtilityServices));?>
-				</td>
-			</tr>
-            <tr>
+      <tr>
 				<td><?php echo getQuestionText('public_utility_id');?></td>
 				<td><?php echo getQuestionAnswer('public_utility_id', $oHouseData->aHomeUtilityServices);?>
                 </td>
@@ -245,7 +259,8 @@
 				<td><?php echo getQuestionAnswer('house_water_source_id', $oHouseData->aHomeWaterSources);?>
                 </td>
 			</tr>
-            <tr>
+
+			<tr>
 				<td><?php echo getQuestionText('house_biodegradable_waste_management_solution_map', 'table_name');?></td>
 				<td>
 						<?php echo getQuestionAnswer('house_biodegradable_waste_management_solution_map',
@@ -254,12 +269,23 @@
 																				);?>
         </td>
 			</tr>
-            <tr>
-				<td><?php echo getQuestionText('is_electrified');?></td>
-				<td><?php echo getQuestionAnswer('is_electrified', $oHouseData->is_electrified);?>
-                </td>
+
+			<tr>
+				<td><?php echo getQuestionText('house_nonbiodegradable_waste_management_solution_map', 'table_name');?></td>
+				<td>
+						<?php echo getQuestionAnswer('house_nonbiodegradable_waste_management_solution_map',
+																					$oHouseData->aHomeNonBioDegradableWasteManagementSolutions,
+																					'table_name'
+																				);?>
+				</td>
 			</tr>
-            <tr>
+
+			<tr>
+				<td><?php echo getQuestionText('is_electrified');?></td>
+				<td><?php echo getQuestionAnswer('is_electrified', $oHouseData->is_electrified);?></td>
+			</tr>
+
+			<tr>
 				<td><?php echo getQuestionText('domestic_fuel_type_id');?></td>
 				<td><?php echo getQuestionAnswer('domestic_fuel_type_id', $oFamily->aFamilyDomesticFuelTypes);?>
                 </td>
@@ -278,6 +304,12 @@
             <tr>
                 <td>വീട്ടുപകരണങ്ങൾ</td>
                 <td><?php echo getQuestionAnswer('house_appliance_id', $oHouseData->aHomeAppliances);?></td>
+            </tr>
+
+
+            <tr>
+                <td><?php echo getQuestionText('livestock_id');?></td>
+                <td><?php echo getQuestionAnswer('livestock_id', array_keys($oFamily->aLiveStocks));?></td>
             </tr>
 
             <tr>
@@ -306,6 +338,49 @@
                 <td><?php echo getQuestionText('bank_account_type_id');?></td>
                 <td><?php echo getQuestionAnswer('bank_account_type_id', $oUserPersonalData->aBankAccountTypes);?></td>
             </tr>
+
+						<tr>
+                <td><?php echo getQuestionText('has_credit_or_debit_card');?></td>
+                <td><?php echo getQuestionAnswer('has_credit_or_debit_card', $oUserPersonalData->has_credit_or_debit_card);?></td>
+            </tr>
+
+						<tr>
+								<td><?php echo getQuestionText('has_internet_banking');?></td>
+								<td><?php echo getQuestionAnswer('has_internet_banking', $oUserPersonalData->has_internet_banking);?></td>
+						</tr>
+
+
+						<tr>
+								<td><?php echo getQuestionText('has_mobile_banking');?></td>
+								<td><?php echo getQuestionAnswer('has_mobile_banking', $oUserPersonalData->has_mobile_banking);?></td>
+						</tr>
+
+
+						<tr>
+                <td><?php echo getQuestionText('investment_type_id');?></td>
+                <td><?php echo getQuestionAnswer('investment_type_id', $oUserPersonalData->aInvestmentTypes);?></td>
+            </tr>
+
+
+						<tr>
+								<td><?php echo getQuestionText('loan_purpose_id');?></td>
+								<td><?php echo getQuestionAnswer('loan_purpose_id', $oUserPersonalData->aLoanPurposes);?></td>
+						</tr>
+
+
+						<tr>
+								<td><?php echo getQuestionText('loan_source_id');?></td>
+								<td><?php echo getQuestionAnswer('loan_source_id', $oUserPersonalData->aLoanSources);?></td>
+						</tr>
+
+
+						<tr>
+								<td><?php echo getQuestionText('nearest_auto_stand_access_time');?></td>
+								<td><?php echo getQuestionAnswer('nearest_auto_stand_access_time', $oHouseData->nearest_auto_stand_access_time);?></td>
+						</tr>
+
+
+
 
         </table>
     </div>

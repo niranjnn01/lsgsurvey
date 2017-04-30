@@ -72,7 +72,12 @@
         $aAdminMenuTree = array(
 
 
-
+          array(
+            'section_title' => 'Home',
+                'links' => array(),
+                'url' => $c_base_url . 'home',
+                'opened' => false,
+          ),
 
 	array(
 
@@ -86,7 +91,7 @@
                 'opened' => false
 			),
 
-      
+
 			array(
 				'title' => 'Create Enumerator',
 				'uri' => 'user/create',
@@ -127,13 +132,15 @@
         'opened' => ($sCurrentMainMenu == 'contact_us') ? true : false,
 	),
 */
+
+
+
 	array(
 		'section_title' => 'Logout',
         'links' => array(),
         'url' => $c_base_url . 'logout',
         'opened' => false,
 	),
-
 
 );
 ?>

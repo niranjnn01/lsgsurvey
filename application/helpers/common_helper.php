@@ -1708,7 +1708,7 @@
 	}
 
 
-	function getQuestionAnswer($field_name, $aAnswerIds, $sSearchBy='field_name'){
+	function getQuestionAnswer($field_name, $aAnswerIds, $sSearchBy='field_name',$bTesting = false){
 		$CI = & get_instance();
 
 		$CI->load->model('question_model');
@@ -1716,7 +1716,14 @@
 		$questions_master_data = $CI->question_model->getQuestionMasterData();
 
 		$aQuestionId = array_column($questions_master_data, $sSearchBy);
+		// if($bTesting) {
+		// p($aQuestionId);
+		// }
 		$iQuestionId = array_search( $field_name, $aQuestionId) + 1;
+		// if($bTesting) {
+		// p($iQuestionId);
+		// }
+
 		$aAnswers	= [];
 		if(!is_array($aAnswerIds)){
 			$aAnswerIds = array( 0 => $aAnswerIds);

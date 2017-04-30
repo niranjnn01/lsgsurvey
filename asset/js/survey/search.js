@@ -3,7 +3,7 @@ var base_url = '<?php echo $base_url;?>';
 
 $(document).ready(function(){
 
-  $( "form" ).on( "submit", function( event ) {
+  $( "#searchForm" ).on( "submit", function( event ) {
     event.preventDefault();
 
     var search_url = base_url + 'search/do_search?' + $( this ).serialize()
@@ -17,6 +17,11 @@ $(document).ready(function(){
         $('#search_message').append(data.message);
 
         $('#result_container').html('');
+
+
+        if(data.testing == true) {
+          $('#query_cnt').html(data.query);
+        }
 
         if(data.result) {
 
@@ -73,7 +78,9 @@ $(document).ready(function(){
           });
         }
 
-        $('html, body').animate({scrollTop: '0px'}, 300);
+        $('html, body').animate({scrollTop: $('#result_container').offset().top}, 700);
+        //$('').animate({scrollTop: '0px'}, 300);
+
 
       },
       dataType : "json"

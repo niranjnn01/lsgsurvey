@@ -1,118 +1,151 @@
 
 <div class="row">
-	<div class="col-md-2" style="font-size:11px;">
+	<div class="col-md-12" style="font-size:10px;">
+		<span style="font-size:10px;">* (വ്യക്തിപരമായ വിവരങ്ങൾ ഗ്രഹനാഥൻ / ഗൃഹനാഥയുമായി ബന്ധിപ്പിച്ചിരിക്കുന്നു )</span>
+	</div>
+</div>
+
+<br/>
+<form method="post" id="searchForm">
+<div class="row">
+	<input type="submit" name="submit" value="Click to search" class="btn btn-primary col-md-12"/>
+</div>
 
 
-<form method="post">
+<div class="row" style="font-size:10px;">
+
+		<?php $iNumColumns = 6;?>
+		<?php $aQuestionsUIDs = array(
+							19, 20, 21, 22, 23, 24,
+							25, 26, 29, 32,
+							33, 34, 35, 36,
+							37, 38, 39, 43,
+							44, 45, 47, 48,
+							49, 50, 51,
+							53, 54, 55, 56,
+							57, 58,
+							//60,
+							61,
+							62, 63, 64, 65,
+							66, 67, 68, 69,
+							70, 71
+						);
+		?>
+
+		<?php
+			$iQuestionCount = count($aQuestionsUIDs);
+			$iOffset = 0;
+			$iLength = ceil($iQuestionCount / $iNumColumns);
+		?>
+		<?php for($i = 0; $i < $iNumColumns; ++$i):?>
+
+			<div class="col-md-2">
+
+				<?php
+							//$aQuestionUids = array_chunk($aQuestionsUIDs, ($iQuestionCount / $iNumColumns));
 
 
-		<div class="form-group">
-			<input type="submit" name="submit" value="Click to search" class="btn btn-primary"/>
-		</div>
 
-		<h5><b>വീടിൻ്റെ ഉടമസ്ഥത</b></h5>
-		<div class="radio">
-
-			<label class="radio">
-				<input type="radio" name="house_ownership_type" value="1"/> സ്വന്തം
-			</label>
-			<label class="radio">
-				<input type="radio" name="house_ownership_type" value="2"/> വാടക
-			</label>
-		</div>
-
-		<h5><b>സ്ഥലത്തിൻ്റെ ഉടമസ്ഥത</b></h5>
-		<div class="radio">
-
-			<label class="radio">
-				<input type="radio" name="land_ownership_type" value="1"/> സ്വന്തം
-			</label>
-			<label class="radio">
-				<input type="radio" name="land_ownership_type" value="2"/> പാട്ടം
-			</label>
-			<label class="radio">
-				<input type="radio" name="land_ownership_type" value="3"/> പാരമ്പര്യമായി  കിട്ടിയത്
-			</label>
-		</div>
-
-		<h5><b>വീടിന്റെ വിസ്തീർണം</b></h5>
-		<div class="radio">
-			<label class="radio">
-				<input type="radio" name="house_area_range" value="1"/> 300 ച: അടി വരെ
-			</label>
-			<label class="radio">
-				<input type="radio" name="house_area_range" value="2"/> 300 - 600 ച: അടി
-			</label>
-			<label class="radio">
-				<input type="radio" name="house_area_range" value="3"/> 600 - 1500 ച: അടി
-			</label>
-			<label class="radio">
-				<input type="radio" name="house_area_range" value="4"/> 2000 ച: അടിയ്ക്ക് മുകളിൽ
-			</label>
-		</div>
-
-		<h5><b>വീട് നിൽക്കുന്ന സ്ഥലത്തിന്റെ വിസ്തീർണം</b></h5>
-		<div class="radio">
-			<label class="radio">
-				<input type="radio" name="land_area_range" value="1"/> 3 സെന്റിൽ താഴ
-			</label>
-			<label class="radio">
-				<input type="radio" name="land_area_range" value="2"/> 3 - 5 സെന്റ്
-			</label>
-			<label class="radio">
-				<input type="radio" name="land_area_range" value="3"/> 5 - 10  സെന്റ്
-			</label>
-			<label class="radio">
-				<input type="radio" name="land_area_range" value="4"/> 10 സെന്റിനു മുകളിൽ
-			</label>
-		</div>
-
-		<h5><b>വീടിന്റെ തരം</b></h5>
-		<div class="checkbox">
-			<label class="checkbox">
-				<input type="checkbox" name="house_type[]" value="1"/> കുടിൽ
-			</label>
-			<label class="checkbox">
-				<input type="checkbox" name="house_type[]" value="2"/> ഓല
-			</label>
-			<label class="checkbox">
-				<input type="checkbox" name="house_type[]" value="3"/> ഷീറ്റ്
-			</label>
-			<label class="checkbox">
-				<input type="checkbox" name="house_type[]" value="4"/> ഓട്
-			</label>
-			<label class="checkbox">
-				<input type="checkbox" name="house_type[]" value="5"/> കോൺക്രീറ്റ്
-			</label>
-			<label class="checkbox">
-				<input type="checkbox" name="house_type[]" value="6"/> ആസ്ബറ്റോസ് ഷീറ്റ്
-			</label>
-			<label class="checkbox">
-				<input type="checkbox" name="house_type[]" value="7"/> അലുമിനിയം
-			</label>
-			<label class="checkbox">
-				<input type="checkbox" name="house_type[]" value="8"/> ടിൻ ഷീറ്റ്റ്
-			</label>
-		</div>
+							$aQuestionUids = array_slice($aQuestionsUIDs, $iOffset, $iLength);
+							$iOffset += $iLength;
+							//echo $iOffset, ' - ';
+							//p($iLength);
+							//p($aQuestionUids);exit;
+							//p($aQuestionUids);exit;
+				?>
 
 
-		<div class="form-group">
-			<input type="submit" name="submit" value="Click to search" class="btn btn-primary"/>
-		</div>
+				<?php foreach($aQuestionUids AS $iQuestionUid):?>
+
+					<?php
+
+						if($aQuestionDetails = $this->question_model->getQuestionDetailsByUID($iQuestionUid)) {
+							echo $this->question_model->constructFormRow_forSearch($aQuestionDetails);
+							//echo $iQuestionUid;
+						} else {
+							echo 'Empty question';
+						}
+
+					?>
+
+				<?php endforeach;?>
+
+				<?php if($i == 1):?>
+
+					<h5><b>സംവരണം</b></h5>
+					<div class="radio">
+						<?php
+							$aReservationCategories = array(
+								0 => 'ഇല്ലാ',
+								1 => 'പട്ടികജാതി/വർഗം',
+								2 => 'പിന്നോക്ക സമുദായം'
+							);
+						?>
+						<?php foreach($aReservationCategories AS $iValue => $sTitle):?>
+							<label class="radio">
+								<input type="radio" name="reservation_category" value="<?php echo $iValue;?>"/> <?php echo $sTitle;?>
+							</label>
+						<?php endforeach;?>
+
+					</div>
+
+					<h5><b>മൊബൈൽ നമ്പർ</b></h5>
+					<div class="form-group">
+							<input type="text" name="mobile_number" value="" class="form-control">
+					</div>
+
+				<?php endif;?>
+
+
+
+			</div>
+
+
+		<?php endfor;?>
+
+</div>
+
+<div class="row">
+	<input type="submit" name="submit" value="Click to search" class="btn btn-primary col-md-12"/>
+</div>
 
 </form>
 
 
-	</div>
+<?php /*?>
 
-	<div class="col-md-10">
+		<div class="form-group">
+			<input type="submit" name="submit" value="Click to search" class="btn btn-primary"/>
+		</div>
 
-		<div class="row">
-			<div class="col-md-12">
-				<h5 id="search_message">Submit the search form to see results.<h5>
-			</div>
-		</div>
-		<div id="result_container">
-		</div>
+<?php */?>
+
+
+
+<?php // -------- // ?>
+
+
+
+
+
+
+<div class="row">
+	<div class="col-md-12">
+		<h5 id="search_message">Submit the search form to see results.<h5>
 	</div>
+</div>
+
+<div class="row">
+	<div class="col-md-12">
+
+		<?php if($bTesting):?>
+				<pre>
+					<div id="query_cnt"></div>
+				</pre>
+		<?php endif;?>
+
+	</div>
+</div>
+
+<div id="result_container">
 </div>

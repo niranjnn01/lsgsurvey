@@ -531,7 +531,9 @@ exit;
 				}
 
 				// insert user debit bank type
-				if(isset($aRawData['family_agriculture_location_map']['agriculture_location_id'])
+				if(
+					isset($aRawData['family_agriculture_location_map']['agriculture_location_id'])
+					&& ! empty($aRawData['family_agriculture_location_map']['agriculture_location_id'])
 					&& count($aRawData['family_agriculture_location_map']['agriculture_location_id']) > 0){
 
 					foreach($aRawData['family_agriculture_location_map']['agriculture_location_id'] as $iLocationId){

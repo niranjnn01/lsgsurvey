@@ -11,6 +11,15 @@ class Developer extends CI_Controller {
 		$this->load->model('common_model');
 	}
 
+	function index() {
+		p(s('ACCOUNT_NO'));
+		$this->load->model('survey_model');
+		$oTemporarySurvey = $this->survey_model->getCurrentTemporarySurvey(s('ACCOUNT_NO'));
+		p($this->db->last_query());
+		p($oTemporarySurvey);
+	}
+
+
 	function complete_survey() {
 
 
@@ -26,9 +35,9 @@ class Developer extends CI_Controller {
 
 					$iTemporarySurveyNumber = 1;
 
-					$this->load->model('survey_model_new');
+					$this->load->model('survey_model');
 
-					$aJsonData['survey_id'] = $this->survey_model_new->createSurvey($iTemporarySurveyNumber);
+					$aJsonData['survey_id'] = $this->survey_model->createSurvey($iTemporarySurveyNumber);
 
 					if($sErrorMessage) {
 						$aJsonData['error'] = $sErrorMessage;
@@ -63,7 +72,7 @@ class Developer extends CI_Controller {
 
 function question_master_data() {
 
-	
+
 	p($this->question_model->getQuestionMasterData());
 }
 
@@ -85,6 +94,56 @@ function question_master_data() {
 		$sFileName = 'log-' . date('Y-m-d') . '.php';
 		purge_log($sFileName);
 		redirect('developer/show_log');
+	}
+
+	function truncate_all_data_________use_only_when_neeeded() {
+
+		$aTables = array(
+
+			'families',
+			'family_agriculture_location_map',
+			'family_appliance_map',
+			'family_domestic_fuel_type_map',
+			'family_house_map',
+			'family_livestock_map',
+			'family_loan_purpose_map',
+			'family_loan_sources_map',
+			'family_pet_map',
+			'family_residence_history_map',
+			'family_vehicle_type_map',
+
+			'houses',
+			'house_biodegradable_waste_management_solution_map',
+			'house_floor_type_map',
+			'house_house_type_map',
+			'house_nonbiodegradable_waste_management_solution_map',
+			'house_public_utility_proximity',
+			'house_road_map',
+			'house_tax',
+			'house_water_source_map',
+
+			'lands',
+			'land_cash_crop_map',
+			'land_fruit_tree_map',
+			'land_house_map',
+
+			'surveyee_users',
+			'surveyee_user_bank_account_type_map',
+			'surveyee_user_family_map',
+			'surveyee_user_investment_type_map',
+			'surveyee_user_payment_type_map',
+
+			'surveys',
+
+			'temporary_survey',
+
+			'ward_sabha_participation'
+		);
+
+		foreach($aTables AS $sTableName) {
+			$this->db->truncate($sTableName);
+		}
+
 	}
 
 }

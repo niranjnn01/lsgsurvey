@@ -12,7 +12,7 @@
 				<img src="<?php echo $c_static_image_url;?>ward_map.jpg" width="600" height="350" />
 			</div>
 		</div>
- 
+
 	</div>
 	<div class="col-md-3">
 
