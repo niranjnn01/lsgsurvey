@@ -117,16 +117,16 @@ class Survey extends CI_Controller {
 
 
 
-		$this->load->model('ProcessAnswer_model');
+		$this->load->model('Processanswer_model');
 
 
 
 		if($iQuestionNo == 1) { // people details (family details)
-			list($iAnswerProcessingStatus, $sError) = $this->ProcessAnswer_model->process_Answers_FamilyQuestion($oCurrentTemporarySurvey->id);
+			list($iAnswerProcessingStatus, $sError) = $this->Processanswer_model->process_Answers_FamilyQuestion($oCurrentTemporarySurvey->id);
 		} elseif ($iQuestionNo == 2) { // house address
-			list($iAnswerProcessingStatus, $sError) = $this->ProcessAnswer_model->process_Answers_Address_Question($oCurrentTemporarySurvey->id);
+			list($iAnswerProcessingStatus, $sError) = $this->Processanswer_model->process_Answers_Address_Question($oCurrentTemporarySurvey->id);
 		} else {
-			list($iAnswerProcessingStatus, $sError) = $this->ProcessAnswer_model->processAnswerForQuestion($iQuestionNo);
+			list($iAnswerProcessingStatus, $sError) = $this->Processanswer_model->processAnswerForQuestion($iQuestionNo);
 		}
 
 
