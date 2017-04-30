@@ -4,7 +4,6 @@ class ProcessAnswer_model extends CI_Model{
 	function __construct(){
 		parent::__construct();
 
-
 		$this->iEnumeratorAccountNo = s('ACCOUNT_NO');
 		$this->load->config('survey_config');
 
