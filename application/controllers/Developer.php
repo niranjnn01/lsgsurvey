@@ -11,7 +11,21 @@ class Developer extends CI_Controller {
 		$this->load->model('common_model');
 	}
 
-	function index() {
+
+	function populate_questions_from_config() {
+
+		$this->load->model('question_model');
+
+
+
+		$this->load->model('developer_model');
+		$this->developer_model->populate_questions_from_config();
+
+	}
+
+
+
+	function index_old() {
 		p(s('ACCOUNT_NO'));
 		$this->load->model('survey_model');
 		$oTemporarySurvey = $this->survey_model->getCurrentTemporarySurvey(s('ACCOUNT_NO'));

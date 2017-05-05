@@ -20,6 +20,14 @@ $config['answer_types'] = array(
   'single_value_select' => 5,
 );
 
+$config['form_fields'] = array(
+  'text'      => 1,
+  'radio'     => 2,
+  'checkbox'  => 3,
+  'textarea'  => 4,
+  'select'    => 5,
+);
+
 $config['answer_types_details'] = array(
   1 => array(
               'field_name' => 'single_value_text'

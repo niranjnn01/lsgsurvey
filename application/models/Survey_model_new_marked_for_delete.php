@@ -1,4 +1,4 @@
-<?php
+<?php echo $var ?><?php
 class Survey_model_new extends CI_Model{
 
 	function __construct(){
