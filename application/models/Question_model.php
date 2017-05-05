@@ -172,6 +172,11 @@ class Question_model extends CI_Model{
 		$aAnswerTypesDetails = $this->config->item('answer_types_details');
 		$aAnswerTypes = $this->config->item('answer_types');
 //p($aQuestion);
+
+if( ! isset($aQuestion['answer_type']) ) {
+	p($aQuestion);exit;
+}
+
 		$aNormalizedQuestionStructure = array(
 
 			'title' 								=> '',

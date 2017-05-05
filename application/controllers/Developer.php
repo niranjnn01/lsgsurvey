@@ -14,13 +14,20 @@ class Developer extends CI_Controller {
 
 	function populate_questions_from_config() {
 
-		$this->load->model('question_model');
+
+		$this->db->truncate('questions');
+		$this->db->truncate('question_groups');
+		$this->db->truncate('question_question_group_map');
 
 
+		$this->load->model('QuestionTransfer_model');
 
-		$this->load->model('developer_model');
-		$this->developer_model->populate_questions_from_config();
+		list($aQuestions, $aGroups) = $this->QuestionTransfer_model->transfer();
 
+		$this->mcontents['aGroups'] = $aGroups;
+		$this->mcontents['aQuestions'] = $aQuestions;
+
+		loadTemplate('developer/transfer');
 	}
 
 
