@@ -25,6 +25,9 @@ class Question_model extends CI_Model{
 			$key ++;
 			$aData = $aQuestionsMasterData[$key];
 		}
+		if(!$aData) {
+			p($sUid);
+		}
 
 		//normalize it
 		$aData = $this->normalizeQuestion($aData);
@@ -153,9 +156,10 @@ class Question_model extends CI_Model{
 	 */
 	function getQuestionMasterData() {
 
+
 		// fetch the questions master data.
-		$this->load->config('question_config');
-		$aQuestionsMasterData = array_values($this->config->item('questions_master_data'));
+		$this->load->config('question_master_data_config');
+		$aQuestionsMasterData = array_values($this->config->item('questions_master_data_new'));
 
 		// adding an empty array. to unset later on.
 		array_unshift($aQuestionsMasterData, array());
@@ -171,11 +175,8 @@ class Question_model extends CI_Model{
 		$aQuestionTypes = $this->config->item('question_types');
 		$aAnswerTypesDetails = $this->config->item('answer_types_details');
 		$aAnswerTypes = $this->config->item('answer_types');
-//p($aQuestion);
 
-if( ! isset($aQuestion['answer_type']) ) {
-	p($aQuestion);exit;
-}
+
 
 		$aNormalizedQuestionStructure = array(
 

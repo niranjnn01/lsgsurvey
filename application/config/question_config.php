@@ -1570,11 +1570,11 @@ $config['questions_master_data'] = array(
 		'answer_options'=> array(
 			array(
         		'value' => 1,
-        		'title' => 'സേവിoഗ്‌സ്',
+        		'title' => 'സേവിoഗ്‌സ് അക്കൗണ്ട്',
       		),
 			array(
         		'value' => 2,
-        		'title' => 'കറണ്ട്',
+        		'title' => 'കറണ്ട് അക്കൗണ്ട്',
       		),
 			array(
         		'value' => 3,

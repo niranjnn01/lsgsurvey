@@ -34,6 +34,8 @@ class Survey extends CI_Controller {
 		$this->mcontents['iNextQuestion']	= 1;
 		$this->mcontents['iLastProcessedQuestion']	= 0;
 		$this->mcontents['bIsLastQuestion']	= FALSE;
+		$this->mcontents['sQuestionUname']	= '';
+
 
 		// this has to be moved to another place where the logged in user
 		// chooses to start a new survey
@@ -66,6 +68,7 @@ class Survey extends CI_Controller {
 			$this->mcontents['iNextQuestion']	= $oCurrentSurvey->last_processed_question + 1;
 			$this->mcontents['iLastProcessedQuestion']	= $oCurrentSurvey->last_processed_question;
 			$this->mcontents['bIsLastQuestion']	= $this->survey_model->isLastQuestion($this->mcontents['iNextQuestion']);
+			$this->mcontents['sQuestionUname']	= $oCurrentSurvey->uname;
 //exit;
 
 		} else {
@@ -88,7 +91,7 @@ class Survey extends CI_Controller {
 		$this->mcontents['load_js']['data']['question_groups'] = json_encode($this->config->item('question_groups'));
 
 		$this->mcontents['menu_active']	= 'survey_new';
-		$this->mcontents['load_js'][] = 'survey/survey_manager.js';
+		$this->mcontents['load_js'][] = 'survey/survey_manager_new.js';
 
 
 		loadTemplate('survey/index');

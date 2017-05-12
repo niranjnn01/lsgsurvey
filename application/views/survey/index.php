@@ -69,6 +69,8 @@
 			<input type="hidden" id="current_temporary_survey_last_procesed_question" value="<?php echo $iLastProcessedQuestion;?>" />
 			<input type="hidden" id="current_temporary_survey_is_last_question" value="<?php echo $bIsLastQuestion ? 1 : 0;?>" />
 
+			<input type="hidden" id="current_temporary_survey_current_question_uname" value="<?php echo $sQuestionUname;?>" />
+
 		</form>
 
 	</div>

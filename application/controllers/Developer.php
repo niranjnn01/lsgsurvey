@@ -11,13 +11,32 @@ class Developer extends CI_Controller {
 		$this->load->model('common_model');
 	}
 
+/*
+	function create_option_tables() {
 
+		$this->load->model('QuestionTransfer_model');
+
+		$this->QuestionTransfer_model->deleteOptionTables();
+
+		$this->QuestionTransfer_model->createOptionTables();
+	}
+
+
+	function delete_option_tables() {
+
+		$this->load->model('QuestionTransfer_model');
+		$this->QuestionTransfer_model->deleteOptionTables();
+	}
+*/
+/*
 	function populate_questions_from_config() {
 
 
 		$this->db->truncate('questions');
 		$this->db->truncate('question_groups');
 		$this->db->truncate('question_question_group_map');
+
+		$this->db->truncate('question_multiple_value_answer_option_source');
 
 
 		$this->load->model('QuestionTransfer_model');
@@ -29,8 +48,12 @@ class Developer extends CI_Controller {
 
 		loadTemplate('developer/transfer');
 	}
+*/
 
-
+	function generate_config_array() {
+		$this->load->model('QuestionTransfer_model');
+		$this->QuestionTransfer_model->generateConfigArray();
+	}
 
 	function index_old() {
 		p(s('ACCOUNT_NO'));

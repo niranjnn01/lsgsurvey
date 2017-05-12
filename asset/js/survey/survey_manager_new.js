@@ -21,7 +21,7 @@ $(document).ready(function() {
 
 			temporary_survey_number = $('#current_temporary_survey_number').val();
 			temporary_survey_current_question = $('#current_temporary_survey_next_question').val();
-      temporary_survey_current_question_uname = $('#current_temporary_survey_current_question_uname').val();
+      //temporary_survey_current_question_uname = $('#current_temporary_survey_current_question_uname').val();
 			temporary_survey_last_procesed_question = $('#current_temporary_survey_last_procesed_question').val();
 			temporary_survey_is_last_question = $('#current_temporary_survey_is_last_question').val() == 1 ? true : false;
 
