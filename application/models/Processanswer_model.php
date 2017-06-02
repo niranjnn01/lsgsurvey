@@ -24,6 +24,10 @@ class Processanswer_model
 	 */
 	function process_Answers_FamilyQuestion($iCurrentTemporarySurveyId) {
 
+
+		$iAnswerProcessingStatus = 1;
+		$sError = '';
+
 		$this->load->config('question_config');
 
 		$this->load->model('question_model');
@@ -41,7 +45,7 @@ class Processanswer_model
 
 			$aData = unserialize($oTemporarySurvey->raw_data);
 
-			//log_message('error', print_r($_POST, true));
+			log_message('error', print_r($_POST, true));
 			//exit;
 
 			//log_message('error', 'surveyee_users_new : ' . print_r($aData['surveyee_users_new'], true));
@@ -50,28 +54,48 @@ class Processanswer_model
 
 			foreach($_POST AS $aItem) {
 
-
 				$aInput = array();
+
+        $aTableFieldName_to_FormFieldName_map = array(
+          'name'                      => 'name',
+          'gender'                    => 'gender',
+          'aadhar_id'                 => 'aadhaar_no',
+          'election_id'               => 'election_id',
+          'mobile_number'             => 'mobile_no',
+          'email_id'                  => 'email',
+          'whatsapp_number'           => 'whatsapp_no',
+          'employment_category'       => 'employment_category',
+          'educational_qualification' => 'educational_qualification',
+          //'reservation'               => 'reservation',
+
+          'date_of_birth'             => 'date_of_birth',
+          'marital_status'            => 'marital_status',
+          'has_passport'              => 'has_passport',
+          'has_driving_license'       => 'has_driving_license',
+
+          'has_bank_account'          => 'has_bank_account',
+          'blood_group'               => 'blood_group',
+          'pension_type_id'           => 'pension_type_id',
+          'insurance_type_id'         => 'insurance_type_id'
+        );
+
 				// populate user data
-				$aInput['name'] 						= safeText($aItem['name'], false, '', TRUE);
-				$aInput['gender'] 					= safeText($aItem['gender'], false, '', TRUE);
-				$aInput['aadhar_id'] 			= safeText($aItem['aadhaar_no'], false, '', TRUE);
-				$aInput['election_id'] 		= safeText($aItem['election_id'], false, '', TRUE);
-				$aInput['mobile_number'] 	= safeText($aItem['mobile_no'], false, '', TRUE);
-				$aInput['email_id'] 				= safeText($aItem['email'], false, '', TRUE);
-				$aInput['whatsapp_number'] = safeText($aItem['whatsapp_no'], false, '', TRUE);
-				$aInput['employment_category'] = safeText($aItem['employment_category'], false, '', TRUE);
-				$aInput['educational_qualification'] = safeText($aItem['educational_qualification'], false, '', TRUE);
+				foreach($aTableFieldName_to_FormFieldName_map AS $sTableFieldName => $sFormFieldName) {
+          $aInput[$sTableFieldName] = safeText($aItem[$sFormFieldName], false, '', TRUE);
+        }
+
 
 				// reservation
+				/*
 				if(safeText($aItem['reservation'], false, '', TRUE) == $this->aReservationCategories['scst']) {
 					$aInput['is_scst'] = 1;
 				} elseif(safeText($aItem['reservation'], false, '', TRUE) == $this->aReservationCategories['obc']) {
 					$aInput['is_obc'] = 1;
 				}
+        */
 
 				// head of family
-				$aInput['is_head_of_house'] = safeText($aItem['is_head_of_house'], false, '', TRUE) == 1 ? 1 : 0;
+				$aInput['is_head_of_house'] = safeText($aItem['is_head_of_family'], false, '', TRUE) == 1 ? 1 : 0;
 
 				//relationship with head of family
 				if( ! $aInput['is_head_of_house'] ) {
@@ -79,17 +103,7 @@ class Processanswer_model
 				}
 
 
-							//to do
-				/*
-							$aInput['date_of_birth'] = safeText('date_of_birth');
-							$aInput['marital_status'] = safeText('marital_status');
-							$aInput['has_passport'] = safeText('has_passport');
-							$aInput['has_bank_account'] = safeText('has_bank_account');
-							$aInput['has_driving_license'] = safeText('has_driving_license');
-							$aInput['blood_group'] = safeText('blood_group');
-							$aInput['has_pension'] = safeText('has_pension');
-							$aInput['has_insurance'] = safeText('has_insurance');
-				*/
+
 
 				$aNormalizedInput = array(
 					'name' => '',
@@ -118,14 +132,14 @@ class Processanswer_model
 			$aData['surveyee_users_new'] = $aNewDataSet;
 
 			// verify, that there is a head of family, and that there is only one head of family
+      // to do
 
 
+      //save data to temporary table
 			$this->updateTemporaryTable($this->iEnumeratorAccountNo, $aData, 'raw_data' );
 
 		}
 
-		$iAnswerProcessingStatus = 1;
-		$sError = '';
 		return array($iAnswerProcessingStatus, $sError);
 	}
 
@@ -194,18 +208,26 @@ function process_Answers_Address_Question () {
 
 				$bIsSkippedQuestion = FALSE;
 
+        // get the individual question
+        $aQuestion = $this->question_model->getQuestionDetailsByOrder($iQuestionNo);
+//p($aQuestion);
+/*
 				$this->load->model('question_model');
-				$aQuestionData = $this->question_model->normalizeQuestion($questions_master_data[$iQuestionNo]);
-
+				$aQuestionData = $this->question_model->normalizeQuestion($aQuestion);
+*/
 				$aData = unserialize($oTemporarySurvey->raw_data);
 
+
+
+//p($aQuestion);
+
 				if($bIsSkippedQuestion == TRUE) {
-					$value = $aQuestionData['default_value'];
+					$value = $aQuestion['default_value'];
 				} else {
-					$value = safeText($answer_types_details[$questions_master_data[$iQuestionNo]['answer_type']]['field_name']);
+					$value = safeText($answer_types_details[$aQuestion['answer_type']]['field_name']);
 				}
 
-				$aData[$questions_master_data[$iQuestionNo]['table_name']][$questions_master_data[$iQuestionNo]['field_name']] = $value;
+				$aData[$aQuestion['table_name']][$aQuestion['field_name']] = $value;
 
 				$this->updateTemporaryTable($this->iEnumeratorAccountNo, $aData, 'raw_data' );
 
@@ -215,6 +237,8 @@ function process_Answers_Address_Question () {
 			$sError = '';
 			return array($iAnswerProcessingStatus, $sError);
 		}
+
+
 
 		function updateTemporaryTable($iEnumeratorAccountNo, $aData, $sGroupName ) {
 

@@ -8,6 +8,7 @@
 
 
 </div>
+<div style="height:50px;">  <div>
 <?php /*?>
 <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
 <?php */?>

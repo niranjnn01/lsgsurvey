@@ -88,7 +88,7 @@ function setTemporarySurveyAsCurrent($iTemporarySurveyId, $iEnumeratorAccountNo)
 
 			// get the temporary survey item
 			$this->db->where('id', $iTemporarySurveyNumber);
-			if(!$oSurveyData = $this->db->get('temporary_survey')->row()) {
+			if( ! $oSurveyData = $this->db->get('temporary_survey')->row() ) {
 				$bProceed = FALSE;
 				$aErrors[] = 'No survey data found.';
 			}
@@ -99,13 +99,18 @@ function setTemporarySurveyAsCurrent($iTemporarySurveyId, $iEnumeratorAccountNo)
 				$aRawData	= unserialize($oSurveyData->raw_data);
 				$iWardId 	= $oSurveyData->ward_id;
 
+				// CREATION OF SURVEY SHOULD HAPPEN IN A SINGLE START TRANSACTION
 
-
+				// START TRANSACTION
 				$this->db->trans_start();
 
 				$iHeadOfFamily_iSurveyeeUserId = 0;
 
 				$aFamilyDetails = array();
+				$aPensionDetails_all_users = array();
+				$aInsuranceDetails_all_users = array();
+				$aDiseaseDetails_all_users = array();
+				$aReservationDetails_all_users = array();
 
 				// create the user entity
 				foreach($aRawData['surveyee_users_new'] AS $aSurveyeeUsers) {
@@ -123,11 +128,47 @@ function setTemporarySurveyAsCurrent($iTemporarySurveyId, $iEnumeratorAccountNo)
 
 					}
 
+					//super temporary
+					unset($aSurveyeeUsers['reservation']);
+					$aSurveyeeUsers['date_of_birth'] = '1953-09-13';
+
 					unset($aSurveyeeUsers['is_head_of_house']);
 					unset($aSurveyeeUsers['relationship_to_head_of_house']);
 
+					// pension type mapping
+					if( isset($aSurveyeeUsers['pension_type_id']) && !empty($aSurveyeeUsers['pension_type_id'])) {
+						$aData = ! is_array( $aSurveyeeUsers['pension_type_id'] ) ? (array)$aSurveyeeUsers['pension_type_id'] : $aSurveyeeUsers['pension_type_id'];
+						//p($aData);exit;
+						foreach($aData AS $iPensionTypeId) {
+							$aPensionDetails[] = $iPensionTypeId;
+						}
+						unset($aSurveyeeUsers['pension_type_id']);
+					}
+
+					// insurance type mapping
+					if( isset($aSurveyeeUsers['insurance_type_id']) && !empty($aSurveyeeUsers['insurance_type_id'])) {
+						$aData = ! is_array( $aSurveyeeUsers['insurance_type_id'] ) ? (array)$aSurveyeeUsers['insurance_type_id'] : $aSurveyeeUsers['insurance_type_id'];
+						foreach($aData AS $iInsuranceTypeId) {
+							$aInsuranceDetails[] = $iInsuranceTypeId;
+						}
+						unset($aSurveyeeUsers['insurance_type_id']);
+					}
+
+
+					// reservation mapping
+					if( isset($aSurveyeeUsers['reservation']) && !empty($aSurveyeeUsers['reservation'])) {
+						$aData = ! is_array( $aSurveyeeUsers['reservation'] ) ? (array)$aSurveyeeUsers['reservation'] : $aSurveyeeUsers['reservation'];
+						foreach($aData AS $iReservationId) {
+							$aReservationDetails[] = $iReservationId;
+						}
+						unset($aSurveyeeUsers['reservation']);
+					}
+
+					// To Do
+					// $aDiseaseDetails
+
 					// temporary fix
-					$aSurveyeeUsers['reservation'] = is_null($aSurveyeeUsers['reservation']) ? 0 : $aSurveyeeUsers['reservation'];
+					//$aSurveyeeUsers['reservation'] = is_null($aSurveyeeUsers['reservation']) ? 0 : $aSurveyeeUsers['reservation'];
 
 
 					$aSurveyeeUsers = array_merge($aSurveyeeUsers, $aRawData['surveyee_users']);
@@ -144,6 +185,9 @@ function setTemporarySurveyAsCurrent($iTemporarySurveyId, $iEnumeratorAccountNo)
 					// make a list of family members
 					$aFamilyDetails[] = $aFamilyMemberDetails;
 
+					$aInsuranceDetails_all_users[$iSurveyeeUserId] 		= $aInsuranceDetails;
+					$aPensionDetails_all_users[$iSurveyeeUserId] 			= $aPensionDetails;
+					$aReservationDetails_all_users[$iSurveyeeUserId] 	= $aPensionDetails;
 				}
 
 
@@ -155,41 +199,76 @@ function setTemporarySurveyAsCurrent($iTemporarySurveyId, $iEnumeratorAccountNo)
 				// Build the user-to-family relationship.
 				foreach ($aFamilyDetails as $aFamilyMemberDetails) {
 
-					$this->db->set('surveyee_user_id', $aFamilyMemberDetails['surveyee_user_id']);
-					$this->db->set('relation_type_to_head', $aFamilyMemberDetails['relationship_to_head_of_house']);
-					$this->db->set('is_head', $aFamilyMemberDetails['is_head']);
-					$this->db->set('family_id', $iFamilyId);
-					$this->db->insert('surveyee_user_family_map');
+						$this->db->set('surveyee_user_id', $aFamilyMemberDetails['surveyee_user_id']);
+						$this->db->set('relation_type_to_head', $aFamilyMemberDetails['relationship_to_head_of_house']);
+						$this->db->set('is_head', $aFamilyMemberDetails['is_head']);
+						$this->db->set('family_id', $iFamilyId);
+						$this->db->insert('surveyee_user_family_map');
 
-					if($aFamilyMemberDetails['is_head']) {
-						$iHeadOfFamily_iSurveyeeUserId =  $aFamilyMemberDetails['surveyee_user_id'];
-					}
-
+						if($aFamilyMemberDetails['is_head']) {
+							$iHeadOfFamily_iSurveyeeUserId =  $aFamilyMemberDetails['surveyee_user_id'];
+						}
 				}
 
 
+//p($aInsuranceDetails_all_users);exit;
+
+				// build family members insurance details
+				foreach($aInsuranceDetails_all_users AS $iUserId => $aInsuranceTypeIds)  {
+					foreach($aInsuranceTypeIds AS $iInsuranceTypeId) {
+						$this->db->set('surveyee_user_id', $iUserId);
+						$this->db->set('insurance_type_id', $iInsuranceTypeId);
+						$this->db->insert('surveyee_user_insurance_type_map');
+					}
+				}
+
+
+
+				// build family members pension details
+				foreach($aPensionDetails_all_users AS $iUserId => $aPensionTypeIds)  {
+					foreach($aPensionTypeIds AS $iPensionTypeId) {
+						$this->db->set('surveyee_user_id', $iUserId);
+						$this->db->set('pension_type_id', $iPensionTypeId);
+						$this->db->insert('surveyee_user_pension_type_map');
+					}
+				}
+
+
+				// build family members reservation details
+				foreach($aReservationDetails_all_users AS $iUserId => $aReservationTypeIds)  {
+					foreach($aReservationTypeIds AS $iReservationId) {
+						$this->db->set('surveyee_user_id', $iUserId);
+						$this->db->set('reservation_id', $iReservationId);
+						$this->db->insert('surveyee_user_reservation_map');
+					}
+				}
+
+
+				// set the head of family.
 				if(! $iHeadOfFamily_iSurveyeeUserId) {
 					// head of family is required
 					$aErrors[] = 'No Head of Family';
 				}
 
-					//$aFloorTypes = $aRawData['houses']['floor_type_id'];
-					//unset($aRawData['houses']['floor_type_id']);
+
 
 				// Create house entity
-					// get the house address details and add to house
-					$aRawData['houses']['house_number'] = $aRawData['address_new']['house_no'];
-					$aRawData['houses']['address_house_name'] = $aRawData['address_new']['house_name'];
-					$aRawData['houses']['address_street_name'] = $aRawData['address_new']['street_name'];
-					$aRawData['houses']['address_pincode'] = $aRawData['address_new']['pincode'];
 
-					//proximity of auto stand from a house
-					//$aRawData['houses']['nearest_auto_stand_access_time'] = $aRawData['houses']['nearest_auto_stand_access_time'];
+				// get the house address details and add to house
+				$aRawData['houses']['house_number'] = $aRawData['address_new']['house_no'];
+				$aRawData['houses']['address_house_name'] = $aRawData['address_new']['house_name'];
+				$aRawData['houses']['address_street_name'] = $aRawData['address_new']['street_name'];
+				$aRawData['houses']['address_pincode'] = $aRawData['address_new']['pincode'];
 
-					$aRawData['houses']['ward_id']	= $iWardId;
-					$this->db->set($aRawData['houses']);
-					$this->db->insert('houses');
-					$iHouseId = $this->db->insert_id();
+				//proximity of auto stand from a house
+				//$aRawData['houses']['nearest_auto_stand_access_time'] = $aRawData['houses']['nearest_auto_stand_access_time'];
+
+				$aRawData['houses']['ward_id']	= $iWardId;
+				$this->db->set($aRawData['houses']);
+				$this->db->insert('houses');
+				$iHouseId = $this->db->insert_id();
+
+
 
 				// create mapping between house and floor type
 				if( isset($aRawData['house_floor_type_map']['floor_type_id'])
@@ -203,6 +282,8 @@ function setTemporarySurveyAsCurrent($iTemporarySurveyId, $iEnumeratorAccountNo)
 					}
 				}
 
+
+
 				// create mapping between house and house type
 				if(isset($aRawData['house_house_type_map'])
 					&& count($aRawData['house_house_type_map']) > 0) {
@@ -213,6 +294,8 @@ function setTemporarySurveyAsCurrent($iTemporarySurveyId, $iEnumeratorAccountNo)
 						$this->db->insert('house_house_type_map');
 					}
 				}
+
+
 
 				// map family to a house
 				$this->db->set('house_id', $iHouseId);
@@ -232,29 +315,38 @@ function setTemporarySurveyAsCurrent($iTemporarySurveyId, $iEnumeratorAccountNo)
 
 				}
 
-				// house ownership
-				if(isset($aRawData['TEMP']['HOUSE_OWNERSHIP'])){
 
-					switch($aRawData['TEMP']['HOUSE_OWNERSHIP']) {
+
+				// house ownership
+				if(isset($aRawData['TEMP']['is_own_house']) && $aRawData['TEMP']['is_own_house'] == 1 ) {
+
+					//own house
+					$this->db->where('id', $iHouseId);
+					$this->db->set('owner_id', $iHeadOfFamily_iSurveyeeUserId);
+					$this->db->update('houses');
+				}
+
+
+
+				// residence type
+				if(isset($aRawData['TEMP']['RESIDENCE_TYPE'])){
+
+					switch($aRawData['TEMP']['RESIDENCE_TYPE']) {
+
 
 						case 1:
-
-							//own house
-							$this->db->where('id', $iHouseId);
-							$this->db->set('owner_id', $iHeadOfFamily_iSurveyeeUserId);
-							$this->db->update('houses');
-
-							// mark the residence status of the family with the house
-							$this->markPermanentResidence($iHouseId, $iFamilyId);
+							// rented residence
+							$this->markRentedResidence($iHouseId, $iFamilyId);
 							break;
 
 						case 2:
-
-							// rented house
-							$this->markRentedResidence($iHouseId, $iFamilyId);
+							// permanent residence
+							$this->markPermanentResidence($iHouseId, $iFamilyId);
 							break;
+
 					}
 				}
+
 
 
 				// create the land entity
@@ -265,11 +357,15 @@ function setTemporarySurveyAsCurrent($iTemporarySurveyId, $iEnumeratorAccountNo)
 				$this->db->insert('lands');
 				$iLandId = $this->db->insert_id();
 
+
+
 				// legacy land
 				if( isset($aRawData['TEMP']['IS_LEGACY_LAND']) && $aRawData['TEMP']['IS_LEGACY_LAND'] == 1 ) {
 
 					$this->markAsLegacyLand($iLandId);
 				}
+
+
 
 				// land ownership
 				switch($aRawData['TEMP']['LAND_OWNERSHIP']) {
@@ -286,9 +382,11 @@ function setTemporarySurveyAsCurrent($iTemporarySurveyId, $iEnumeratorAccountNo)
 						break;
 					case 3:
 						// legacy
-
+						// now handled as a separate question
 						break;
 				}
+
+
 
 				// create mapping between land and house
 				$this->db->set('land_id', $iLandId);
@@ -307,10 +405,9 @@ function setTemporarySurveyAsCurrent($iTemporarySurveyId, $iEnumeratorAccountNo)
 
 
 				// insert ward sabha participation
-
+				// temporary fix
 				$bApplyTemporaryFixes = TRUE;
 
-				// temporary fix
 				if($bApplyTemporaryFixes) {
 					$aRawData['ward_sabha_participation']['is_satisfied'] = ! empty($aRawData['ward_sabha_participation']['is_satisfied']) ? $aRawData['ward_sabha_participation']['is_satisfied'] : null;
 					$aRawData['ward_sabha_participation']['have_suggestion'] = ! empty($aRawData['ward_sabha_participation']['have_suggestion']) ? $aRawData['ward_sabha_participation']['have_suggestion'] : null;
@@ -519,7 +616,11 @@ function setTemporarySurveyAsCurrent($iTemporarySurveyId, $iEnumeratorAccountNo)
 					}
 				}
 
-				// insert user debit bank type
+
+
+
+
+				// insert agriculture location
 				if(
 					isset($aRawData['family_agriculture_location_map']['agriculture_location_id'])
 					&& ! empty($aRawData['family_agriculture_location_map']['agriculture_location_id'])
@@ -629,6 +730,40 @@ function setTemporarySurveyAsCurrent($iTemporarySurveyId, $iEnumeratorAccountNo)
 
  			return $return;
  		}
+
+
+		/**
+		 *
+		 * Determine which question needs to be asked for a given survey
+		 *
+		 * @param  [type] $iTemporarySurveyNumber [description]
+		 * @return [type]                         [description]
+		 */
+		function getNextQuestionNumber($iTemporarySurveyNumber) {
+
+			$question_no = false;
+			$sError = '';
+
+			$this->load->config('question_master_data_config');
+
+			$this->load->config('question_in_order_config'); // this is an autogenerated config file.
+			$aQuestionInOrder = $this->config->item('questions_in_order');
+			$iTotalCount = count($aQuestionInOrder);
+
+			$this->db->where('id', $iTemporarySurveyNumber);
+			if($oRow = $this->db->get('temporary_survey')->row()) {
+				if($oRow->last_processed_question < $iTotalCount) {
+					$question_no = $oRow->last_processed_question + 1;
+				}
+			} else {
+				$sError = 'survey not found';
+			}
+
+			$iQuestionUid = isset($aQuestionInOrder[$question_no]) ? $aQuestionInOrder[$question_no] : null;
+
+
+			return array( $question_no, $iQuestionUid, $sError );
+		}
 
 		// determine if the given question is last question or not
 		function isLastQuestion($iQuestionNo) {

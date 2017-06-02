@@ -1,9 +1,6 @@
-<style>
-.repeating-row select{font-size: 11px;}
-</style>
 <div class="repeating-row odd-row">
 <div class="counter">1</div>
-  <div class="row">
+  <div class="form-group">
     <div class="col-md-3">
       <label class="small">പേര്</label>
         <span class="q_uid_2">
@@ -36,7 +33,7 @@
 
 
 
-  <div class="row">
+  <div class="form-group">
     <div class="col-md-3">
       <label class="small">സംവരണം</label>
         <span class="q_uid_6">
@@ -69,7 +66,7 @@
   </div>
 
 
-  <div class="row">
+  <div class="form-group">
     <div class="col-md-3">
       <label class="small">ഗൃഹനാഥൻ / ഗൃഹനാഥയാണോ</label>
         <span class="q_uid_10">
@@ -130,102 +127,5 @@
 
 
 
-    <div class="row">
-
-      <div class="col-md-3">
-        <?php
-        $sFieldName = 'date_of_birth';
-        $iQuestionNo = $aFieldName_Quid_map[$sFieldName];
-        $aQuestion = $aQuestionsMasterData_raw[$iQuestionNo];
-        ?>
-        <label class="small"><?php echo $aQuestion['title'];?></label>
-        <input type="text" name="<?php echo $aQuestion['field_name'];?>" class="form-control"/>
-      </div>
-
-      <div class="col-md-3">
-        <?php
-        $sFieldName = 'marital_status';
-        $iQuestionNo = $aFieldName_Quid_map[$sFieldName];
-        $aQuestion = $aQuestionsMasterData_raw[$iQuestionNo];
-        ?>
-        <label class="small"><?php echo $aQuestion['title'];?></label>
-        <?php echo $this->display_model->constructSelectElement_forMultiOptionQuestion($aQuestion);?>
-      </div>
-
-      <div class="col-md-3">
-        <?php
-        $sFieldName = 'has_passport';
-        $iQuestionNo = $aFieldName_Quid_map[$sFieldName];
-        $aQuestion = $aQuestionsMasterData_raw[$iQuestionNo];
-        ?>
-        <label class="small"><?php echo $aQuestion['title'];?></label>
-          <?php echo form_dropdown(
-              $aQuestion['field_name'],
-              $aTrueFalseVariants[$aQuestion['true_false_variant']],
-              0,
-              'class="form-control"'); ?>
-      </div>
-
-      <div class="col-md-3">
-        <?php
-        $sFieldName = 'has_driving_license';
-        $iQuestionNo = $aFieldName_Quid_map[$sFieldName];
-        $aQuestion = $aQuestionsMasterData_raw[$iQuestionNo];
-        ?>
-        <label class="small"><?php echo $aQuestion['title'];?></label>
-
-          <?php echo form_dropdown(
-              $aQuestion['field_name'],
-              $aTrueFalseVariants[$aQuestion['true_false_variant']],
-              0,
-              'class="form-control"'); ?>
-      </div>
-    </div>
-
-    
-    <div class="row">
-      <div class="col-md-3">
-        <?php
-        $sFieldName = 'has_bank_account';
-        $iQuestionNo = $aFieldName_Quid_map[$sFieldName];
-        $aQuestion = $aQuestionsMasterData_raw[$iQuestionNo];
-        ?>
-        <label class="small"><?php echo $aQuestion['title'];?></label>
-
-          <?php echo form_dropdown(
-              $aQuestion['field_name'],
-              $aTrueFalseVariants[$aQuestion['true_false_variant']],
-              0,
-              'class="form-control"'); ?>
-      </div>
-
-      <div class="col-md-3">
-        <?php
-        $sFieldName = 'blood_group';
-        $iQuestionNo = $aFieldName_Quid_map[$sFieldName];
-        $aQuestion = $aQuestionsMasterData_raw[$iQuestionNo];
-        ?>
-        <label class="small"><?php echo $aQuestion['title'];?></label>
-        <?php echo $this->display_model->constructSelectElement_forMultiOptionQuestion($aQuestion);?>
-      </div>
-      <div class="col-md-3">
-        <?php
-        $sFieldName = 'pension_type_id';
-        $iQuestionNo = $aFieldName_Quid_map[$sFieldName];
-        $aQuestion = $aQuestionsMasterData_raw[$iQuestionNo];
-        ?>
-        <label class="small"><?php echo $aQuestion['title'];?></label>
-        <?php echo $this->display_model->constructSelectElement_forMultiOptionQuestion($aQuestion);?>
-      </div>
-      <div class="col-md-3">
-        <?php
-        $sFieldName = 'insurance_type_id';
-        $iQuestionNo = $aFieldName_Quid_map[$sFieldName];
-        $aQuestion = $aQuestionsMasterData_raw[$iQuestionNo];
-        ?>
-        <label class="small"><?php echo $aQuestion['title'];?></label>
-        <?php echo $this->display_model->constructSelectElement_forMultiOptionQuestion($aQuestion);?>
-      </div>
-    </div>
 
 </div>

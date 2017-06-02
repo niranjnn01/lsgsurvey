@@ -56,23 +56,31 @@
 				<td><?php echo $oUserPersonalData->election_id;?></td>
 			</tr>
 
-      <tr>
-				<td><?php echo getQuestionText('belief_in_religion_id');?>:</td>
-				<td><?php echo getQuestionAnswer('belief_in_religion_id', $oUserPersonalData->belief_in_religion_id);?></td>
-			</tr>
+			<?php
+			$aMultiOptionQuestions = array(
+				'belief_in_religion_id' => $oUserPersonalData->belief_in_religion_id,
+				'reservation' 					=> $oUserPersonalData->reservation
+			);
+			?>
+			<?php foreach($aMultiOptionQuestions AS $sFieldName => $sFieldValue):?>
 
-      <tr>
-				<td>സംവരണം:</td>
-				<td>
-					<?php
-					$aReservations = array(
-					0 => 'ഇല്ലാ',
-					1 => 'പട്ടികജാതി/വർഗം',
-					2 => 'പിന്നോക്ക സമുദായം');
-					echo $aReservations[$oUserPersonalData->reservation];
-					?>
-				</td>
-			</tr>
+			      <tr>
+							<td>
+								<?php $aQuestion = $this->question_model->getQuestionBy($sFieldName, 'field_name');?>
+								<?php echo $aQuestion['title'];?>:
+							</td>
+							<td>
+								<?php
+									$aAsnwerOptions = $this->question_model->getAnswerOptions($aQuestion['uid'], true);
+									echo $aAsnwerOptions[$sFieldValue];
+								?>
+							</td>
+						</tr>
+
+			<?php endforeach;?>
+
+
+
       <tr>
 				<td>മൊബൈൽ ഫോൺ:</td>
 				<td><?php echo $oUserPersonalData->mobile_number;?></td>
@@ -85,39 +93,53 @@
 				<td>വാട്സപ്പ്‍ നമ്പർ:</td>
 				<td><?php echo $oUserPersonalData->whatsapp_number;?></td>
 			</tr>
+
+			<?php
+				$aTrueFalseQuestions = array(
+					'is_member_ayalkoottam' => $oUserPersonalData->is_member_ayalkoottam,
+					'is_member_ayalkoottam' => $oUserPersonalData->is_member_ayalkoottam,
+					'is_office_bearer_ayalkoottam' => $oUserPersonalData->is_office_bearer_ayalkoottam,
+					'is_member_political_party' => $oUserPersonalData->is_member_political_party,
+					'is_memeber_socio_cultural_organization' => $oUserPersonalData->is_memeber_socio_cultural_organization,
+					'is_office_bearer_religious_organization' => $oUserPersonalData->is_office_bearer_religious_organization,
+					'is_member_library' => $oUserPersonalData->is_member_library,
+					'status' => $oUserPersonalData->is_ward_sabha_participant,
+				);
+			?>
+			<?php foreach($aTrueFalseQuestions AS $sFieldName => $iValue):?>
+
+				<?php $aQuestion = $this->question_model->getQuestionBy($sFieldName, 'field_name')?>
       <tr>
-				<td><?php echo getQuestionText('is_member_ayalkoottam');?>:</td>
-				<td><?php echo getQuestionAnswer('is_member_ayalkoottam', $oUserPersonalData->is_member_ayalkoottam);?></td>
+				<td><?php echo $aQuestion['title'];?>:</td>
+				<td><?php echo $this->question_model->getTrueFalseAnswer($iValue,$aQuestion);?></td>
 			</tr>
-            <tr>
-				<td><?php echo getQuestionText('is_office_bearer_ayalkoottam');?>:</td>
-				<td><?php echo getQuestionAnswer('is_office_bearer_ayalkoottam', $oUserPersonalData->is_office_bearer_ayalkoottam);?></td>
-			</tr>
-            <tr>
-				<td><?php echo getQuestionText('is_member_political_party');?>:</td>
-				<td><?php echo getQuestionAnswer('is_member_political_party', $oUserPersonalData->is_member_political_party);?></td>
-			</tr>
-            <tr>
-				<td><?php echo getQuestionText('is_memeber_socio_cultural_organization');?>:</td>
-				<td><?php echo getQuestionAnswer('is_memeber_socio_cultural_organization', $oUserPersonalData->is_memeber_socio_cultural_organization);?></td>
-			</tr>
-            <tr>
-				<td><?php echo getQuestionText('is_office_bearer_religious_organization');?>:</td>
-				<td><?php echo getQuestionAnswer('is_office_bearer_religious_organization', $oUserPersonalData->is_office_bearer_religious_organization);?></td>
-			</tr>
-            <tr>
-				<td><?php echo getQuestionText('is_member_library');?>:</td>
-				<td><?php echo getQuestionAnswer('is_member_library', $oUserPersonalData->is_member_library);?></td>
-			</tr>
-            <tr>
-				<td><?php echo getQuestionText('status');?>:</td>
-				<td><?php echo getQuestionAnswer('status', $oUserPersonalData->is_ward_sabha_participant);?></td>
-			</tr>
-            <tr>
+
+			<?php endforeach;?>
+
+
+      <tr>
 				<td><?php echo getQuestionText('reason');?>:</td>
 				<td><?php echo getQuestionAnswer('reason', $oUserPersonalData->not_participation_reason);?></td>
 			</tr>
-            <tr>
+
+						<?php
+							$aTrueFalseQuestions = array(
+								'is_satisfied' => $oUserPersonalData->is_participant_satisfied,
+								'have_suggestion' => $oUserPersonalData->have_ward_sabha_suggestion,
+								'is_birth_same_ward' => $oUserPersonalData->is_birth_same_ward,
+							);
+						?>
+						<?php foreach($aTrueFalseQuestions AS $sFieldName => $iValue):?>
+
+							<?php $aQuestion = $this->question_model->getQuestionBy($sFieldName, 'field_name');?>
+				      <tr>
+								<td><?php echo $aQuestion['title'];?>:</td>
+								<td><?php echo $this->question_model->getTrueFalseAnswer($iValue,$aQuestion);?></td>
+							</tr>
+
+						<?php endforeach;?>
+					<?php /*?>
+      <tr>
 				<td><?php echo getQuestionText('is_satisfied');?>:</td>
 				<td><?php echo getQuestionAnswer('is_satisfied', $oUserPersonalData->is_participant_satisfied);?></td>
 			</tr>
@@ -129,7 +151,9 @@
 				<td><?php echo getQuestionText('is_birth_same_ward');?>:</td>
 				<td><?php echo getQuestionAnswer('is_birth_same_ward', $oUserPersonalData->is_birth_same_ward);?></td>
 			</tr>
-            <tr>
+			<?php */?>
+
+      <tr>
 				<td><?php echo getQuestionText('ifnot_birth_place');?>:</td>
 				<td><?php echo $oUserPersonalData->ifnot_birth_place;?></td>
 			</tr>

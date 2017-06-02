@@ -94,6 +94,8 @@ $autoload['helper'] = array('url',
 $autoload['config'] = array('site_config',
                             'settings',
                             'user',
+
+                            
                             );
 
 

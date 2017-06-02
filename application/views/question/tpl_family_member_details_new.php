@@ -133,99 +133,52 @@
     <div class="row">
 
       <div class="col-md-3">
-        <?php
-        $sFieldName = 'date_of_birth';
-        $iQuestionNo = $aFieldName_Quid_map[$sFieldName];
-        $aQuestion = $aQuestionsMasterData_raw[$iQuestionNo];
-        ?>
-        <label class="small"><?php echo $aQuestion['title'];?></label>
-        <input type="text" name="<?php echo $aQuestion['field_name'];?>" class="form-control"/>
+                <label class="small">ജനന തീയതി</label>
+        <input type="text" name="date_of_birth" class="form-control"/>
       </div>
 
       <div class="col-md-3">
-        <?php
-        $sFieldName = 'marital_status';
-        $iQuestionNo = $aFieldName_Quid_map[$sFieldName];
-        $aQuestion = $aQuestionsMasterData_raw[$iQuestionNo];
-        ?>
-        <label class="small"><?php echo $aQuestion['title'];?></label>
-        <?php echo $this->display_model->constructSelectElement_forMultiOptionQuestion($aQuestion);?>
+                <label class="small">വിവാഹാവസ്ഥ</label>
+        <select name="marital_status" class="form-control"><option value="0"> -- തിരഞ്ഞെടുക്കു -- </option><option value="1">കല്യാണം കഴിച്ചിട്ടില്ലാ</option><option value="2">കല്യാണം കഴിച്ചു</option><option value="3">ഡിവോഴ്സ് ചെയ്തു</option><option value="4">പുനർ വിവാഹം ചെയ്തു</option></select>      </div>
+
+      <div class="col-md-3">
+                <label class="small">പാസ്പോര്ട്ട് ഉണ്ടോ ?</label>
+          <select name="has_passport" class="form-control">
+<option value="0" selected="selected">ഇല്ലാ</option>
+<option value="1">ഉണ്ട്</option>
+</select>
       </div>
 
       <div class="col-md-3">
-        <?php
-        $sFieldName = 'has_passport';
-        $iQuestionNo = $aFieldName_Quid_map[$sFieldName];
-        $aQuestion = $aQuestionsMasterData_raw[$iQuestionNo];
-        ?>
-        <label class="small"><?php echo $aQuestion['title'];?></label>
-          <?php echo form_dropdown(
-              $aQuestion['field_name'],
-              $aTrueFalseVariants[$aQuestion['true_false_variant']],
-              0,
-              'class="form-control"'); ?>
-      </div>
+                <label class="small">ഡ്രൈവിങ് ലൈസൻസ് ഉണ്ടോ ?</label>
 
-      <div class="col-md-3">
-        <?php
-        $sFieldName = 'has_driving_license';
-        $iQuestionNo = $aFieldName_Quid_map[$sFieldName];
-        $aQuestion = $aQuestionsMasterData_raw[$iQuestionNo];
-        ?>
-        <label class="small"><?php echo $aQuestion['title'];?></label>
-
-          <?php echo form_dropdown(
-              $aQuestion['field_name'],
-              $aTrueFalseVariants[$aQuestion['true_false_variant']],
-              0,
-              'class="form-control"'); ?>
+          <select name="has_driving_license" class="form-control">
+<option value="0" selected="selected">ഇല്ലാ</option>
+<option value="1">ഉണ്ട്</option>
+</select>
       </div>
     </div>
 
     
     <div class="row">
       <div class="col-md-3">
-        <?php
-        $sFieldName = 'has_bank_account';
-        $iQuestionNo = $aFieldName_Quid_map[$sFieldName];
-        $aQuestion = $aQuestionsMasterData_raw[$iQuestionNo];
-        ?>
-        <label class="small"><?php echo $aQuestion['title'];?></label>
+                <label class="small">ബാങ്ക് അക്കൗണ്ട് ഉണ്ടോ ?</label>
 
-          <?php echo form_dropdown(
-              $aQuestion['field_name'],
-              $aTrueFalseVariants[$aQuestion['true_false_variant']],
-              0,
-              'class="form-control"'); ?>
+          <select name="has_bank_account" class="form-control">
+<option value="0" selected="selected">ഇല്ലാ</option>
+<option value="1">ഉണ്ട്</option>
+</select>
       </div>
 
       <div class="col-md-3">
-        <?php
-        $sFieldName = 'blood_group';
-        $iQuestionNo = $aFieldName_Quid_map[$sFieldName];
-        $aQuestion = $aQuestionsMasterData_raw[$iQuestionNo];
-        ?>
-        <label class="small"><?php echo $aQuestion['title'];?></label>
-        <?php echo $this->display_model->constructSelectElement_forMultiOptionQuestion($aQuestion);?>
-      </div>
+                <label class="small">ബ്ലഡ് ഗ്രൂപ്പ്</label>
+        <select name="blood_group" class="form-control"><option value="0">അറിയില്ലാ</option><option value="1">A +ve</option><option value="2">A -ve</option><option value="3">B +ve</option><option value="4">B -ve</option><option value="5">AB +ve</option><option value="6">AB -ve</option><option value="7">O +ve</option><option value="8">O -ve</option></select>      </div>
       <div class="col-md-3">
-        <?php
-        $sFieldName = 'pension_type_id';
-        $iQuestionNo = $aFieldName_Quid_map[$sFieldName];
-        $aQuestion = $aQuestionsMasterData_raw[$iQuestionNo];
-        ?>
-        <label class="small"><?php echo $aQuestion['title'];?></label>
-        <?php echo $this->display_model->constructSelectElement_forMultiOptionQuestion($aQuestion);?>
-      </div>
+                <label class="small">ഏതൊക്കെ പെൻഷൻ ഉണ്ട് ?</label>
+        <select name="pension_type_id" class="form-control"><option value="1">ഗവണ്മെന്റ് പെൻഷൻ</option><option value="2">മുതിർന്ന പൗരനുള്ള പെൻഷൻ</option></select>      </div>
       <div class="col-md-3">
-        <?php
-        $sFieldName = 'insurance_type_id';
-        $iQuestionNo = $aFieldName_Quid_map[$sFieldName];
-        $aQuestion = $aQuestionsMasterData_raw[$iQuestionNo];
-        ?>
-        <label class="small"><?php echo $aQuestion['title'];?></label>
-        <?php echo $this->display_model->constructSelectElement_forMultiOptionQuestion($aQuestion);?>
-      </div>
+                <label class="small">ഏതൊക്കെ ഇൻഷുറൻസ് പരിരക്ഷ ഉണ്ട് ?</label>
+        <select name="insurance_type_id" class="form-control"><option value="1">ലൈഫ് ഇൻഷുറൻസ്</option><option value="2">മെഡിക്കൽ ഇൻഷുറൻസ്</option></select>      </div>
     </div>
 
 </div>

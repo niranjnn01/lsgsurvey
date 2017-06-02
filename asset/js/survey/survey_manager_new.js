@@ -173,6 +173,7 @@ function fetchNextQuestion(question_id) {
 			// append the question to the viewing area.
 			appendQuestion(data);
 
+      //remove overlay
 		  $('#survey_container').removeClass('animated fadeInLeft');
 		  $('#survey_container').addClass('animated fadeInLeft');
 			$('#survey_container').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function (){$('#survey_container').removeClass('animated fadeInLeft');});
@@ -207,48 +208,33 @@ function handleCurrentAnswer(direction) {
 
           oDataObject_New = {};
 
-          // name and family details
-          oDataObject_New.name = $(elem).find('.q_uid_2 input[name="single_value_text"]').val();
-          oDataObject_New.gender = $(elem).find('.q_uid_3 select[name="single_value_select"]').val();
-          oDataObject_New.election_id = $(elem).find('.q_uid_4 input[name="single_value_text"]').val();
-          oDataObject_New.aadhaar_no = $(elem).find('.q_uid_5 input[name="single_value_text"]').val();
-          oDataObject_New.reservation = $(elem).find('.q_uid_6 select[name="single_value_select"]').val();
-          oDataObject_New.mobile_no = $(elem).find('.q_uid_7 input[name="single_value_text"]').val();
-          oDataObject_New.email = $(elem).find('.q_uid_8 input[name="single_value_text"]').val();
-          oDataObject_New.whatsapp_no = $(elem).find('.q_uid_9 input[name="single_value_text"]').val();
-          oDataObject_New.is_head_of_house = $(elem).find('.q_uid_10 select[name="single_value_select"]').val();
-          oDataObject_New.relationship_to_head_of_house = $(elem).find('.q_uid_11 select[name="single_value_select"]').val();
-          oDataObject_New.educational_qualification = $(elem).find('.q_uid_12 select[name="single_value_select"]').val();
-          oDataObject_New.employment_category = $(elem).find('.q_uid_13 select[name="single_value_select"]').val();
+          // all form inputs which are of type "text"
+          $(elem).find('input[type="text"]').each(function(index, elem){
+
+            oDataObject_New[$(elem).attr('name')] = $(elem).val();
+          });
+
+          // all form inputs which are select
+          $(elem).find('select').each(function(index, elem){
+
+            oDataObject_New[$(elem).attr('name')] = $(elem).val();
+          });
+
 
           oDataObject[index] = oDataObject_New;
         });
 
 
-
-        /*
-					// name and family details
-					oDataObject.name = $('#question_container .answer_block .q_uid_2 input[name="single_value_text"]').val();
-					oDataObject.gender = $('#question_container .answer_block .q_uid_3 select[name="single_value_select"]').val();
-					oDataObject.election_id = $('#question_container .answer_block .q_uid_4 input[name="single_value_text"]').val();
-					oDataObject.aadhaar_no = $('#question_container .answer_block .q_uid_5 input[name="single_value_text"]').val();
-					oDataObject.reservation = $('#question_container .answer_block .q_uid_6 input[name="single_value_select"]').val();
-					oDataObject.mobile_no = $('#question_container .answer_block .q_uid_7 input[name="single_value_text"]').val();
-					oDataObject.email = $('#question_container .answer_block .q_uid_8 input[name="single_value_text"]').val();
-					oDataObject.whatsapp_no = $('#question_container .answer_block .q_uid_9 input[name="single_value_text"]').val();
-					oDataObject.is_head_of_house = $('#question_container .answer_block .q_uid_10 input[name="multi_value_checkbox"]:checked').val();
-					oDataObject.relationship_to_head_of_house = $('#question_container .answer_block .q_uid_11 select[name="single_value_select"]').val();
-					oDataObject.educational_qualification = $('#question_container .answer_block .q_uid_12 select[name="single_value_select"]').val();
-					oDataObject.employment_category = $('#question_container .answer_block .q_uid_13 select[name="single_value_select"]').val();
-          */
-
           break;
 
 				case "2" :
-					oDataObject.address_house_no = $('#question_container .answer_block .q_uid_15 input[name="single_value_text"]').val();
-					oDataObject.address_house_name = $('#question_container .answer_block .q_uid_16 input[name="single_value_text"]').val();
-					oDataObject.address_street_name = $('#question_container .answer_block .q_uid_17 input[name="single_value_text"]').val();
-					oDataObject.address_pincode = $('#question_container .answer_block .q_uid_18 input[name="single_value_text"]').val();
+
+        // all form inputs which are of type "text"
+        $('#question_container .answer_block').find('input[type="text"]').each(function(index, elem){
+
+          oDataObject[$(elem).attr('name')] = $(elem).val();
+        });
+
 					break;
 			}
 
@@ -381,16 +367,19 @@ function constructAnswerFormParts(data, bProvideWrapper){
 
 	var q_uid_class_name = 'q_uid_' + data.uid;
 
+
 	switch(data.answer_type) {
 
-		case 1:
+		case '1':
 
 			answer_html += bProvideWrapper ? '<div class="form-group">' : '';
 			answer_html += '<span class="'+ q_uid_class_name +'"><input type="text" name="single_value_text" class="form-control"/></span>';
 			answer_html += bProvideWrapper ? '</div>' : '';
 			break;
 
-		case 2:
+		case '2':
+
+
 
 			answer_html += bProvideWrapper ? '<div class="radio">' : '';
 
@@ -407,9 +396,11 @@ function constructAnswerFormParts(data, bProvideWrapper){
 			answer_html += '</span>';
 
 			answer_html += bProvideWrapper ? '</div>' : '';
+
+
 			break;
 
-		case 3:
+		case '3':
 
 			answer_html += bProvideWrapper ? '<div class="radio">' : '';
 
@@ -428,7 +419,7 @@ function constructAnswerFormParts(data, bProvideWrapper){
 			answer_html += bProvideWrapper ? '</div>' : '';
 			break;
 
-		case 4:
+		case '4':
 
 			answer_html += bProvideWrapper ? '<div class="form-group">' : '';
 			answer_html +=
@@ -438,13 +429,24 @@ function constructAnswerFormParts(data, bProvideWrapper){
 			answer_html += bProvideWrapper ? '</div>' : '';
 			break;
 
-		case 5:
+		case '5':
 
 			answer_html += bProvideWrapper ? '<div class="form-group">' : '';
 			answer_html +=
 			'<span class="'+ q_uid_class_name +'">'+
 			'<select name="single_value_select" class="form-control">';
 			//console.log(JSON.stringify(data.answer_options));
+
+			   //attach the non-selection option first
+			   if(data.answer_non_selection_option) {
+           $.each(data.answer_non_selection_option, function (index, answer_option){
+            answer_html +=
+            '<option value="'+ answer_option.value +'">' +
+             ((answer_option.title == undefined) ? '' : answer_option.title) +
+            '</option>';
+          });
+         }
+
 				$.each(data.answer_options, function (index, answer_option){
 
 					answer_html +=
@@ -474,7 +476,12 @@ function appendQuestion(data) {
 
 	if(data.question_type == 1) {
 
+    console.log(data.question_type);
+
+    console.log(JSON.stringify(data));
 		answer_html = constructAnswerFormParts(data);
+
+    //console.log(answer_html);
 
 	} else if(data.question_type == 2) {
 
@@ -516,7 +523,7 @@ function appendQuestion(data) {
 	}
 
 
-  if(data.multiple_answer_sets == true) {
+  if(data.is_multipliable == true) {
 
     // add the addition button
     $('#add_button_cnt').html('<a href="#" class="btn btn-primary" id="add_question_set"> + </a>');

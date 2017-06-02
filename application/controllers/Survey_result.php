@@ -1,7 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 
-class Survey extends CI_Controller {
+class Survey_result extends CI_Controller {
 
 	public function __construct(){
 
@@ -18,318 +18,14 @@ class Survey extends CI_Controller {
 	}
 
 
-	function view_template() {
-
-		loadTemplate('survey/tpl_view');
-	}
-
-
-	/**
-	 * Load the survey form
-	 *
-	 */
-	public function index() {
-
-		$this->authentication->is_user_logged_in(true, 'user/login');
-
-
-		$this->load->config('question_config');
-//exit('locked');
-		// Initialize stuff
-		$this->mcontents['iCurrentTemporarySurveyNumber']	= 0;
-		$this->mcontents['iNextQuestion']	= 1;
-		$this->mcontents['iLastProcessedQuestion']	= 0;
-		$this->mcontents['bIsLastQuestion']	= FALSE;
-		$this->mcontents['sQuestionUname']	= '';
-
-
-		// this has to be moved to another place where the logged in user
-		// chooses to start a new survey
-
-		$oCurrentSurvey = $this->survey_model->getCurrentSurvey( s('ACCOUNT_NO') );
-/*
-		p($this->db->last_query());
-		p($oCurrentSurvey);
-		exit;
-	*/
-	$this->mcontents['aSurveyStatus'] = $this->config->item('survey_status');
-
-		if( $oCurrentSurvey ) {
-
-			//p('HERE');
-
-
-			$aQuestionsMasterData = $this->question_model->getQuestionMasterData();
-			//p($aQuestionsMasterData);
-			//p(count($aQuestionsMasterData));
-			//p($oCurrentSurvey->last_processed_question);
-			//exit;
-			if( count($aQuestionsMasterData) == $oCurrentSurvey->last_processed_question ) {
-				$this->mcontents['iSurveyStatus'] = $this->mcontents['aSurveyStatus']['processed_last_question'];
-			} else {
-				$this->mcontents['iSurveyStatus'] = $this->mcontents['aSurveyStatus']['in_progress'];
-			}
-
-			$this->mcontents['iCurrentTemporarySurveyNumber']	= $oCurrentSurvey->id;
-			$this->mcontents['iNextQuestion']	= $oCurrentSurvey->last_processed_question + 1;
-			$this->mcontents['iLastProcessedQuestion']	= $oCurrentSurvey->last_processed_question;
-			$this->mcontents['bIsLastQuestion']	= $this->survey_model->isLastQuestion($this->mcontents['iNextQuestion']);
-			//$this->mcontents['sQuestionUname']	= $oCurrentSurvey->uname;
-//exit;
-
-		} else {
-
-			$this->mcontents['iSurveyStatus'] = $this->mcontents['aSurveyStatus']['in_progress'];
-
-			$oNewTemporarySurveyId = $this->survey_model->createTemporarySurvey();
-			$this->survey_model->setTemporarySurveyAsCurrent($oNewTemporarySurveyId, s('ACCOUNT_NO'));
-
-			$this->mcontents['iCurrentTemporarySurveyNumber']	= $oNewTemporarySurveyId;
-			$this->mcontents['iNextQuestion']	= 1;
-			$this->mcontents['iLastProcessedQuestion']	= 0;
-			$this->mcontents['bIsLastQuestion']	= $this->survey_model->isLastQuestion($this->mcontents['iNextQuestion']);
-		}
-
-
-
-		$this->load->config('question_config');
-		$this->mcontents['question_groups'] = json_encode($this->config->item('question_groups'));
-		$this->mcontents['load_js']['data']['question_groups'] = json_encode($this->config->item('question_groups'));
-
-		$this->mcontents['menu_active']	= 'survey_new';
-		$this->mcontents['load_js'][] = 'survey/survey_manager_new.js';
-
-
-		loadTemplate('survey/index');
-	}
-
-
-
-	function accept_answer($iQuestionNo=0) {
-
-		// sanitize the data
-		$iQuestionNo = safeText($iQuestionNo, false, '', TRUE);
-
-		// get answer_type for the question
-		$iAnswerType = 1;
-
-		$iEnumeratorAccountNo = s('ACCOUNT_NO');
-		$sError = '';
-		$bProceed = TRUE;
-
-		if(! $oCurrentTemporarySurvey = $this->survey_model->getCurrentTemporarySurvey($iEnumeratorAccountNo)) {
-			$bProceed = FALSE;
-			$sError = 'Survey was not found';
-		}
-
-
-
-		$this->load->model('Processanswer_model');
-
-
-
-		if($iQuestionNo == 1) { // people details (family details)
-			list($iAnswerProcessingStatus, $sError) = $this->Processanswer_model->process_Answers_FamilyQuestion($oCurrentTemporarySurvey->id);
-		} elseif ($iQuestionNo == 2) { // house address
-			list($iAnswerProcessingStatus, $sError) = $this->Processanswer_model->process_Answers_Address_Question($oCurrentTemporarySurvey->id);
-		} else {
-			list($iAnswerProcessingStatus, $sError) = $this->Processanswer_model->processAnswerForQuestion($iQuestionNo);
-		}
-
-
-
-		if(! $sError) {
-
-			$bLocalizedTestingInProgress = FALSE; // For local testing purposes only. to be removed in production code.
-
-			if( ! $bLocalizedTestingInProgress) {
-				// set this question as last_processed_question
-				if( $iEnumeratorAccountNo ) {
-
-					if( $oRow = $this->survey_model->getCurrentSurvey( $iEnumeratorAccountNo ) ) {
-						$this->db->where('enumerator_account_no', $iEnumeratorAccountNo);
-						$this->db->where('id', $oRow->id);
-						$this->db->set('last_processed_question', $iQuestionNo);
-						$this->db->update('temporary_survey');
-					}
-				}
-			}
-		}
-
-
-		$aJsonData = array(
-										'error' => $sError,
-										'status' => $iAnswerProcessingStatus,
-									);
-
-		$sJsonData = json_encode($aJsonData);
-
-		$this->output->set_header('Content-type: application/json');
-		$this->load->view('output', array('output' => $sJsonData));
-	}
-
-
-
-
-	/**
-	 *
-	 * Cancel the temporary survey
-	 *
-	 * @param  integer $iTemporarySurveyNumber [description]
-	 * @return [type]                          [description]
-	 */
-	function cancel($iTemporarySurveyId=0){
-
-				$aJsonData = array(
-											'error' => '',
-											'success' => ''
-										);
-				if(	$this->authentication->is_user_logged_in(false) ) {
-
-					$iEnumeratorAccountNo = s('ACCOUNT_NO');
-
-					if( $oTemporarySurvey = $this->survey_model->getCurrentTemporarySurvey($iEnumeratorAccountNo) ) {
-
-						if( $oTemporarySurvey->id == $iTemporarySurveyId ){
-
-							$this->db->where('id', $iTemporarySurveyId);
-							$this->db->delete('temporary_survey');
-						}
-					}
-
-				}
-
-				sf('success_message', 'The Survey has been cancelled');
-				redirect('home');
-	}
-
-
-
-	/**
-	 *
-	 * Get details of the current survey that is going on
-	 * @return [type] [description]
-	 */
-	public function current_survey() {
-
-		$aJsonData = array();
-		$aJsonData = array(
-									'temporary_survey_number' => 0,
-									'current_question' => '1'
-								);
-		if(	$this->authentication->is_user_logged_in(false) ) {
-
-			$oCurrentSurvey = $this->survey_model->getCurrentSurvey();
-
-			if($oCurrentSurvey) {
-				$aJsonData = array(
-											'temporary_survey_number' => $oCurrentSurvey->id,
-											'current_question' => '1'
-										);
-
-			} else {
-				//error JSON
-			}
-
-		}
-
-		$sJsonData = json_encode($aJsonData);
-
-		$this->output->set_header('Content-type: application/json');
-		$this->load->view('output', array('output' => $sJsonData));
-	}
-
-
-
-	/**
-	 * This function is called, when a question is skipped
-	 * @return [type] [description]
-	 */
-	function skip($iQuestionNo=0) {
-
-		// add data to skipped array
-		// update the last processed question in DB
-		// return success to server
-	}
-
-
-
-	/**
-	 * This function will do the survey complete routines
-	 * @return [type] [description]
-	 */
-	function complete () {
-
-		$bProceed = TRUE;
-
-		$sErrorMessage = '';
-		$aJsonData = array('error' => '', 'success' => 0);
-
-
-		if(! $this->authentication->is_user_logged_in(FALSE)) {
-			$aJsonData['error'] = 'Not logged In';
-			$bProceed = FALSE;
-		}
-
-
-		// do verification of input data
-		// TO DO
-		//
-		//
-
-
-		// get the current survey details
-		$iEnumeratorAccountNo = s('ACCOUNT_NO');
-		if( ! $oTemporarySurvey = $this->survey_model->getCurrentTemporarySurvey($iEnumeratorAccountNo) ) {
-			$aJsonData['error'] = 'Invalid Survey no:';
-			$bProceed = FALSE;
-		}
-
-		// if all ok, then proceed to save Survey Data.
-		if($bProceed) {
-
-			$iTemporarySurveyNumber = $oTemporarySurvey->id;
-
-
-			// create the survey
-			$this->load->model('survey_model');
-			list($iSurveyId, $aErrorMessages) = $this->survey_model->createSurvey($iTemporarySurveyNumber);
-
-
-			$aJsonData['survey_id'] = $iSurveyId;
-
-			if($aErrorMessages) {
-				$aJsonData['error'] = $aErrorMessages;
-				$aJsonData['survey_id'] = $iSurveyId;
-			} else {
-				$aJsonData['success'] = '1';
-			}
-
-		}
-
-
-		$sJsonData = json_encode($aJsonData);
-
-		$this->output->set_header('Content-type: application/json');
-		$this->load->view('output', array('output' => $sJsonData));
-	}
-
-
 /**
  *
  * get details of a survey
  *
- *
- *
- *  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * 	!!!!!!!!!! NEW FUNCTION is SUVEY_RESULT/VIEW/ !!!!!!!!!!
- *  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- *
- * 
  * @param  [type] $iSurveyId [description]
  * @return [type]            [description]oUserPersonalData
  */
-	function data_to_delete($iSurveyId){
+	function view($iSurveyId){
 
 		$this->load->model('question_model');
 		$this->authentication->is_user_logged_in('true', 'user/login');
@@ -377,27 +73,18 @@ class Survey extends CI_Controller {
 			'show_default_value' 	=> FALSE
 		);
 		$this->mcontents['aHouseTypes'] = $this->common_model->getDropDownArray($aConfig);
-
+*/
 
 		$this->mcontents['aHouseOwnershipTypes'] = array(
 			1 => 'സ്വന്തം',
 			2 => 'വാടകയ്ക്ക്',
 		);
 
-*/
-
-		$aConfig = array(
-			'table' 		        => 'ans_option_land_ownership',
-			'id_field' 		       	=> 'id',
-			'title_field' 	     	=> 'title',
-			'show_default_value' 	=> FALSE
+		$this->mcontents['aLandOwnershipTypes'] = array(
+			1 => 'സ്വന്തം',
+			2 => 'പാട്ടം',
+			3 => 'പാരമ്പര്യമായി  കിട്ടിയത്',
 		);
-		$this->mcontents['aLandOwnershipTypes'] = $this->common_model->getDropDownArray($aConfig);
-
-
-
-
-
 
 		$this->load->config('question_config');
 		//$this->mcontents['questions_master_data']	= $this->config->item('questions_master_data');
@@ -412,21 +99,48 @@ class Survey extends CI_Controller {
 		$this->mcontents['oSurveyData'] = $this->db->get('surveys S')->row();
 
 		// get house Details
+		$this->db->select('
+											H.id house_id,
+											H.address_house_name,
+											H.house_number address_house_no,
+											H.address_street_name, H.address_pincode,
+											H.owner_id, H.house_area_range_id, H.num_floors, H.num_rooms, H.largest_accessible_vehicle,
+											H.toilet_count, H.is_electrified, H.connection_type_to_septic_tank, H.nearest_auto_stand_access_time');
 		$this->db->where('S.id', $this->mcontents['oSurveyData']->id);
 		$this->db->join('surveys S', 'H.id = S.house_id');
 		$this->mcontents['oHouseData'] = $this->db->get('houses H')->row();
+
+		// hous tax
+		$this->db->where('HT.house_id', $this->mcontents['oHouseData']->house_id);
+		$this->mcontents['oHouseData']->amount = $this->db->get('house_tax HT')->row()->amount;
 //p($this->mcontents['oHouseData']);
+
+/*
+$this->mcontents['oHouseData']
+house_type_id
+*/
+
+
+		// get house types
+		$this->mcontents['oHouseData']->house_type_id = [];
+
+		$this->db->select('HHTM.house_type_id as id');
+		$this->db->where('HHTM.house_id', $this->mcontents['oHouseData']->house_id);
+		$aHouseHouseTypesMap = $this->db->get('house_house_type_map HHTM')->result();
+		foreach($aHouseHouseTypesMap as $oItem){
+			array_push($this->mcontents['oHouseData']->house_type_id, $oItem->id);
+		}
 
 
 		// get house floor types
-		$this->mcontents['oHouseData']->aFloorTypes = [];
+		$this->mcontents['oHouseData']->floor_type_id = [];
 
 		$this->db->select('HFTM.floor_type_id as id');
  		$this->db->where('HFTM.house_id', $this->mcontents['oHouseData']->house_id);
  		$aHomeFloorTypesMap = $this->db->get('house_floor_type_map HFTM')->result();
 		//p($this->db->last_query());
 		foreach($aHomeFloorTypesMap as $oFloorType){
-			array_push($this->mcontents['oHouseData']->aFloorTypes, $oFloorType->id);
+			array_push($this->mcontents['oHouseData']->floor_type_id, $oFloorType->id);
 		}
 
 //p($this->mcontents['oHouseData']->aFloorTypes);
@@ -455,8 +169,18 @@ class Survey extends CI_Controller {
 			SU.has_credit_or_debit_card,
 			SU.has_internet_banking,
 			SU.has_mobile_banking,
+			SU.educational_qualification,
+			SU.employment_category,
 
-			FHM.residence_type_id,
+			DATE_FORMAT(SU.date_of_birth, "%D %M - %Y") AS date_of_birth,
+			SU.marital_status,
+			SU.has_passport,
+			SU.has_driving_license,
+			SU.has_bank_account,
+			SU.blood_group,
+
+
+			FHM.residence_type_id RESIDENCE_TYPE,
 
 			H.id house_id,
 			H.house_number,
@@ -475,13 +199,22 @@ class Survey extends CI_Controller {
 			WP.reason as not_participation_reason,
 			WP.is_satisfied as is_participant_satisfied ,
 			WP.have_suggestion as have_ward_sabha_suggestion,
+			'
 
-			HTX.amount as house_tax,
+			.'WP.status as status,' // temporary fix
+			.'WP.reason as reason,' // temporary fix
+			.'WP.is_satisfied as is_satisfied,' // temporary fix
+			.'WP.have_suggestion as have_suggestion,' // temporary fix
+
+			.'HTX.amount as house_tax,
 
 			FHM.family_id,
 
+			SUFM.is_head is_head_of_house,
+			SUFM.relation_type_to_head relationship_to_head_of_house,
+
 			F.ration_card_no,
-			F.ration_card_type_id,
+			F.ration_card_type_id
 			');
 		$this->db->join('surveyee_user_family_map SUFM', 'SU.id = SUFM.surveyee_user_id');
 		$this->db->join('families F', 'SUFM.family_id = F.id');
@@ -498,13 +231,14 @@ class Survey extends CI_Controller {
 		//p($this->mcontents['oUserPersonalData']);
 
 
+
 		// users Investment types
 		$this->db->select('SUIM.investment_type_id as id');
 		$this->db->where('SUIM.surveyee_user_id', $this->mcontents['oUserPersonalData']->surveyee_user_id);
 		$aRows = $this->db->get('surveyee_user_investment_type_map SUIM')->result();
-		$this->mcontents['oUserPersonalData']->aInvestmentTypes = [];
+		$this->mcontents['oUserPersonalData']->investment_type_id = [];
 		foreach($aRows as $oItem){
-			array_push($this->mcontents['oUserPersonalData']->aInvestmentTypes, $oItem->id);
+			array_push($this->mcontents['oUserPersonalData']->investment_type_id, $oItem->id);
 		}
 
 
@@ -512,19 +246,29 @@ class Survey extends CI_Controller {
 		$this->db->select('FLPM.loan_purpose_id as id');
 		$this->db->where('FLPM.family_id', $this->mcontents['oUserPersonalData']->family_id);
 		$aRows = $this->db->get('family_loan_purpose_map FLPM')->result();
-		$this->mcontents['oUserPersonalData']->aLoanPurposes = [];
+		$this->mcontents['oUserPersonalData']->loan_purpose_id = [];
 		foreach($aRows as $oItem){
-			array_push($this->mcontents['oUserPersonalData']->aLoanPurposes, $oItem->id);
+			array_push($this->mcontents['oUserPersonalData']->loan_purpose_id, $oItem->id);
 		}
+
 
 
 		// users Loan sources
 		$this->db->select('FLSM.loan_source_id as id');
 		$this->db->where('FLSM.family_id', $this->mcontents['oUserPersonalData']->family_id);
 		$aRows = $this->db->get('family_loan_sources_map FLSM')->result();
-		$this->mcontents['oUserPersonalData']->aLoanSources = [];
+		$this->mcontents['oUserPersonalData']->loan_source_id = [];
 		foreach($aRows as $oItem){
-			array_push($this->mcontents['oUserPersonalData']->aLoanSources, $oItem->id);
+			array_push($this->mcontents['oUserPersonalData']->loan_source_id, $oItem->id);
+		}
+
+
+
+		//is own house
+		if( $this->mcontents['oUserPersonalData']->surveyee_user_id == $this->mcontents['oHouseData']->owner_id ) {
+			$this->mcontents['oHouseData']->is_own_house = 1;
+		} else {
+			$this->mcontents['oHouseData']->is_own_house = 0;
 		}
 
 
@@ -535,7 +279,7 @@ class Survey extends CI_Controller {
 		$this->mcontents['oHouseData']->ration_card_type_id	= $this->mcontents['oUserPersonalData']->ration_card_type_id;
 
 
-
+/*
 		switch($this->mcontents['oUserPersonalData']->residence_type_id) {
 			case 1:
 				//rented stay
@@ -554,7 +298,7 @@ class Survey extends CI_Controller {
 				}
 				break;
 		}
-
+*/
 
 		//House tax
 		$this->mcontents['oHouseData']->tax_amount = $this->mcontents['oUserPersonalData']->house_tax;
@@ -564,9 +308,9 @@ class Survey extends CI_Controller {
 		$this->db->select('FR.from, FR.to');
 		$this->db->where('FR.family_id', $this->mcontents['oUserPersonalData']->family_id);
 		$aFamilyResidence = $this->db->get('family_residence_history_map FR')->row();
-		$this->mcontents['oUserPersonalData']->sFamilyResidenceHistory	= '';
+		$this->mcontents['oUserPersonalData']->YEARS_OF_STAYING	= '';
 		if(isset($aFamilyResidence->from)){
-			$this->mcontents['oUserPersonalData']->sFamilyResidenceHistory =
+			$this->mcontents['oUserPersonalData']->YEARS_OF_STAYING =
 				date('Y', strtotime($aFamilyResidence->to)) - date('Y', strtotime($aFamilyResidence->from)) . ' വർഷം ' . '('.
 				date('Y', strtotime($aFamilyResidence->from)).' - '.
 				date('Y', strtotime($aFamilyResidence->to)).')';
@@ -575,14 +319,15 @@ class Survey extends CI_Controller {
 
 
 		// House Road Type
-		$this->db->select('HRM.road_type_id as id');
+		$this->db->select('HRM.road_type_id');
 		$this->db->where('HRM.house_id', $this->mcontents['oUserPersonalData']->house_id);
-		$aHomeRoadMap = $this->db->get('house_road_map HRM')->row();
+		$oHomeRoadMap = $this->db->get('house_road_map HRM')->row();
 
-		$this->mcontents['oHouseData']->sHomeRoadMap = '';
-		if(isset($this->mcontents['oHouseData']->sHomeRoadMap)){
-			$this->mcontents['oHouseData']->sHomeRoadMap = $aHomeRoadMap->id;
+		$this->mcontents['oHouseData']->road_type_id = NULL;
+		if($oHomeRoadMap) {
+			$this->mcontents['oHouseData']->road_type_id = $oHomeRoadMap->road_type_id;
 		}
+
 
 
 
@@ -590,10 +335,10 @@ class Survey extends CI_Controller {
 		$this->db->select('HPU.public_utility_id as id, HPU.proximity');
 		$this->db->where('HPU.house_id', $this->mcontents['oUserPersonalData']->house_id);
 		$aHomeUtilityProximity = $this->db->get('house_public_utility_proximity HPU')->result();
-		//$this->mcontents['oHouseData']->aHomeUtilityProximity = [];
-		$this->mcontents['oHouseData']->aHomeUtilityServices = [];
+
+		$this->mcontents['oHouseData']->public_utility_id = [];
 		foreach($aHomeUtilityProximity as $oUtility){
-			array_push($this->mcontents['oHouseData']->aHomeUtilityServices, $oUtility->id);
+			array_push($this->mcontents['oHouseData']->public_utility_id, $oUtility->id);
 		}
 
 
@@ -602,16 +347,16 @@ class Survey extends CI_Controller {
 		$this->db->select('HWS.house_water_source_id as id');
 		$this->db->where('HWS.house_id', $this->mcontents['oUserPersonalData']->house_id);
 		$aHomeWaterSources = $this->db->get('house_water_source_map HWS')->result();
-		$this->mcontents['oHouseData']->aHomeWaterSources = [];
+		$this->mcontents['oHouseData']->house_water_source_id = [];
 		foreach($aHomeWaterSources as $oItem){
-			array_push($this->mcontents['oHouseData']->aHomeWaterSources, $oItem->id);
+			array_push($this->mcontents['oHouseData']->house_water_source_id, $oItem->id);
 		}
 
 
 
 
 		// get details of family
-		$this->db->select('FAM.*');
+		$this->db->select('FAM.ration_card_no, FAM.ration_card_type_id, FAM.has_agriculture');
 		$this->db->where('id', $this->mcontents['oUserPersonalData']->family_id);
 		$this->mcontents['oFamily'] = $this->db->get('families FAM')->row();
 
@@ -620,9 +365,9 @@ class Survey extends CI_Controller {
 		$this->db->select('H_BDWM_SM.solution_id as id');
 		$this->db->where('H_BDWM_SM.house_id', $this->mcontents['oUserPersonalData']->house_id);
 		$aSolutions = $this->db->get('house_biodegradable_waste_management_solution_map H_BDWM_SM')->result();
-		$this->mcontents['oHouseData']->aHomeBioDegradableWasteManagementSolutions = [];
+		$this->mcontents['oHouseData']->biodegradable_solution_id = [];
 		foreach($aSolutions as $oItem){
-			array_push($this->mcontents['oHouseData']->aHomeBioDegradableWasteManagementSolutions, $oItem->id);
+			array_push($this->mcontents['oHouseData']->biodegradable_solution_id, $oItem->id);
 		}
 
 
@@ -631,9 +376,9 @@ class Survey extends CI_Controller {
 		$this->db->where('H_NBDWM_SM.house_id', $this->mcontents['oUserPersonalData']->house_id);
 		$aSolutions = $this->db->get('house_nonbiodegradable_waste_management_solution_map H_NBDWM_SM')->result();
 
-		$this->mcontents['oHouseData']->aHomeNonBioDegradableWasteManagementSolutions = [];
+		$this->mcontents['oHouseData']->nonbiodegradable_solution_id = [];
 		foreach($aSolutions as $oItem){
-			array_push($this->mcontents['oHouseData']->aHomeNonBioDegradableWasteManagementSolutions, $oItem->id);
+			array_push($this->mcontents['oHouseData']->nonbiodegradable_solution_id, $oItem->id);
 		}
 
 
@@ -643,9 +388,9 @@ class Survey extends CI_Controller {
 		$this->db->where('FDF.family_id', $this->mcontents['oUserPersonalData']->family_id);
 		$aFamilyDomesticFuelTypes = $this->db->get('family_domestic_fuel_type_map FDF')->result();
 
-		$this->mcontents['oFamily']->aFamilyDomesticFuelTypes = [];
+		$this->mcontents['oFamily']->domestic_fuel_type_id = [];
 		foreach($aFamilyDomesticFuelTypes as $oItem){
-			array_push($this->mcontents['oFamily']->aFamilyDomesticFuelTypes, $oItem->id);
+			array_push($this->mcontents['oFamily']->domestic_fuel_type_id, $oItem->id);
 		}
 
 
@@ -665,15 +410,18 @@ class Survey extends CI_Controller {
 		$this->db->select('FP.pet_id as id, FP.has_license');
 		$this->db->where('FP.family_id', $this->mcontents['oUserPersonalData']->family_id);
 		$aFamilyPets = $this->db->get('family_pet_map FP')->result();
-		$this->mcontents['oFamily']->aPets = [];
+		//$this->mcontents['oFamily']->aPets = [];
+		$this->mcontents['oFamily']->pet_id = [];
 		foreach($aFamilyPets as $oItem){
-			$this->mcontents['oFamily']->aPets[$oItem->id] = array('has_license' => $oItem->has_license);
+			//$this->mcontents['oFamily']->aPets[$oItem->id] = array('has_license' => $oItem->has_license);
+			array_push($this->mcontents['oFamily']->pet_id, $oItem->id);
 		}
 
-		$this->mcontents['oFamily']->iHasPet = (count($this->mcontents['oFamily']->aPets) > 0) ? 1 : 0;
-		$this->mcontents['oFamily']->iHasDog	= (isset($this->mcontents['oFamily']->aPets[1])) ? 1 : 0 ;
-		$this->mcontents['oFamily']->iHasDogLicense	=
-		($this->mcontents['oFamily']->iHasDog == 1 && 1 == $this->mcontents['oFamily']->aPets[1]) ? 1 : 0;
+
+		$this->mcontents['oFamily']->iHasPet = (count($this->mcontents['oFamily']->pet_id) > 0) ? 1 : 0;
+		$this->mcontents['oFamily']->iHasDog	= (isset($this->mcontents['oFamily']->pet_id[1])) ? 1 : 0 ;
+		$this->mcontents['oFamily']->has_license	=
+		($this->mcontents['oFamily']->iHasDog == 1 && 1 == $this->mcontents['oFamily']->pet_id[1]) ? 1 : 0;
 
 
 
@@ -682,21 +430,19 @@ class Survey extends CI_Controller {
 		$this->db->select('FLM.livestock_id as id');
 		$this->db->where('FLM.family_id', $this->mcontents['oUserPersonalData']->family_id);
 		$aRows = $this->db->get('family_livestock_map FLM')->result();
-		$this->mcontents['oFamily']->aLiveStocks = [];
+		$this->mcontents['oFamily']->livestock_id = [];
 		foreach($aRows AS $oRow) {
-			array_push($this->mcontents['oFamily']->aLiveStocks, $oRow->id);
+			array_push($this->mcontents['oFamily']->livestock_id, $oRow->id);
 		}
 
 
 		// Home applicances
 		$this->db->select('FA.house_appliance_id as id');
 		$this->db->where('FA.family_id', $this->mcontents['oUserPersonalData']->family_id);
-		//$this->db->join('house_appliance HA', 'HA.id = FA.house_appliance_id');
 		$aFamilyAppliances = $this->db->get('family_appliance_map FA')->result();
-
-		$this->mcontents['oHouseData']->aHomeAppliances = [];
+		$this->mcontents['oHouseData']->house_appliance_id = [];
 		foreach($aFamilyAppliances AS $iItemId) {
-			array_push($this->mcontents['oHouseData']->aHomeAppliances, $iItemId->id);
+			array_push($this->mcontents['oHouseData']->house_appliance_id, $iItemId->id);
 		}
 
 		// Family vehicles
@@ -704,9 +450,9 @@ class Survey extends CI_Controller {
 		$this->db->where('FV.family_id', $this->mcontents['oUserPersonalData']->family_id);
 		$aFamilyVehicleType = $this->db->get('family_vehicle_type_map FV')->result();
 
-		$this->mcontents['oHouseData']->aFamilyVehicleType = [];
+		$this->mcontents['oHouseData']->vehicle_type_id = [];
 		foreach($aFamilyVehicleType AS $iItemId) {
-			array_push($this->mcontents['oHouseData']->aFamilyVehicleType, $iItemId->id);
+			array_push($this->mcontents['oHouseData']->vehicle_type_id, $iItemId->id);
 		}
 
 		// Family agriculture location
@@ -715,23 +461,11 @@ class Survey extends CI_Controller {
 		//$this->db->join('house_appliance HA', 'HA.id = FA.house_appliance_id');
 		$aFamilyAgricultureLocations = $this->db->get('family_agriculture_location_map FA')->result();
 
-		$this->mcontents['oHouseData']->aFamilyAgricultureLocations = [];
+		$this->mcontents['oHouseData']->agriculture_location_id = [];
 		foreach($aFamilyAgricultureLocations AS $iItemId) {
-			array_push($this->mcontents['oHouseData']->aFamilyAgricultureLocations, $iItemId->id);
+			array_push($this->mcontents['oHouseData']->agriculture_location_id, $iItemId->id);
 		}
 
-/*
-		// Family agriculture location
-		$this->db->select('FA.agricultural_produce_id as id');
-		$this->db->where('FA.family_id', $this->mcontents['oUserPersonalData']->family_id);
-		//$this->db->join('house_appliance HA', 'HA.id = FA.house_appliance_id');
-		$aFamilyAgricultureProduce = $this->db->get('family_agricultural_produce_map FA')->result();
-
-		$this->mcontents['oHouseData']->aFamilyAgricultureProduce = [];
-		foreach($aFamilyAgricultureProduce AS $iItemId) {
-			array_push($this->mcontents['oHouseData']->aFamilyAgricultureProduce, $iItemId->id);
-		}
-*/
 
 
 		// surveyee_user_bank_account_type_map
@@ -740,13 +474,13 @@ class Survey extends CI_Controller {
 		//$this->db->join('house_appliance HA', 'HA.id = FA.house_appliance_id');
 		$aBankAccountTypes = $this->db->get('surveyee_user_bank_account_type_map FA')->result();
 
-		$this->mcontents['oUserPersonalData']->aBankAccountTypes = [];
+		$this->mcontents['oUserPersonalData']->bank_account_type_id = [];
 		foreach($aBankAccountTypes AS $iItemId) {
-			array_push($this->mcontents['oUserPersonalData']->aBankAccountTypes, $iItemId->id);
+			array_push($this->mcontents['oUserPersonalData']->bank_account_type_id, $iItemId->id);
 		}
 
 		//p($this->mcontents['oUserPersonalData']);
-
+/*
 		// house types
 		$this->db->select('HT.title');
 		$this->db->where('HHTM.house_id', $this->mcontents['oUserPersonalData']->house_id);
@@ -758,18 +492,38 @@ class Survey extends CI_Controller {
 			$this->mcontents['oHouseData']->sHouseTypes .= $oItem->title . ', ';
 		}
 		$this->mcontents['oHouseData']->sHouseTypes = rtrim($this->mcontents['oHouseData']->sHouseTypes, ', ');
+*/
 
 
-
-		$this->db->select('L.*, LL.lessee_user_id, LL.id leased_land_id');
+		$this->db->select('
+			L.id,
+			L.area_range,
+			L.owner_user_id,
+			L.unique_identification,
+			L.is_legacy IS_LEGACY_LAND,
+			LL.lessee_user_id,
+			LL.id leased_land_id
+			');
 		$this->db->where('H.id', $this->mcontents['oUserPersonalData']->house_id);
 		$this->db->join('land_house_map LHM', 'L.id = LHM.land_id');
 		$this->db->join('houses H', 'LHM.house_id = H.id');
 		$this->db->join('leased_lands LL', 'L.id = LL.land_id', 'LEFT');
 		$this->mcontents['oLandData'] = $this->db->get('lands L')->row();
 
+
+
+		// land ownership
+		if( $this->mcontents['oLandData']->owner_user_id == $this->mcontents['oUserPersonalData']->surveyee_user_id ) {
+			$this->mcontents['oLandData']->LAND_OWNERSHIP = 1; // own
+		} elseif($this->mcontents['oLandData']->leased_land_id) {
+			$this->mcontents['oHouseData']->LAND_OWNERSHIP = 2; // leased
+		}
+
+
+
 		//p($this->mcontents['oLandData']);
 		// determine the land ownership
+		/*
 		$this->mcontents['oLandData']->sLandOwnershipType = '';
 		if($this->mcontents['oLandData']->leased_land_id) {
 			$this->mcontents['oLandData']->sLandOwnershipType = $this->mcontents['aLandOwnershipTypes'][2];
@@ -778,37 +532,185 @@ class Survey extends CI_Controller {
 		} elseif($this->mcontents['oUserPersonalData']->surveyee_user_id == $this->mcontents['oLandData']->owner_user_id) {
 			$this->mcontents['oLandData']->sLandOwnershipType = $this->mcontents['aLandOwnershipTypes'][1];
 		}
+		*/
+
+		// land ownership
+		if( $this->mcontents['oLandData']->owner_user_id == $this->mcontents['oUserPersonalData']->surveyee_user_id ) {
+			$this->mcontents['oLandData']->LAND_OWNERSHIP = 1; // own
+		} elseif($this->mcontents['oLandData']->leased_land_id) {
+			$this->mcontents['oHouseData']->LAND_OWNERSHIP = 2; // leased
+		}
+
+
+
 
 		// get the fruit trees on the land
 		$this->db->where('LFTM.land_id', $this->mcontents['oLandData']->id);
 		$aFruitTrees = $this->db->get('land_fruit_tree_map LFTM')->result();
-		$this->mcontents['oLandData']->aFruitTrees = [];
+		$this->mcontents['oLandData']->fruit_tree_id = [];
 		if($aFruitTrees) {
 			foreach($aFruitTrees AS $oRow) {
-				$this->mcontents['oLandData']->aFruitTrees[] = $oRow->fruit_tree_id;
+				$this->mcontents['oLandData']->fruit_tree_id[] = $oRow->fruit_tree_id;
 			}
 		}
+
+
+
+		// get the users pension details
+		$this->db->where('SUPTM.surveyee_user_id', $this->mcontents['oUserPersonalData']->surveyee_user_id);
+		$aPensionTypeIds = $this->db->get('surveyee_user_pension_type_map SUPTM')->result();
+		$this->mcontents['oUserPersonalData']->pension_type_id = [];
+		if($aPensionTypeIds) {
+			foreach($aPensionTypeIds AS $oRow) {
+				$this->mcontents['oUserPersonalData']->pension_type_id[]
+				= $oRow->pension_type_id;
+			}
+		}
+
+
+
+		// get the users pension details
+		$this->db->where('SUITM.surveyee_user_id', $this->mcontents['oUserPersonalData']->surveyee_user_id);
+		$aInsuranceTypeIds = $this->db->get('surveyee_user_insurance_type_map SUITM')->result();
+		$this->mcontents['oUserPersonalData']->insurance_type_id = [];
+		if($aInsuranceTypeIds) {
+			foreach($aInsuranceTypeIds AS $oRow) {
+				$this->mcontents['oUserPersonalData']->insurance_type_id[] = $oRow->insurance_type_id;
+			}
+		}
+
 
 
 		// get the cash crops on the land
 		$this->db->where('LCCM.land_id', $this->mcontents['oLandData']->id);
 		$aCashCrops = $this->db->get('land_cash_crop_map LCCM')->result();
-		$this->mcontents['oLandData']->aCashCrops = [];
+		$this->mcontents['oLandData']->cash_crop_id = [];
 		if($aCashCrops) {
 			foreach($aCashCrops AS $oRow) {
-				$this->mcontents['oLandData']->aCashCrops[] = $oRow->cash_crop_id;
+				$this->mcontents['oLandData']->cash_crop_id[] = $oRow->cash_crop_id;
 			}
 		}
 
 
+		$aPopulatedArray = array();
+
+
+		$aCompleteData = array(
+			(array)$this->mcontents['oUserPersonalData'],
+			(array)$this->mcontents['oLandData'],
+			(array)$this->mcontents['oHouseData'],
+			(array)$this->mcontents['oFamily']
+		);
+
+
+
+		$aQuestionsMasterData_raw = $this->question_model->getQuestionMasterData_raw();
+
+
+		$this->load->config('field_name_quid_map_config');
+		$aFieldName_Quid_map = $this->config->item('field_name_quid_map');
+
+
+		$aAllFieldNames = array_column($aQuestionsMasterData_raw, 'field_name');
+
+
+
+
+		$aAnswerTypes = $this->config->item('answer_types');
+
+		//populate the answer which were multi options
+		foreach($aCompleteData AS $key => & $aData) {
+
+			foreach($aData AS $sFieldName => & $value) {
+
+				// only the field names should be present as the keys of $aCompleteData array.
+				if( ! in_array($sFieldName, $aAllFieldNames) ) {
+
+					unset($aData[$sFieldName]);
+					continue;
+				}
+
+
+				$iQuid = $aFieldName_Quid_map[$sFieldName];
+
+
+				switch($aQuestionsMasterData_raw[$iQuid]['answer_type']) {
+
+					case $aAnswerTypes['single_value_radio']:
+					case $aAnswerTypes['single_value_select']:
+						//get the text correspondng to $value
+
+						//convert the answer options to a more easily accessible format
+						$aKeyValueFormat = $this->question_model->convertAnswerOptionsToKeyValueFormat($aQuestionsMasterData_raw[$iQuid]['answer_options']);
+
+/*
+
+*/
+
+						if( ! is_null($aQuestionsMasterData_raw[$iQuid]['true_false_variant']) ) {
+							if( is_null($value) ) {
+								$value = '';
+							} else {
+								$value = $aKeyValueFormat[$value];
+							}
+						} else {
+
+							if(! isset($aKeyValueFormat[$value])) {
+								//p($iQuid);
+							}
+
+							$value = isset($aKeyValueFormat[$value]) ? $aKeyValueFormat[$value] : $value;
+						}
+
+						break;
+					case $aAnswerTypes['multi_value_checkbox']:
+
+						$aKeyValueFormat = $this->question_model->convertAnswerOptionsToKeyValueFormat($aQuestionsMasterData_raw[$iQuid]['answer_options']);
+						$aTemp = array();
+
+						$sTemp = '<ul>';
+						foreach($value AS $iValue) {
+							$sTemp .= '<li>' . $aKeyValueFormat[$iValue] . '</li>';
+						}
+						$sTemp .= '</ul>';
+
+						$value = $sTemp;
+						break;
+				}
+
+//p($aData);exit;
+			}
+
+		}
+
+
+		//p($aCompleteData); exit;
+
+
+
+
+		// make into a single array
+		$aPopulatedArray = array();
+		foreach($aCompleteData AS $aArray) {
+
+			foreach($aArray AS $sKey => $sValue) {
+
+				$aPopulatedArray['{'.$sKey.'}'] = $sValue;
+			}
+		}
+
+//p($aPopulatedArray);exit;
+
+		$this->load->model('display_model');
+		$this->mcontents['sPopulatedTemplate'] = $this->display_model->populateTemplate($aPopulatedArray);
 
 
 		if( safeText('p', false, 'get') == 'iframe' ) {
 			$this->load->view('iframe_header', $this->mcontents);
-			$this->load->view('survey/data');
+			$this->load->view('survey_result/view');
 			$this->load->view('iframe_footer');
 		} else {
-			loadTemplate('survey/data');
+			loadTemplate('survey_result/view');
 		}
 
 	}
