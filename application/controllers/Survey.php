@@ -90,14 +90,30 @@ class Survey extends CI_Controller {
 			$this->mcontents['bIsLastQuestion']	= $this->survey_model->isLastQuestion($this->mcontents['iNextQuestion']);
 		}
 
+		//which menu item is currently active?
+		$this->mcontents['menu_active']	= 'survey_new';
 
 
 		$this->load->config('question_config');
 		$this->mcontents['question_groups'] = json_encode($this->config->item('question_groups'));
 		$this->mcontents['load_js']['data']['question_groups'] = json_encode($this->config->item('question_groups'));
 
-		$this->mcontents['menu_active']	= 'survey_new';
+
+		//load datepicker
+		$this->mcontents['load_js'][] = 'jquery/jquery-ui.min-datepicker.js';
+		$this->mcontents['load_common_css'][] = 'jquery/jquery-ui.min.css';
+		$this->mcontents['load_common_css'][] = 'jquery/jquery-ui.structure.min.css';
+		//$this->mcontents['load_css'][] = 'jquery/jquery-ui.structure.min.css';
+
+
+		// load the js files that will manipulate this page.
 		$this->mcontents['load_js'][] = 'survey/survey_manager_new.js';
+
+		$this->mcontents['load_js'][] = "jquery/jquery.validate.min.1.17.0.js";
+		$this->mcontents['load_js'][] = 'survey/survey_validation.js';
+
+		$this->mcontents['load_common_css'][] = 'common/css/survey.css';
+		//$this->mcontents['load_js'][] = 'datepicker/survey.js';
 
 
 		loadTemplate('survey/index');
@@ -325,7 +341,7 @@ class Survey extends CI_Controller {
  * 	!!!!!!!!!! NEW FUNCTION is SUVEY_RESULT/VIEW/ !!!!!!!!!!
  *  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  *
- * 
+ *
  * @param  [type] $iSurveyId [description]
  * @return [type]            [description]oUserPersonalData
  */

@@ -651,6 +651,11 @@ house_type_id
 							if( is_null($value) ) {
 								$value = '';
 							} else {
+								if(!isset($aKeyValueFormat[$value])) {
+									p($iQuid);
+									p($value);
+									exit;
+								}
 								$value = $aKeyValueFormat[$value];
 							}
 						} else {

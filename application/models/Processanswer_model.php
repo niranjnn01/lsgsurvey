@@ -52,9 +52,12 @@ class Processanswer_model
 
 			$aNewDataSet = [];
 
-			foreach($_POST AS $aItem) {
+			foreach($_POST AS $iKey => $aItem) {
 
 				$aInput = array();
+
+        // field name of form has been modified. there is a row number attached to field names.
+        // it(++$iKey) is added in the next "for loop" for convinience.
 
         $aTableFieldName_to_FormFieldName_map = array(
           'name'                      => 'name',
@@ -80,8 +83,9 @@ class Processanswer_model
         );
 
 				// populate user data
+				$iRowNumber = ++$iKey;
 				foreach($aTableFieldName_to_FormFieldName_map AS $sTableFieldName => $sFormFieldName) {
-          $aInput[$sTableFieldName] = safeText($aItem[$sFormFieldName], false, '', TRUE);
+          $aInput[$sTableFieldName] = safeText($aItem[$sFormFieldName . $iRowNumber], false, '', TRUE);
         }
 
 
@@ -95,11 +99,11 @@ class Processanswer_model
         */
 
 				// head of family
-				$aInput['is_head_of_house'] = safeText($aItem['is_head_of_family'], false, '', TRUE) == 1 ? 1 : 0;
+				$aInput['is_head_of_house'] = safeText($aItem['is_head_of_family' . $iRowNumber], false, '', TRUE) == 1 ? 1 : 0;
 
 				//relationship with head of family
 				if( ! $aInput['is_head_of_house'] ) {
-					$aInput['relationship_to_head_of_house'] = safeText($aItem['relationship_to_head_of_house'], false, '', TRUE);
+					$aInput['relationship_to_head_of_house'] = safeText($aItem['relationship_to_head_of_house' . $iRowNumber], false, '', TRUE);
 				}
 
 

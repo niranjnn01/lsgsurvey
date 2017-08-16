@@ -77,6 +77,19 @@ function setTemporarySurveyAsCurrent($iTemporarySurveyId, $iEnumeratorAccountNo)
 		}
 
 
+
+		function validateTemporarySurveyData ($oTemporarySurveyItem) {
+			$bResult = TRUE;
+
+			// there should be a head of house
+			if(FALSE) {
+				$bResult = TRUE;
+			}
+			return $bResult;
+		}
+
+
+
 		function createSurvey($iTemporarySurveyNumber) {
 
 			// Initialize Items that we will be returning.
@@ -94,12 +107,19 @@ function setTemporarySurveyAsCurrent($iTemporarySurveyId, $iEnumeratorAccountNo)
 			}
 
 
+			// Make sure that the data collected is good to go
+			if(! $this->validateTemporarySurveyData($oSurveyData)) {
+				$bProceed = FALSE;
+				$aErrors[] = 'There was some problem with validating the input data';
+			}
+
+
 			if($bProceed) {
 
 				$aRawData	= unserialize($oSurveyData->raw_data);
 				$iWardId 	= $oSurveyData->ward_id;
 
-				// CREATION OF SURVEY SHOULD HAPPEN IN A SINGLE START TRANSACTION
+				// CREATION OF SURVEY SHOULD HAPPEN IN A SINGLE TRANSACTION
 
 				// START TRANSACTION
 				$this->db->trans_start();
@@ -646,6 +666,7 @@ function setTemporarySurveyAsCurrent($iTemporarySurveyId, $iEnumeratorAccountNo)
 
 				// mark that the survey item in the temporary_survey has been processed.
 				$this->db->set('pushed_to_main', 1);
+				$this->db->set('survey_id', $iSurveyeId);
 				$this->db->where('id', $iTemporarySurveyNumber);
 				$this->db->update('temporary_survey');
 

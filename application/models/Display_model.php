@@ -15,10 +15,10 @@ class Display_model extends CI_Model{
 	 * @param  [type] $aAnswerOption [description]
 	 * @return [type]                [description]
 	 */
-	function constructSelectElement_forMultiOptionQuestion($aQuestion) {
+	function constructSelectElement_forMultiOptionQuestion($aQuestion, $sAppendToName='') {
 		$sHtml = '';
 
-		$sHtml .= '<select name="'. $aQuestion['field_name'] .'" class="form-control">';
+		$sHtml .= '<select name="'. $aQuestion['field_name'] .$sAppendToName.'" class="form-control">';
 
 		// if sepcified, append the non selection option
 		if($aQuestion['answer_non_selection_option']) {

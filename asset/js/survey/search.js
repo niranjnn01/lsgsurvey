@@ -63,7 +63,7 @@ $(document).ready(function(){
                   (index + 1) +
                   '</td>' +
                   '<td>' +
-                    '<a href="'+ base_url +'survey/data/'+ item.survey_id +'" target="_blank">' +
+                    '<a href="'+ base_url +'survey_result/view/'+ item.survey_id +'" target="_blank">' +
                       item.user_name +
                     '</a>' +
                   '</td>' +

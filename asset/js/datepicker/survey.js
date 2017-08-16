@@ -1,13 +1,14 @@
 $(document).ready(function(){
+	//alert($('#datepicker').length);
+	/*
 $( ".datepicker" ).datepicker(
-	{ 
+	{
 		dateFormat: 'yy-mm-dd',
 		changeMonth: true,
 		changeYear: true,
-        minDate: '-4M',
-        maxDate: '0M',
-		yearRange: $('#datepicker_from').val() + ':' + $('#datepicker_to').val()
+		yearRange: '1910:2017'
 	}
 );
-});
+*/
 
+});

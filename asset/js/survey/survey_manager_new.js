@@ -4,6 +4,17 @@ var dont_confirm_leave = 1; //set dont_confirm_leave to 1 when you want the user
 
 var question_groups = <?php echo $question_groups;?>;
 
+/**
+ * This function will append row number to questions name field
+ * @return {[type]} [description]
+ */
+function template_append_row_num_to_name_field(question_form_body, row_num) {
+
+  //console.log(question_form_body);
+  //console.log(row_num);
+  return question_form_body.replace(/{row_number}/g, row_num);
+}
+
 $(document).ready(function() {
 
 	//console.log(question_groups[1]);
@@ -94,12 +105,33 @@ $(document).ready(function() {
   }
 
 
+  // Bind Date picker for this page
+
+  $("#question_container").on('click', '.datepicker', function () {
+
+    //console.log('loading date picker');
+
+    $( this ).datepicker(
+      {
+        dateFormat: 'yy-mm-dd',
+        changeMonth: true,
+        changeYear: true,
+        yearRange: '1910:2017'
+      }
+    );
+    $( this ).datepicker( "show" );
+  });
+
+
+
+
+
 
 
 
   $('#next_btn').click(function (event) {
 
-		showOverlay();
+		//showOverlay(); - moved to handleCurrentAnswer() . so that overlay can be shown only if validation is OK.
 
 		event.preventDefault();
 
@@ -277,36 +309,44 @@ console.log(JSON.stringify(oDataObject));
 return false;
 */
 
-    //Submit data back to server
-    $.ajax({
-      url: base_url + "survey/accept_answer/" + current_question,
-      data: oDataObject,
-      method:"POST",
-      success:function (data) {
+    // see if this data is valid
+    if( is_data_valid() ) {
 
-        if(data.error == '') {
+      // show over lay
+      showOverlay();
 
-          var last_question = localStorage.getItem('last_question');
+      //Submit data back to server
+      $.ajax({
+        url: base_url + "survey/accept_answer/" + current_question,
+        data: oDataObject,
+        method:"POST",
+        success:function (data) {
 
-          if(last_question == "true") {
+          if(data.error == '') {
 
-            surveyCompleteRoutines();
+            var last_question = localStorage.getItem('last_question');
 
-          } else {
+            if(last_question == "true") {
 
-						dont_confirm_leave = 0;
-            fetchNextQuestion();
+              surveyCompleteRoutines();
+
+            } else {
+
+              dont_confirm_leave = 0;
+              fetchNextQuestion();
+            }
+
           }
 
-        }
+        },
+        error:function (data) {
 
-      },
-      error:function (data) {
+          alert('There was some problem loading the question');
+        },
+        dataType : "json"
+      });
+    }
 
-        alert('There was some problem loading the question');
-      },
-      dataType : "json"
-    });
   }
 
 }
@@ -476,9 +516,9 @@ function appendQuestion(data) {
 
 	if(data.question_type == 1) {
 
-    console.log(data.question_type);
+    //console.log(data.question_type);
 
-    console.log(JSON.stringify(data));
+    //console.log(JSON.stringify(data));
 		answer_html = constructAnswerFormParts(data);
 
     //console.log(answer_html);
@@ -486,8 +526,10 @@ function appendQuestion(data) {
 	} else if(data.question_type == 2) {
 
 
+
     if(data.question_form_body) {
-      answer_html += data.question_form_body;
+      var row_number = 1; // if we are appending a question, then naturally, the row number will be one.
+      answer_html += template_append_row_num_to_name_field(data.question_form_body, row_number);
     } else {
       var wrapping = 'table';
 
@@ -540,17 +582,29 @@ function appendQuestion(data) {
       event.preventDefault();
       event.stopPropagation();
 
+      
+
       var row_num = parseInt(localStorage.getItem('row_num'));
 
       var question_form_body = $(localStorage.getItem('question_form_body'));
+
       if( row_num % 2 != 0 ) {
         question_form_body.removeClass('odd-row');
       }
 
+      // place the updated counter
       row_num++;
       $(question_form_body).find('.counter').html(row_num);
 
-      $('#question_container .answer_block').append(question_form_body);
+
+      // access the form HTML
+      var question_form_body_html = question_form_body.prop('outerHTML');
+
+      //append the row number to all names of the form.
+      question_form_body_html = template_append_row_num_to_name_field(question_form_body_html, row_num)
+
+
+      $('#question_container .answer_block').append(question_form_body_html);
 
       localStorage.setItem('row_num', row_num );
     });
@@ -579,16 +633,31 @@ function appendQuestion(data) {
   $('#question-group-id').text(question_groups[data.group_id].title);
 
 	// place question in its container
-  $('#question_container').html(
-    $(
-      '<h3>'+
-      data.title +
-      '</h3>'+
-      '<div class="answer_block">'+
-      	answer_html +
-      '</div>'
-    )
-  );
+
+    $('#question_container').html(
+      $(
+        '<h3>'+
+        data.title +
+        '</h3>'+
+        '<div class="answer_block">'+
+        	answer_html +
+        '</div>'
+      )
+    );
+
+
+
+
+$(document).ready(function(){
+  //load date picker if applicable
+
+
+
+});
+
+
+//console.log('question loaded');
+
 }
 
 
@@ -620,5 +689,6 @@ $(document).ready(function() {
       gotoPage('survey/cancel/' + localStorage.getItem('temporary_survey_number'));
     }
   });
+
 
 });

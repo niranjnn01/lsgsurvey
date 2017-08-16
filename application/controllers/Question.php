@@ -217,6 +217,7 @@ class Question extends CI_Controller {
 				$aQuestionData['last_question'] 	= $bIsLastQuestion;
 
 				if( isset($aQuestionData['template']) && !empty($aQuestionData['template']) ) {
+
 					$aQuestionData['question_form_body'] = $this->load->view($aQuestionData['template'], $aQuestionData, TRUE);
 				}
 

@@ -11,6 +11,20 @@ class Developer extends CI_Controller {
 		$this->load->model('common_model');
 	}
 
+	function index() {
+
+		$this->db->order_by('created_on', 'desc');
+		$this->mcontents['aTemporarySurveys'] = $this->db->get('temporary_survey')->result();
+
+		$this->mcontents['aLinks'] = array(
+			array(
+				'uri' => 'preview_data/',
+				'title' => 'Temporary Survey -> view raw data',
+			),
+		);
+		loadTemplate('developer/index');
+	}
+
 	function generate_family_template() {
 
 		$this->load->model('display_model');
@@ -362,6 +376,31 @@ function slice() {
 	}
 */
 
+	/**
+	 *
+	 * given the temporary id of a survey, we can do the last step.
+	 * ie, creation of the survey.
+	 * @return [type] [description]
+	 */
+	function complete_survey($iTemporarySurveyNumber=0) {
+
+		if($iTemporarySurveyNumber) {
+
+			list($iSurveyId, $aErrorMessages) = $this->survey_model->createSurvey($iTemporarySurveyNumber);
+
+			if($aErrorMessages) {
+
+				p($aErrorMessages);
+
+			} else {
+				echo "success";
+			}
+
+		}
+
+	}
+
+
 	function generate_config_array() {
 
 		$this->load->model('QuestionTransfer_model');
@@ -380,8 +419,7 @@ function slice() {
 	}
 
 
-	function complete_survey() {
-
+	function complete_survey__to_delete() {
 
 
 				$bProceed = TRUE;
@@ -411,6 +449,7 @@ function slice() {
 
 
 	}
+
 
 	function preview_data($iTemporarySurveyId) {
 

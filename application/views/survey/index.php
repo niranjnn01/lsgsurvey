@@ -34,6 +34,7 @@
 
 				</div>
 				<div class="col-md-11">
+						<div id="error_container"></div>
 						<form id="current_form" action="#">
 						<div id="question_container"
 									style="min-height:200px;margin-bottom:10px;"
