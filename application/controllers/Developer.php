@@ -460,6 +460,27 @@ function slice() {
 		//p( unserialize($oRow->general_data) );
 	}
 
+
+
+	function alter_raw_data($iTemporarySurveyId) {
+
+		exit(0); // safe guard . to prevent accidental updates
+
+		$this->db->where('id', $iTemporarySurveyId);
+		$this->mcontents['oRow'] = $this->db->get('temporary_survey')->row();
+
+		$unserialized_data = unserialize($this->mcontents['oRow']->raw_data);
+		$unserialized_data['surveyee_users']['belief_in_religion_id'] = NULL;
+		//p(var_dump($unserialized_data));
+
+
+		$this->db->where('id', $iTemporarySurveyId);
+		$this->db->set('raw_data', serialize($unserialized_data));
+		$this->db->update('temporary_survey');
+
+	}
+
+
 	function sync_demo_data() {
 		$this->db->where('pushed_to_main', 0);
 		$this->db->where('id', 17);

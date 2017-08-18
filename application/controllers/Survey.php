@@ -107,7 +107,12 @@ class Survey extends CI_Controller {
 
 
 		// load the js files that will manipulate this page.
+		$this->mcontents['load_js'][] = 'survey/survey_manager_construct_QA.js';
+		$this->mcontents['load_js'][] = 'survey/survey_manager_handle_answer.js';
+		$this->mcontents['load_js'][] = 'survey/survey_manager_event_handlers.js';
+		$this->mcontents['load_js'][] = 'survey/survey_manager_server_error_handler.js';
 		$this->mcontents['load_js'][] = 'survey/survey_manager_new.js';
+
 
 		$this->mcontents['load_js'][] = "jquery/jquery.validate.min.1.17.0.js";
 		$this->mcontents['load_js'][] = 'survey/survey_validation.js';
@@ -152,11 +157,11 @@ class Survey extends CI_Controller {
 			list($iAnswerProcessingStatus, $sError) = $this->Processanswer_model->processAnswerForQuestion($iQuestionNo);
 		}
 
-
+		//$sError = 'There is a server side error'; // testing
 
 		if(! $sError) {
 
-			$bLocalizedTestingInProgress = FALSE; // For local testing purposes only. to be removed in production code.
+			$bLocalizedTestingInProgress = false; // For local testing purposes only. to be removed in production code.
 
 			if( ! $bLocalizedTestingInProgress) {
 				// set this question as last_processed_question

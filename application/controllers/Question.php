@@ -213,6 +213,8 @@ class Question extends CI_Controller {
 				$aQuestionData['question_count']	= count($aQuestionsMasterData);
 				$aQuestionData['question_no']		= $iQuestionNo;
 				$aQuestionData['question_uid']		= $iQuestionUid;
+				$aQuestionData['ui_validation']		= $aQuestionData['ui_validation'];
+
 				$aQuestionData['end_of_section']	= false;
 				$aQuestionData['last_question'] 	= $bIsLastQuestion;
 

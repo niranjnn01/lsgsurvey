@@ -354,6 +354,8 @@ function getAnswerOptions($iQuestionUid, $bAttachNonSelectionOption = false) {
 
 		return $this->config->item('questions_master_data_raw_new');
 	}
+
+
 	function normalizeQuestion($aQuestion) {
 
 		$aQuestionTypes = $this->config->item('question_types');
@@ -373,7 +375,8 @@ function getAnswerOptions($iQuestionUid, $bAttachNonSelectionOption = false) {
 			'question_type' 							=> $aQuestionTypes['individual'],
 			'questions' 									=> array(),
 			'default_value' 							=> null,
-
+			'ci_validation' 							=> $aQuestion['ci_validation'],	
+			'ui_validation' 							=> $aQuestion['ui_validation'],
 			'question_template' 					=> '',
 			'multiple_answer_sets' 				=> false,
 		);

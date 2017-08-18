@@ -2,6 +2,8 @@
 
 function is_data_valid() {
 
+  //return true;
+
   var bIsValid = false;
 
   // custom method - we need at least one person as head of family
@@ -42,6 +44,8 @@ function is_data_valid() {
   if( $('#current_form').valid() ) {
     bIsValid = true;
   }
+
+  console.log(bIsValid);
 
   return bIsValid;
 }

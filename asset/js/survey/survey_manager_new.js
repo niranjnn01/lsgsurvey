@@ -105,48 +105,6 @@ $(document).ready(function() {
   }
 
 
-  // Bind Date picker for this page
-
-  $("#question_container").on('click', '.datepicker', function () {
-
-    //console.log('loading date picker');
-
-    $( this ).datepicker(
-      {
-        dateFormat: 'yy-mm-dd',
-        changeMonth: true,
-        changeYear: true,
-        yearRange: '1910:2017'
-      }
-    );
-    $( this ).datepicker( "show" );
-  });
-
-
-
-
-
-
-
-
-  $('#next_btn').click(function (event) {
-
-		//showOverlay(); - moved to handleCurrentAnswer() . so that overlay can be shown only if validation is OK.
-
-		event.preventDefault();
-
-    // handle the current answer
-    handleCurrentAnswer('next');
-  });
-
-  $('#previous_btn').click(function (event) {
-
-
-    event.preventDefault();
-
-    // handle the current answer
-    handleCurrentAnswer('prev');
-  });
 
 });
 
@@ -171,10 +129,13 @@ function defaultForInteger(arg, val) {
 	return typeof arg !== NaN ? arg : val;
 }
 
+
 function fetchNextQuestion(question_id) {
 
-  //clear the container
+  //clear the containers
   $('#question_container').html('');
+  $('#error_container').html('');
+
 
   var temporary_survey_number = localStorage.getItem('temporary_survey_number');
   var current_question = localStorage.getItem('current_question');
@@ -216,141 +177,14 @@ function fetchNextQuestion(question_id) {
 }
 
 
-function handleCurrentAnswer(direction) {
 
-
-  var bWasSuccessful = false;
-
-  if($('#question_container').html() != '') {
-
-    var answer_type = localStorage.getItem('answer_type');
-		var question_type = localStorage.getItem('question_type');
-    var current_question = localStorage.getItem('current_question');
-
-
-
-    var oDataObject = new Object();
-
-		if( question_type == 2 ) { //question type = group
-
-			switch(current_question) {
-
-				case "1" :
-        $('#question_container .answer_block .repeating-row').each(function(index, elem){
-
-          oDataObject_New = {};
-
-          // all form inputs which are of type "text"
-          $(elem).find('input[type="text"]').each(function(index, elem){
-
-            oDataObject_New[$(elem).attr('name')] = $(elem).val();
-          });
-
-          // all form inputs which are select
-          $(elem).find('select').each(function(index, elem){
-
-            oDataObject_New[$(elem).attr('name')] = $(elem).val();
-          });
-
-
-          oDataObject[index] = oDataObject_New;
-        });
-
-
-          break;
-
-				case "2" :
-
-        // all form inputs which are of type "text"
-        $('#question_container .answer_block').find('input[type="text"]').each(function(index, elem){
-
-          oDataObject[$(elem).attr('name')] = $(elem).val();
-        });
-
-					break;
-			}
-
-		} else { //question type = individual
-
-			switch(answer_type) {
-
-        case "1":
-          var input = $('#question_container .answer_block input[name="single_value_text"]').val();
-
-          oDataObject.single_value_text = input;
-          break;
-
-        case "2":
-          var input = $('#question_container .answer_block input[name="single_value_radio"]:checked').val();
-
-          oDataObject.single_value_radio = input;
-          break;
-
-        case "3":
-          oDataObject.multi_value_checkbox = $('#question_container .answer_block input[name="multi_value_checkbox"]:checked').map(function () {
-            return $(this).val();
-          }).get();
-        case "4":
-          var input = $('#question_container .answer_block textarea[name="single_value_textarea"]').val();
-
-          oDataObject.single_value_textarea = input;
-          break;
-
-				case "5":
-					var input = $('#question_container .answer_block select[name="single_value_select"]').val();
-
-					oDataObject.single_value_select = input;
-					break;
-      }
-		}
-
-/*
-console.log(JSON.stringify(oDataObject));
-return false;
-*/
-
-    // see if this data is valid
-    if( is_data_valid() ) {
-
-      // show over lay
-      showOverlay();
-
-      //Submit data back to server
-      $.ajax({
-        url: base_url + "survey/accept_answer/" + current_question,
-        data: oDataObject,
-        method:"POST",
-        success:function (data) {
-
-          if(data.error == '') {
-
-            var last_question = localStorage.getItem('last_question');
-
-            if(last_question == "true") {
-
-              surveyCompleteRoutines();
-
-            } else {
-
-              dont_confirm_leave = 0;
-              fetchNextQuestion();
-            }
-
-          }
-
-        },
-        error:function (data) {
-
-          alert('There was some problem loading the question');
-        },
-        dataType : "json"
-      });
-    }
-
-  }
-
-}
-
+/**
+ *
+ * Show message once the survey has been completed.
+ *
+ * @param  {[type]} survey_id [description]
+ * @return {[type]}           [description]
+ */
 function showSurveyCompleteView(survey_id) {
 
   // remove all buttons etc
@@ -397,111 +231,6 @@ function surveyCompleteRoutines() {
 }
 
 
-function constructAnswerFormParts(data, bProvideWrapper){
-
-
-//console.log(data.uid + ' , ' + data.answer_type);
-
-	var answer_html = '';
-  bProvideWrapper = defaultFor(bProvideWrapper, true);
-
-	var q_uid_class_name = 'q_uid_' + data.uid;
-
-
-	switch(data.answer_type) {
-
-		case '1':
-
-			answer_html += bProvideWrapper ? '<div class="form-group">' : '';
-			answer_html += '<span class="'+ q_uid_class_name +'"><input type="text" name="single_value_text" class="form-control"/></span>';
-			answer_html += bProvideWrapper ? '</div>' : '';
-			break;
-
-		case '2':
-
-
-
-			answer_html += bProvideWrapper ? '<div class="radio">' : '';
-
-			answer_html +=
-			'<span class="'+ q_uid_class_name +'">';
-
-			$.each(data.answer_options, function (index, answer_option){
-				// name="'+ data.field_name +'"
-				answer_html += bProvideWrapper ? '<label class="radio-inline">' : '';
-				answer_html += '<input type="radio" name="single_value_radio" value="'+ answer_option.value +'"/> ' + answer_option.title;
-				answer_html += bProvideWrapper ? '</label>' : '';
-			});
-
-			answer_html += '</span>';
-
-			answer_html += bProvideWrapper ? '</div>' : '';
-
-
-			break;
-
-		case '3':
-
-			answer_html += bProvideWrapper ? '<div class="radio">' : '';
-
-			answer_html += '<span class="'+ q_uid_class_name +'">';
-
-			$.each(data.answer_options, function (index, answer_option){
-				answer_html +=
-				'<label class="checkbox-inline">' +
-					'<input type="checkbox" name="multi_value_checkbox" value="'+ answer_option.value +'"/> ' +
-					((answer_option.title == undefined) ? '' : answer_option.title)  +
-				'</label>';
-			});
-
-			answer_html += '</span>';
-
-			answer_html += bProvideWrapper ? '</div>' : '';
-			break;
-
-		case '4':
-
-			answer_html += bProvideWrapper ? '<div class="form-group">' : '';
-			answer_html +=
-			'<span class="'+ q_uid_class_name +'">'+
-			'<textarea name="single_value_textarea" class="form-control" rows="4"></textarea>' +
-			'</span>';
-			answer_html += bProvideWrapper ? '</div>' : '';
-			break;
-
-		case '5':
-
-			answer_html += bProvideWrapper ? '<div class="form-group">' : '';
-			answer_html +=
-			'<span class="'+ q_uid_class_name +'">'+
-			'<select name="single_value_select" class="form-control">';
-			//console.log(JSON.stringify(data.answer_options));
-
-			   //attach the non-selection option first
-			   if(data.answer_non_selection_option) {
-           $.each(data.answer_non_selection_option, function (index, answer_option){
-            answer_html +=
-            '<option value="'+ answer_option.value +'">' +
-             ((answer_option.title == undefined) ? '' : answer_option.title) +
-            '</option>';
-          });
-         }
-
-				$.each(data.answer_options, function (index, answer_option){
-
-					answer_html +=
-					'<option value="'+ answer_option.value +'">' +
-					 ((answer_option.title == undefined) ? '' : answer_option.title) +
-					'</option>';
-				});
-			answer_html += '</select>' + '</span>';
-			answer_html += bProvideWrapper ? '</div>' : '';
-			break;
-
-	}
-
-	return answer_html;
-}
 
 function appendQuestion(data) {
 
@@ -514,7 +243,7 @@ function appendQuestion(data) {
 
   // construct the question body
 
-	if(data.question_type == 1) {
+	if(data.question_type == 1) { // 1=> single question
 
     //console.log(data.question_type);
 
@@ -582,7 +311,7 @@ function appendQuestion(data) {
       event.preventDefault();
       event.stopPropagation();
 
-      
+
 
       var row_num = parseInt(localStorage.getItem('row_num'));
 
@@ -644,20 +373,6 @@ function appendQuestion(data) {
         '</div>'
       )
     );
-
-
-
-
-$(document).ready(function(){
-  //load date picker if applicable
-
-
-
-});
-
-
-//console.log('question loaded');
-
 }
 
 
@@ -676,19 +391,3 @@ function storageAvailable(type) {
 		return false;
 	}
 }
-
-
-$(document).ready(function() {
-
-  $('#cancel_survey').click(function(event) {
-
-    event.stopPropagation();
-    event.preventDefault();
-
-    if( confirm("Are you sure you want to cancel the survey?. \n data entered till now will be lost.") ) {
-      gotoPage('survey/cancel/' + localStorage.getItem('temporary_survey_number'));
-    }
-  });
-
-
-});

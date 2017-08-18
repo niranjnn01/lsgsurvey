@@ -18,7 +18,7 @@
 
     <div class="col-md-3">
       <label class="small">പിൻകോഡ്</label>
-      <input type="text" name="address_pincode" class="form-control"/>
+      <input type="text" name="address_pincode" class="form-control" data-rule-number="true"/>
     </div>
 
   </div>

@@ -156,26 +156,35 @@ function setTemporarySurveyAsCurrent($iTemporarySurveyId, $iEnumeratorAccountNo)
 					unset($aSurveyeeUsers['relationship_to_head_of_house']);
 
 					// pension type mapping
-					if( isset($aSurveyeeUsers['pension_type_id']) && !empty($aSurveyeeUsers['pension_type_id'])) {
-						$aData = ! is_array( $aSurveyeeUsers['pension_type_id'] ) ? (array)$aSurveyeeUsers['pension_type_id'] : $aSurveyeeUsers['pension_type_id'];
-						//p($aData);exit;
-						foreach($aData AS $iPensionTypeId) {
-							$aPensionDetails[] = $iPensionTypeId;
+					$aPensionDetails = array();
+					if( isset($aSurveyeeUsers['pension_type_id']) ) {
+						if( !empty($aSurveyeeUsers['pension_type_id']) )  {
+
+							$aData = ! is_array( $aSurveyeeUsers['pension_type_id'] ) ? (array)$aSurveyeeUsers['pension_type_id'] : $aSurveyeeUsers['pension_type_id'];
+							//p($aData);exit;
+							foreach($aData AS $iPensionTypeId) {
+								$aPensionDetails[] = $iPensionTypeId;
+							}
 						}
 						unset($aSurveyeeUsers['pension_type_id']);
 					}
 
 					// insurance type mapping
-					if( isset($aSurveyeeUsers['insurance_type_id']) && !empty($aSurveyeeUsers['insurance_type_id'])) {
-						$aData = ! is_array( $aSurveyeeUsers['insurance_type_id'] ) ? (array)$aSurveyeeUsers['insurance_type_id'] : $aSurveyeeUsers['insurance_type_id'];
-						foreach($aData AS $iInsuranceTypeId) {
-							$aInsuranceDetails[] = $iInsuranceTypeId;
+					$aInsuranceDetails = array();
+					if( isset($aSurveyeeUsers['insurance_type_id']) ) {
+						if(!empty($aSurveyeeUsers['insurance_type_id'])) {
+
+							$aData = ! is_array( $aSurveyeeUsers['insurance_type_id'] ) ? (array)$aSurveyeeUsers['insurance_type_id'] : $aSurveyeeUsers['insurance_type_id'];
+							foreach($aData AS $iInsuranceTypeId) {
+								$aInsuranceDetails[] = $iInsuranceTypeId;
+							}
 						}
 						unset($aSurveyeeUsers['insurance_type_id']);
 					}
 
 
 					// reservation mapping
+					$aReservationDetails = array();
 					if( isset($aSurveyeeUsers['reservation']) && !empty($aSurveyeeUsers['reservation'])) {
 						$aData = ! is_array( $aSurveyeeUsers['reservation'] ) ? (array)$aSurveyeeUsers['reservation'] : $aSurveyeeUsers['reservation'];
 						foreach($aData AS $iReservationId) {
@@ -207,7 +216,7 @@ function setTemporarySurveyAsCurrent($iTemporarySurveyId, $iEnumeratorAccountNo)
 
 					$aInsuranceDetails_all_users[$iSurveyeeUserId] 		= $aInsuranceDetails;
 					$aPensionDetails_all_users[$iSurveyeeUserId] 			= $aPensionDetails;
-					$aReservationDetails_all_users[$iSurveyeeUserId] 	= $aPensionDetails;
+					$aReservationDetails_all_users[$iSurveyeeUserId] 	= $aReservationDetails;
 				}
 
 
