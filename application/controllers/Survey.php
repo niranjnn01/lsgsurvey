@@ -41,7 +41,7 @@ class Survey extends CI_Controller {
 		$this->mcontents['iLastProcessedQuestion']	= 0;
 		$this->mcontents['bIsLastQuestion']	= FALSE;
 		$this->mcontents['sQuestionUname']	= '';
-
+		$this->mcontents['iTotalNumberOfQuestions']	= 0;
 
 		// this has to be moved to another place where the logged in user
 		// chooses to start a new survey
@@ -54,16 +54,12 @@ class Survey extends CI_Controller {
 	*/
 	$this->mcontents['aSurveyStatus'] = $this->config->item('survey_status');
 
+	$aQuestionsMasterData = $this->question_model->getQuestionMasterData();
+
+	$this->mcontents['iTotalNumberOfQuestions'] = count($aQuestionsMasterData);
+
 		if( $oCurrentSurvey ) {
 
-			//p('HERE');
-
-
-			$aQuestionsMasterData = $this->question_model->getQuestionMasterData();
-			//p($aQuestionsMasterData);
-			//p(count($aQuestionsMasterData));
-			//p($oCurrentSurvey->last_processed_question);
-			//exit;
 			if( count($aQuestionsMasterData) == $oCurrentSurvey->last_processed_question ) {
 				$this->mcontents['iSurveyStatus'] = $this->mcontents['aSurveyStatus']['processed_last_question'];
 			} else {
@@ -96,6 +92,7 @@ class Survey extends CI_Controller {
 
 		$this->load->config('question_config');
 		$this->mcontents['question_groups'] = json_encode($this->config->item('question_groups'));
+		//p($this->mcontents['question_groups']);
 		$this->mcontents['load_js']['data']['question_groups'] = json_encode($this->config->item('question_groups'));
 
 
@@ -107,11 +104,12 @@ class Survey extends CI_Controller {
 
 
 		// load the js files that will manipulate this page.
+		$this->mcontents['load_js'][] = 'survey/survey_manager_new.js';
 		$this->mcontents['load_js'][] = 'survey/survey_manager_construct_QA.js';
 		$this->mcontents['load_js'][] = 'survey/survey_manager_handle_answer.js';
 		$this->mcontents['load_js'][] = 'survey/survey_manager_event_handlers.js';
 		$this->mcontents['load_js'][] = 'survey/survey_manager_server_error_handler.js';
-		$this->mcontents['load_js'][] = 'survey/survey_manager_new.js';
+
 
 
 		$this->mcontents['load_js'][] = "jquery/jquery.validate.min.1.17.0.js";
@@ -143,10 +141,7 @@ class Survey extends CI_Controller {
 			$sError = 'Survey was not found';
 		}
 
-
-
 		$this->load->model('Processanswer_model');
-
 
 
 		if($iQuestionNo == 1) { // people details (family details)
@@ -168,10 +163,17 @@ class Survey extends CI_Controller {
 				if( $iEnumeratorAccountNo ) {
 
 					if( $oRow = $this->survey_model->getCurrentSurvey( $iEnumeratorAccountNo ) ) {
-						$this->db->where('enumerator_account_no', $iEnumeratorAccountNo);
-						$this->db->where('id', $oRow->id);
-						$this->db->set('last_processed_question', $iQuestionNo);
-						$this->db->update('temporary_survey');
+
+						// "last_processed_question" is to be used to see how far the survey has progressed.
+						//  This check is done, because we have a "previous button".
+						if($oRow->last_processed_question < $iQuestionNo) {
+
+							$this->db->where('enumerator_account_no', $iEnumeratorAccountNo);
+							$this->db->where('id', $oRow->id);
+							$this->db->set('last_processed_question', $iQuestionNo);
+							$this->db->update('temporary_survey');
+						}
+
 					}
 				}
 			}

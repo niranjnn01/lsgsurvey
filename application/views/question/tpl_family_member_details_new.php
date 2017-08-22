@@ -27,7 +27,7 @@
     <div class="col-md-3">
       <label class="small">ആധാർ നം</label>
         <span class="q_uid_5">
-          <input type="text" name="aadhaar_no{row_number}" class="form-control">
+          <input type="text" name="aadhar_id{row_number}" class="form-control">
         </span>
     </div>
   </div>
@@ -48,20 +48,20 @@
     <div class="col-md-3">
       <label class="small">മൊബൈൽ നമ്പർ</label>
         <span class="q_uid_7">
-          <input type="text" name="mobile_no{row_number}" data-rule-number="true" data-rule-minlength="10" data-rule-maxlength="10" class="form-control">
+          <input type="text" name="mobile_number{row_number}" data-rule-number="true" data-rule-minlength="10" data-rule-maxlength="10" class="form-control">
         </span>
     </div>
     <div class="col-md-3">
       <label class="small">ഇമെയിൽ വിലാസം</label>
         <span class="q_uid_8">
-          <input type="text" name="email{row_number}" data-rule-email="true" class="form-control">
+          <input type="text" name="email_id{row_number}" data-rule-email="true" class="form-control">
         </span>
     </div>
 
     <div class="col-md-3">
       <label class="small">വാട്സപ്പ്‍ നമ്പർം</label>
         <span class="q_uid_9">
-          <input type="text" name="whatsapp_no{row_number}" data-rule-number="true" data-rule-minlength="10" data-rule-maxlength="10"  class="form-control">
+          <input type="text" name="whatsapp_number{row_number}" data-rule-number="true" data-rule-minlength="10" data-rule-maxlength="10"  class="form-control">
         </span>
     </div>
   </div>
@@ -71,7 +71,7 @@
     <div class="col-md-3">
       <label class="small">ഗൃഹനാഥൻ / ഗൃഹനാഥയാണോ</label>
         <span class="q_uid_10">
-          <select name="is_head_of_family{row_number}" data-rule-is-head-of-family="true" class="form-control">
+          <select name="is_head_of_house{row_number}" data-rule-is-head-of-family="true" class="form-control">
             <option value="0">അല്ലാ</option>
             <option value="1">അതെ</option>
           </select>
@@ -132,7 +132,7 @@
 
       <div class="col-md-3">
                 <label class="small">ജനന തീയതി</label>
-        <input type="text" name="date_of_birth{row_number}" class="form-control"/>
+        <input type="text" name="date_of_birth{row_number}" class="form-control datepicker"/>
       </div>
 
       <div class="col-md-3">

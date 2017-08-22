@@ -102,7 +102,7 @@ class Survey_result extends CI_Controller {
 		$this->db->select('
 											H.id house_id,
 											H.address_house_name,
-											H.house_number address_house_no,
+											H.address_house_no,
 											H.address_street_name, H.address_pincode,
 											H.owner_id, H.house_area_range_id, H.num_floors, H.num_rooms, H.largest_accessible_vehicle,
 											H.toilet_count, H.is_electrified, H.connection_type_to_septic_tank, H.nearest_auto_stand_access_time');
@@ -183,7 +183,7 @@ house_type_id
 			FHM.residence_type_id RESIDENCE_TYPE,
 
 			H.id house_id,
-			H.house_number,
+			H.address_house_no,
 			H.address_house_name,
 			H.address_street_name,
 			H.address_pincode,
@@ -230,7 +230,7 @@ house_type_id
 
 		//p($this->mcontents['oUserPersonalData']);
 
-
+p($this->mcontents['oUserPersonalData']);
 
 		// users Investment types
 		$this->db->select('SUIM.investment_type_id as id');

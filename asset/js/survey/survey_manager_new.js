@@ -10,14 +10,12 @@ var question_groups = <?php echo $question_groups;?>;
  */
 function template_append_row_num_to_name_field(question_form_body, row_num) {
 
-  //console.log(question_form_body);
-  //console.log(row_num);
   return question_form_body.replace(/{row_number}/g, row_num);
 }
 
 $(document).ready(function() {
 
-	//console.log(question_groups[1]);
+
   if (storageAvailable('localStorage')) {
 
 		var temporary_survey_number = null;
@@ -25,8 +23,9 @@ $(document).ready(function() {
 		var temporary_survey_last_processed_question = 0;
 		var temporary_survey_is_last_question = false;
     var current_temporary_survey_status = null;
+    var total_number_of_questions = $('#current_temporary_survey_total_num_questions').val();
 
-
+    localStorage.setItem('total_number_of_questions', total_number_of_questions)
 
 		if($('#current_temporary_survey_number').val()) {
 
@@ -42,6 +41,9 @@ $(document).ready(function() {
 			displayTemporarySurveyNumber(temporary_survey_number);
 
 		}
+
+
+
 
     //var temporary_survey_number = localStorage.getItem('temporary_survey_number');
 
@@ -76,9 +78,7 @@ $(document).ready(function() {
 
     } else {
 
-      //console.log(current_temporary_survey_status);
-
-			// store survey information locally.
+      // store survey information locally.
 			localStorage.setItem('temporary_survey_number', temporary_survey_number);
 			localStorage.setItem('current_question', temporary_survey_last_procesed_question); // TO Do : fetchNextQuestion() should use "last_processed_question" instead of current_question. for more clarity in code
 			localStorage.setItem('last_question', temporary_survey_is_last_question);
@@ -89,7 +89,7 @@ $(document).ready(function() {
 
         case '1':
           //contact the server for next question
-          fetchNextQuestion();
+          fetchNextQuestion(getNextQuestionNumber('forward'), true);
           break;
 
         case '2':
@@ -130,7 +130,7 @@ function defaultForInteger(arg, val) {
 }
 
 
-function fetchNextQuestion(question_id) {
+function fetchNextQuestion(question_id, specific) {
 
   //clear the containers
   $('#question_container').html('');
@@ -148,7 +148,7 @@ function fetchNextQuestion(question_id) {
 
   //contact the server for next question
   $.ajax({
-    url:base_url + "question/get/" + temporary_survey_number + "/" + next_question_id,
+    url:base_url + "question/get/" + temporary_survey_number + "/" + next_question_id + ((specific == true) ? '?specific=true':''),
     type:"GET",
     success:function (data) {
 
@@ -165,6 +165,12 @@ function fetchNextQuestion(question_id) {
 
 			// append the question to the viewing area.
 			appendQuestion(data);
+
+      // repopulate the question if required
+      if (specific) {
+        repopulateQuestion(data);
+      }
+
 
       //remove overlay
 		  $('#survey_container').removeClass('animated fadeInLeft');
@@ -232,153 +238,6 @@ function surveyCompleteRoutines() {
 
 
 
-function appendQuestion(data) {
-
-  var answer_html = '';
-
-
-  // clear any control buttons activated during the last question
-  $('#add_button_cnt').html('');
-
-
-  // construct the question body
-
-	if(data.question_type == 1) { // 1=> single question
-
-    //console.log(data.question_type);
-
-    //console.log(JSON.stringify(data));
-		answer_html = constructAnswerFormParts(data);
-
-    //console.log(answer_html);
-
-	} else if(data.question_type == 2) {
-
-
-
-    if(data.question_form_body) {
-      var row_number = 1; // if we are appending a question, then naturally, the row number will be one.
-      answer_html += template_append_row_num_to_name_field(data.question_form_body, row_number);
-    } else {
-      var wrapping = 'table';
-
-      switch(wrapping) {
-      	case 'table':
-      			answer_html = '<table>';
-
-      				answer_html += '<tr>';
-      				$.each(data.questions, function (index, question_data){
-
-      					answer_html += '<th class="text-center">' + question_data.title + '</th>';
-
-      				});
-      				answer_html += '</tr>';
-
-
-      				answer_html += '<tr>';
-      				$.each(data.questions, function (index, question_data){
-
-      					answer_html += '<td class="text-center">';
-      					answer_html += constructAnswerFormParts(question_data, false);
-      					answer_html += '</td>';
-      				});
-      				answer_html += '</tr>';
-
-      			answer_html += '</table>';
-      			break;
-
-
-      }
-    }
-
-	}
-
-
-  if(data.is_multipliable == true) {
-
-    // add the addition button
-    $('#add_button_cnt').html('<a href="#" class="btn btn-primary" id="add_question_set"> + </a>');
-
-    // store the form body locally
-    localStorage.setItem('question_form_body', data.question_form_body);
-
-    // set the row number
-    localStorage.setItem('row_num', 1);
-
-    // make the add button clickable.
-    $('#add_question_set').on('click', function(event){
-
-      event.preventDefault();
-      event.stopPropagation();
-
-
-
-      var row_num = parseInt(localStorage.getItem('row_num'));
-
-      var question_form_body = $(localStorage.getItem('question_form_body'));
-
-      if( row_num % 2 != 0 ) {
-        question_form_body.removeClass('odd-row');
-      }
-
-      // place the updated counter
-      row_num++;
-      $(question_form_body).find('.counter').html(row_num);
-
-
-      // access the form HTML
-      var question_form_body_html = question_form_body.prop('outerHTML');
-
-      //append the row number to all names of the form.
-      question_form_body_html = template_append_row_num_to_name_field(question_form_body_html, row_num)
-
-
-      $('#question_container .answer_block').append(question_form_body_html);
-
-      localStorage.setItem('row_num', row_num );
-    });
-
-  }
-
-
-
-	// --- Handle the display of controls (buttons etc)
-
-  //$('#previous_btn').prop('disabled', false);
-  if(data.question_no == data.question_count){
-  	$('#next_btn').text('Save & Complete Survey');
-  }else if(data.question_no == 1){
-	  //$('#previous_btn').prop('disabled', true);
-  }else{
-	  $('#next_btn').text('Next Question');
-  }
-
-
-
-	// update question number to the display
-	$('#question-status').text(data.question_no+' of '+data.question_count);
-
-	// update the group information of the question
-  $('#question-group-id').text(question_groups[data.group_id].title);
-
-	// place question in its container
-
-    $('#question_container').html(
-      $(
-        '<h3>'+
-        data.title +
-        '</h3>'+
-        '<div class="answer_block">'+
-        	answer_html +
-        '</div>'
-      )
-    );
-}
-
-
-
-
-
 function storageAvailable(type) {
 	try {
 		var storage = window[type],
@@ -390,4 +249,31 @@ function storageAvailable(type) {
 	catch(e) {
 		return false;
 	}
+}
+
+/**
+ * get the next question number based on "current_question"
+ *
+ * if current question is not withhing range, then current question is returned.
+ * @return {[type]} [description]
+ */
+function getNextQuestionNumber(direction) {
+
+  var next_question_no = current_question = parseInt(localStorage.getItem('current_question'));
+  var total_number_of_questions = parseInt(localStorage.getItem('total_number_of_questions'));
+
+  switch(direction) {
+    case 'forward':
+      next_question_no =  current_question + 1;
+      break;
+    case 'backward':
+      next_question_no =  current_question - 1;
+      break;
+  }
+
+  if( ! (next_question_no >= 1) || ! (next_question_no <= total_number_of_questions) ) {
+    next_question_no = current_question;
+  }
+
+  return next_question_no;
 }

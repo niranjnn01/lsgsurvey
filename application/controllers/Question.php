@@ -141,6 +141,8 @@ class Question extends CI_Controller {
 		$aQuestionData = array();
 		$sJsonData = '{}';
 
+		// see if we are requested a specific question.
+		$bIsSpecificQuestionRequested = safeText('specific', false, 'get') == 'true' ? TRUE : FALSE;
 
 		$questions_master_data	= $this->question_model->getQuestionMasterData();
 
@@ -153,43 +155,26 @@ class Question extends CI_Controller {
 
 		$sError = '';
 
-		// find the next question number
-		list($iQuestionNo, $iQuestionUid, $sErrorMessage) = $this->survey_model->getNextQuestionNumber($iTemporarySurveyNumber);
+		$sErrorMessage = '';
 
-		log_message('error', 'Next calculated question : question_number('.$iQuestionNo.') , question_uid('.$iQuestionUid.')');
+		// find the question number
+		if($bIsSpecificQuestionRequested) {
+
+			// fetch details of the given question number
+			list($iQuestionNo, $iQuestionUid, $sErrorMessage) = $this->survey_model->getQuestionDetailsFromChronologicalOrderNumber($iQuestionNo);
+			//log_message('error', 'Next specified question : question_number('.$iQuestionNo.') , question_uid('.$iQuestionUid.')');
+		} else {
+
+			// fetch details of the next question number in chronological order
+			list($iQuestionNo, $iQuestionUid, $sErrorMessage) = $this->survey_model->getNextQuestionNumber($iTemporarySurveyNumber);
+			//log_message('error', 'Next calculated question : question_number('.$iQuestionNo.') , question_uid('.$iQuestionUid.')');
+		}
+
 
 		if($iQuestionNo == FALSE || $sErrorMessage != '' || ! $iQuestionUid) {
 			$bProceed = FALSE;
 			$sErrorMessage = '';
 		}
-
-
-/*
-		// check conditions.
-		if(! $iQuestionNo) {
-			$bProceed = FALSE;
-			$sError = 'No question no:';
-		}
-		if(
-				$bProceed  &&
-				(
-					$iQuestionNo < 1
-					||
-					($iQuestionNo > $iTotalQuestionCount)
-				)
-			) {
-				$bProceed = FALSE;
-				$sError = 'shady question no:';
-		}
-*/
-
-
-
-/*
-		if( ! $this->survey_model->isValidTemporarySurveyNumber($iTemporarySurveyNumber) ) {
-			$bProceed = FALSE;
-		}
-*/
 
 
 		// all ok. we can proceed
@@ -199,7 +184,7 @@ class Question extends CI_Controller {
 
 			// Is this the last question ?
 			$bIsLastQuestion = $this->survey_model->isLastQuestion($iQuestionNo);
-//p($aQuestionsMasterData);
+
 			if(isset($aQuestionsMasterData[$iQuestionUid])) {
 
 				//get the question data
@@ -222,6 +207,12 @@ class Question extends CI_Controller {
 
 					$aQuestionData['question_form_body'] = $this->load->view($aQuestionData['template'], $aQuestionData, TRUE);
 				}
+
+				// If a question was alrady asnwered, then get the data that was populated.
+				if( $bIsSpecificQuestionRequested ) {
+					$aQuestionData['populated_answer'] = $this->survey_model->getPopulatedAnswer($iTemporarySurveyNumber, $iQuestionNo);
+				}
+
 
 				// encode the data
 				$sJsonData = json_encode($aQuestionData);

@@ -4,8 +4,6 @@
 
   $("#question_container").on('click', '.datepicker', function () {
 
-    //console.log('loading date picker');
-
     $( this ).datepicker(
       {
         dateFormat: 'yy-mm-dd',
@@ -16,7 +14,6 @@
     );
     $( this ).datepicker( "show" );
   });
-
 
 
   $('#next_btn').click(function (event) {
@@ -34,8 +31,19 @@
 
     event.preventDefault();
 
-    // handle the current answer
-    handleCurrentAnswer('prev');
+    var current_question_no = parseInt(localStorage.getItem('current_question'));
+
+    if(current_question_no > 1) {
+
+      var previous_question_no = current_question_no - 1;
+
+      var load_populated_data = true;
+      fetchNextQuestion(previous_question_no, load_populated_data);
+
+      //set this question as the current question
+      localStorage.setItem('current_question',previous_question_no);
+    }
+
   });
 
 

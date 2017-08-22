@@ -408,6 +408,10 @@ function slice() {
 
 		$this->load->model('question_model');
 		$this->question_model->generateConfig_QuestionsInOrder();
+
+		// regenerate the question groups config array as well.
+		$this->QuestionTransfer_model->generateQuestionGroupConfigArray();
+
 	}
 
 	function index_old() {

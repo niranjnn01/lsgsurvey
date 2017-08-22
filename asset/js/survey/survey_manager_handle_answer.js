@@ -88,10 +88,7 @@ function handleCurrentAnswer(direction) {
       }
 		}
 
-/*
-console.log(JSON.stringify(oDataObject));
-return false;
-*/
+
 
     // see if this data is valid
     if( is_data_valid() ) {
@@ -116,8 +113,12 @@ return false;
 
             } else {
 
-              dont_confirm_leave = 0;
-              fetchNextQuestion();
+              dont_confirm_leave = 0; // this is no longer needed as the server will remember the last question answered for a given survey.
+
+              var next_question_number = getNextQuestionNumber('forward');
+              var specific = true; // this is required so that previous populated value is also fetched . if available.
+                                  // required in the context of next and previous button. and the cases it gives.
+              fetchNextQuestion(next_question_number, specific);
             }
 
           } else {

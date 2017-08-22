@@ -154,17 +154,13 @@ function getAnswerOptions($iQuestionUid, $bAttachNonSelectionOption = false) {
 	 */
 	function getQuestionDetailsByUID($sUid) {
 
-		$aQuestionsMasterData = $this->getQuestionMasterData();
-//p((array_column($aQuestionsMasterData, 'uid')));exit;
-		$aData = array();
-		$key = array_search($sUid, array_column($aQuestionsMasterData, 'uid'));
-		if($key !== FALSE) {
+		$aQuestionsMasterData = $this->getQuestionMasterData_raw();
 
-			$key ++;
-			$aData = $aQuestionsMasterData[$key];
-		}
-		if(!$aData) {
-			p($sUid);
+
+		$aData = array();
+
+		if(isset($aQuestionsMasterData[$sUid])) {
+			$aData = $aQuestionsMasterData[$sUid];
 		}
 
 		//normalize it
@@ -173,6 +169,21 @@ function getAnswerOptions($iQuestionUid, $bAttachNonSelectionOption = false) {
 		return $aData;
 	}
 
+
+function getQuestionDetailsByNo($iQuestionNo) {
+
+	$aData = array();
+	$this->load->config('question_in_order_config');
+	$aQuestionsInOrder = $this->config->item('questions_in_order');
+
+	if(isset($aQuestionsInOrder[$iQuestionNo])) {
+
+		$aData = $this->getQuestionDetailsByUID($aQuestionsInOrder[$iQuestionNo]);
+		//echo 'here';
+	}
+
+	return $aData;
+}
 
 
 	/**
@@ -261,6 +272,10 @@ function getAnswerOptions($iQuestionUid, $bAttachNonSelectionOption = false) {
 				$sOutterStart = '<div class="checkbox">';
 				$sOutterEnd = '</div>';
 			}
+			if( $aQuestionDetails['answer_type'] == $aAnswerTypes['single_value_select'] ) {
+				$sOutterStart = '<div class="form-group">';
+				$sOutterEnd = '</div>';
+			}
 			if( $aQuestionDetails['answer_type'] == $aAnswerTypes['single_value_text'] ) {
 				$sOutterStart = '<div class="form-group">';
 				$sOutterEnd = '</div>';
@@ -306,6 +321,12 @@ function getAnswerOptions($iQuestionUid, $bAttachNonSelectionOption = false) {
 					$sFormRow .= '</select>';
 				}
 
+
+
+				if( $aQuestionDetails['answer_type'] == $aAnswerTypes['single_value_text'] ) {
+
+					$sFormRow .= '<input type="text" name="'. $sFormElementName .'" class="form-control">';
+				}
 			$sFormRow .= $sOutterEnd;
 
 
@@ -356,14 +377,18 @@ function getAnswerOptions($iQuestionUid, $bAttachNonSelectionOption = false) {
 	}
 
 
+
 	function normalizeQuestion($aQuestion) {
 
 		$aQuestionTypes = $this->config->item('question_types');
 		$aAnswerTypesDetails = $this->config->item('answer_types_details');
 		$aAnswerTypes = $this->config->item('answer_types');
 
-
-
+/*
+if( !isset($aQuestion['answer_type']) ) {
+	p($aQuestion);exit;
+}
+*/
 		$aNormalizedQuestionStructure = array(
 
 			'title' 											=> '',
@@ -375,7 +400,7 @@ function getAnswerOptions($iQuestionUid, $bAttachNonSelectionOption = false) {
 			'question_type' 							=> $aQuestionTypes['individual'],
 			'questions' 									=> array(),
 			'default_value' 							=> null,
-			'ci_validation' 							=> $aQuestion['ci_validation'],	
+			'ci_validation' 							=> $aQuestion['ci_validation'],
 			'ui_validation' 							=> $aQuestion['ui_validation'],
 			'question_template' 					=> '',
 			'multiple_answer_sets' 				=> false,

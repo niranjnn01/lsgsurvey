@@ -62,14 +62,18 @@ class Processanswer_model
         $aTableFieldName_to_FormFieldName_map = array(
           'name'                      => 'name',
           'gender'                    => 'gender',
-          'aadhar_id'                 => 'aadhaar_no',
           'election_id'               => 'election_id',
-          'mobile_number'             => 'mobile_no',
-          'email_id'                  => 'email',
-          'whatsapp_number'           => 'whatsapp_no',
-          'employment_category'       => 'employment_category',
+          'aadhar_id'                 => 'aadhar_id',
+
+          'reservation'               => 'reservation',
+          'mobile_number'             => 'mobile_number',
+          'email_id'                  => 'email_id',
+          'whatsapp_number'           => 'whatsapp_number',
+
+          'is_head_of_house'          => 'is_head_of_house',
+          'relationship_to_head_of_house' => 'relationship_to_head_of_house',
           'educational_qualification' => 'educational_qualification',
-          //'reservation'               => 'reservation',
+          'employment_category'       => 'employment_category',
 
           'date_of_birth'             => 'date_of_birth',
           'marital_status'            => 'marital_status',
@@ -89,39 +93,45 @@ class Processanswer_model
         }
 
 
-				// reservation
-				/*
-				if(safeText($aItem['reservation'], false, '', TRUE) == $this->aReservationCategories['scst']) {
-					$aInput['is_scst'] = 1;
-				} elseif(safeText($aItem['reservation'], false, '', TRUE) == $this->aReservationCategories['obc']) {
-					$aInput['is_obc'] = 1;
-				}
-        */
 
 				// head of family
-				$aInput['is_head_of_house'] = safeText($aItem['is_head_of_family' . $iRowNumber], false, '', TRUE) == 1 ? 1 : 0;
+				//$aInput['is_head_of_house'] = safeText($aItem['is_head_of_family' . $iRowNumber], false, '', TRUE) == 1 ? 1 : 0;
 
 				//relationship with head of family
+				/*
 				if( ! $aInput['is_head_of_house'] ) {
 					$aInput['relationship_to_head_of_house'] = safeText($aItem['relationship_to_head_of_house' . $iRowNumber], false, '', TRUE);
 				}
-
+*/
 
 
 
 				$aNormalizedInput = array(
 					'name' => '',
 					'gender' => NULL,
-					'aadhar_id' => '',
-					'election_id' => '',
-					'mobile_number' => '',
+          'election_id' => '',
+          'aadhar_id' => '',
+
+          'reservation' => NULL,
+          'mobile_number' => '',
 					'email_id' => '',
 					'whatsapp_number' => '',
+
+          'is_head_of_house' => NULL,
+          'relationship_to_head_of_house' => NULL,
 					'employment_category' => NULL,
 					'educational_qualification' => NULL,
-					'is_head_of_house' => NULL,
-					'relationship_to_head_of_house' => NULL,
-					'reservation' => NULL,
+
+          'date_of_birth'             => NULL,
+          'marital_status'            => NULL,
+          'has_passport'              => NULL,
+          'has_driving_license'       => NULL,
+
+          'has_bank_account'          => NULL,
+          'blood_group'               => NULL,
+          'pension_type_id'           => NULL,
+          'insurance_type_id'         => NULL
+
 				);
 
 				$aInput = array_merge($aNormalizedInput, $aInput);
@@ -164,17 +174,25 @@ function process_Answers_Address_Question () {
 				$aData = unserialize($oTemporarySurvey->raw_data);
 
 				$aInput = array();
-
+/*
 				$aInput['house_no'] 		= safeText('address_house_no');
 				$aInput['house_name'] 	= safeText('address_house_name');
 				$aInput['street_name'] 	= safeText('address_street_name');
 				$aInput['pincode'] 			= safeText('address_pincode');
+*/
+
+
+				$aInput['address_house_no'] 		= safeText('address_house_no');
+				$aInput['address_house_name'] 	= safeText('address_house_name');
+				$aInput['address_street_name'] 	= safeText('address_street_name');
+				$aInput['address_pincode'] 			= safeText('address_pincode');
+
 
 				$aNormalizedInput = array(
-					'house_no' 		=> '',
-				  'house_name' 	=> '',
-				  'street_name' => '',
-				  'pincode' 		=> '',
+					'address_house_no' 		=> '',
+				  'address_house_name' 	=> '',
+				  'address_street_name' => '',
+				  'address_pincode' 		=> '',
 				);
 
 				$aInput = array_merge($aNormalizedInput, $aInput);
@@ -214,11 +232,7 @@ function process_Answers_Address_Question () {
 
         // get the individual question
         $aQuestion = $this->question_model->getQuestionDetailsByOrder($iQuestionNo);
-//p($aQuestion);
-/*
-				$this->load->model('question_model');
-				$aQuestionData = $this->question_model->normalizeQuestion($aQuestion);
-*/
+
 				$aData = unserialize($oTemporarySurvey->raw_data);
 
 
@@ -245,9 +259,12 @@ function process_Answers_Address_Question () {
           safeText($answer_types_details[$aQuestion['answer_type']]['field_name']) == '' ||
           is_null(safeText($answer_types_details[$aQuestion['answer_type']]['field_name']))
         ) {
-          $bIsSkippedQuestion == TRUE;
+          $bIsSkippedQuestion = TRUE;
         }
-
+/*
+        log_message('error', var_export(safeText($answer_types_details[$aQuestion['answer_type']]['field_name']), TRUE));
+        log_message('error', var_export($bIsSkippedQuestion, TRUE));
+*/
 
         // get the value
         $value = $aQuestion['default_value'];

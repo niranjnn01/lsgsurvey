@@ -95,7 +95,9 @@ $autoload['config'] = array('site_config',
                             'settings',
                             'user',
 
-                            
+                            // generated config files
+                            'generated_question_group_config'
+
                             );
 
 

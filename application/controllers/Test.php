@@ -11,9 +11,30 @@ class Test extends CI_Controller {
 
   function index() {
 
-    
+
 		$this->mcontents['load_js'][] = 'validation/test.js';
 
     loadTemplate('test/index');
   }
+
+
+	function assign_uname() {
+
+		$this->db->select('uid,field_name');
+		foreach($this->db->get('questions')->result() AS $oRow) {
+
+			$this->db->where('uid', $oRow->uid);
+			$this->db->set('uname', strtolower($oRow->field_name));
+			$this->db->update('questions');
+		}
+	}
+
+	function identify_uname () {
+
+		foreach($this->db->get('questions')->result() AS $oRow) {
+			echo '\'', $oRow->uname, '\', ';
+		}
+
+	}
+
 }

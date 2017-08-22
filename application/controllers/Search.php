@@ -7,7 +7,7 @@ class Search extends CI_Controller {
 
 		parent::__construct();
 
-		$this->mcontents['bTesting'] = FALSE;
+		$this->mcontents['bTesting'] = TRUE;
 
 	}
 
@@ -26,6 +26,9 @@ class Search extends CI_Controller {
 		$this->mcontents['menu_active']	= 'survey_search';
 		$this->mcontents['load_js'][] = 'survey/search.js';
 
+		$this->mcontents['sSearchTemplate'] = $this->load->view('search_template/generated_template_1',array(), true);
+
+
 		loadTemplate('search/index');
 	}
 
@@ -33,8 +36,6 @@ class Search extends CI_Controller {
 
 
 		public function do_search() {
-
-
 
 					// defining our response
 					$aJsonData = array(
@@ -78,6 +79,10 @@ class Search extends CI_Controller {
 					// family head - we are looking at details of head of family only
 					$aWhere['SUFM.is_head'] = 1;
 
+					//name of head of house
+					if($sFamilyHeadName = safeText('name', FALSE, 'get')) {
+						$aLike['SU.name'] = $sFamilyHeadName;
+					}
 
 							 // HOUSE OWNERSHIP
 							 $iHouseOwnerShipType = safeText('house_ownership', FALSE, 'get');
@@ -733,7 +738,7 @@ class Search extends CI_Controller {
 
 
 
-	public function do_search_old() {
+	public function do_search_old_to_delete() {
 
 
 		// defining our response
@@ -835,5 +840,5 @@ class Search extends CI_Controller {
 
 }
 
-/* End of file account.php */
-/* Location: ./application/controllers/account.php */
+/* End of file Search.php */
+/* Location: ./application/controllers/Search.php */

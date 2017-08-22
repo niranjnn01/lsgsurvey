@@ -45,9 +45,9 @@
 				<div class="row">
 	      	<div class="col-md-12">
 	            <div class="col-md-4">
-	           			<?php /*?>
+
 	                <button id="previous_btn" class="btn btn-primary">Previous Question</button>
-									<?php */?>
+
 	            </div>
 
 	            <div class="col-md-4">
@@ -58,6 +58,7 @@
 
 	            <div class="col-md-4">
 	                <button id="next_btn" class="btn btn-primary pull-right">Next Question</button>
+
 	            </div>
 					</div>
 				</div>
@@ -71,6 +72,7 @@
 			<input type="hidden" id="current_temporary_survey_is_last_question" value="<?php echo $bIsLastQuestion ? 1 : 0;?>" />
 
 			<input type="hidden" id="current_temporary_survey_current_question_uname" value="<?php echo $sQuestionUname;?>" />
+			<input type="hidden" id="current_temporary_survey_total_num_questions" value="<?php echo $iTotalNumberOfQuestions;?>" />
 
 		</form>
 
