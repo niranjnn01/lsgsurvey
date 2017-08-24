@@ -7,6 +7,78 @@ class Survey_model extends CI_Model{
 		$this->load->config('survey_config');
 	}
 
+
+	function deleteSurvey($iSurveyId) {
+
+		$this->db->where('id', $iSurveyId);
+		$oSurvey = $this->db->get('surveys')->row();
+
+		$this->db->select('SU.id surveyee_user_id, SUFM.family_id');
+		$this->db->join('surveyee_user_family_map SUFM', 'SU.id = SUFM.surveyee_user_id');
+		$this->db->where('SU.id', $oSurvey->surveyee_user_id__head_of_family);
+		$oSurveyeeUser = $this->db->get('surveyee_users SU')->row();
+
+		$this->db->select('H.id house_id');
+		$this->db->join('family_house_map FHM', 'FHM.house_id = H.id');
+		$this->db->where('FHM.family_id', $oSurveyeeUser->family_id);
+		$oHouse = $this->db->get('houses H')->row();
+
+
+		$this->db->select('L.id land_id');
+		$this->db->join('land_house_map LHM', 'LHM.land_id = L.id');
+		$this->db->where('LHM.house_id', $oHouse->house_id);
+		$oLand = $this->db->get('lands L')->row();
+
+
+		$bProceed = true;
+
+		if($oSurvey && $oSurveyeeUser && $oHouse && $oLand) {
+
+			p($oSurvey);
+			p($oSurveyeeUser);
+			p($oHouse);
+			p($oLand);
+			// Delete should happen as a single transaction
+
+			/**
+			 *
+			 *  START TRANSACTION
+			 */
+			$this->db->trans_start();
+
+			if($bProceed) {
+
+				// delete survey
+				$this->db->where('id', $oSurvey->id);
+				$this->db->delete('surveys');
+
+				// delete survey user
+				$this->db->where('id', $oSurveyeeUser->surveyee_user_id);
+				$this->db->delete('surveyee_users');
+
+				// delete Family
+				$this->db->where('id', $oSurveyeeUser->family_id);
+				$this->db->delete('families');
+
+				// delete house
+				$this->db->where('id', $oHouse->house_id);
+				$this->db->delete('houses');
+
+				// delete survey
+				$this->db->where('id', $oLand->land_id);
+				$this->db->delete('lands');
+			}
+
+
+			/**
+			 *
+			 *  TRANSACTION COMPLETE
+			 */
+			$this->db->trans_complete();
+
+		}
+	}
+
 	/**
 	 *
 	 * Create temporary survey for the currently logged in enumerator
@@ -121,7 +193,10 @@ class Survey_model extends CI_Model{
 
 				// CREATION OF SURVEY SHOULD HAPPEN IN A SINGLE TRANSACTION
 
-				// START TRANSACTION
+				/**
+				 *
+				 *  START TRANSACTION
+				 */
 				$this->db->trans_start();
 
 				$iHeadOfFamily_iSurveyeeUserId = 0;
@@ -141,6 +216,7 @@ class Survey_model extends CI_Model{
 
 					$aFamilyMemberDetails['relationship_to_head_of_house'] = null;
 					$aFamilyMemberDetails['is_head'] = null;
+
 					if($aSurveyeeUsers['is_head_of_house'] != 1) {
 						$aFamilyMemberDetails['relationship_to_head_of_house'] = $aSurveyeeUsers['relationship_to_head_of_house'];
 					} else {
@@ -213,7 +289,9 @@ class Survey_model extends CI_Model{
 					$aInsuranceDetails_all_users[$iSurveyeeUserId] 		= $aInsuranceDetails;
 					$aPensionDetails_all_users[$iSurveyeeUserId] 			= $aPensionDetails;
 					$aReservationDetails_all_users[$iSurveyeeUserId] 	= $aReservationDetails;
-				}
+
+				} // end of foreach
+
 
 
 				// create the family entity
@@ -221,6 +299,7 @@ class Survey_model extends CI_Model{
 				$this->db->insert('families');
 				$iFamilyId = $this->db->insert_id();
 
+//p($aFamilyDetails);exit;
 				// Build the user-to-family relationship.
 				foreach ($aFamilyDetails as $aFamilyMemberDetails) {
 
@@ -230,13 +309,13 @@ class Survey_model extends CI_Model{
 						$this->db->set('family_id', $iFamilyId);
 						$this->db->insert('surveyee_user_family_map');
 
-						if($aFamilyMemberDetails['is_head']) {
+						if($aFamilyMemberDetails['is_head'] == 1) {
 							$iHeadOfFamily_iSurveyeeUserId =  $aFamilyMemberDetails['surveyee_user_id'];
 						}
 				}
 
 
-//p($aInsuranceDetails_all_users);exit;
+//p($iHeadOfFamily_iSurveyeeUserId);exit;
 
 				// build family members insurance details
 				foreach($aInsuranceDetails_all_users AS $iUserId => $aInsuranceTypeIds)  {
@@ -349,7 +428,7 @@ class Survey_model extends CI_Model{
 				// house ownership
 				if(isset($aRawData['TEMP']['is_own_house']) && $aRawData['TEMP']['is_own_house'] == 1 ) {
 
-					//own house
+					//This house is own house.
 					$this->db->where('id', $iHouseId);
 					$this->db->set('owner_id', $iHeadOfFamily_iSurveyeeUserId);
 					$this->db->update('houses');
@@ -665,7 +744,8 @@ class Survey_model extends CI_Model{
 
 				// create survey
 				$this->db->set('enumerator_account_no', $oSurveyData->enumerator_account_no);
-				$this->db->set('house_id', $iHouseId);
+				//$this->db->set('house_id', $iHouseId);
+				$this->db->set('surveyee_user_id__head_of_family', $iHeadOfFamily_iSurveyeeUserId); // head of family.
 				$this->db->insert('surveys');
 				$iSurveyeId = $this->db->insert_id();
 
@@ -853,11 +933,11 @@ class Survey_model extends CI_Model{
 					// we have multiple fields per form for only the first two questions
 					switch($iQuestionNo) {
 						case 1:// people details (family details)
-							$value = $aUnserializedRawData['surveyee_users_new'];
+							$value = isset($aUnserializedRawData['surveyee_users_new']) ? $aUnserializedRawData['surveyee_users_new'] : array();
 							break;
 
 						case 2:// house address
-							$value = $aUnserializedRawData['address_new'];
+							$value = isset($aUnserializedRawData['address_new']) ? $aUnserializedRawData['address_new'] : array();
 							break;
 
 						default:

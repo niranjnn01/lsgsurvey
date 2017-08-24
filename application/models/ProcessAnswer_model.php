@@ -38,7 +38,10 @@ class Processanswer_model
 		$answer_types_details	= $this->config->item('answer_types_details');
 
 
-		$this->db->where('id', $iCurrentTemporarySurveyId);
+    $iEnumeratorAccountNo = s('ACCOUNT_NO');
+
+    $this->db->where('enumerator_account_no', s('ACCOUNT_NO'));
+    $this->db->where('id', $iCurrentTemporarySurveyId);
 		$oTemporarySurvey = $oRow = $this->db->get('temporary_survey')->row();
 
 		if($oTemporarySurvey) {
@@ -150,7 +153,7 @@ class Processanswer_model
 
 
       //save data to temporary table
-			$this->updateTemporaryTable($this->iEnumeratorAccountNo, $aData, 'raw_data' );
+			$this->updateTemporaryTable($iEnumeratorAccountNo, $aData, 'raw_data', $iCurrentTemporarySurveyId );
 
 		}
 
@@ -158,15 +161,14 @@ class Processanswer_model
 	}
 
 
-function process_Answers_Address_Question () {
+function process_Answers_Address_Question ($iCurrentTemporarySurveyId) {
 
 
-			//$this->load->config('question_config');
 
-			//$questions_master_data 	= $this->config->item('questions_master_data');
-			//$answer_types_details	= $this->config->item('answer_types_details');
+      $iEnumeratorAccountNo = s('ACCOUNT_NO');
 
-			$this->db->where('enumerator_account_no', s('ACCOUNT_NO'));
+			$this->db->where('enumerator_account_no', $iEnumeratorAccountNo);
+      $this->db->where('id', $iCurrentTemporarySurveyId);
 			$oTemporarySurvey = $oRow = $this->db->get('temporary_survey')->row();
 
 			if($oTemporarySurvey) {
@@ -174,13 +176,6 @@ function process_Answers_Address_Question () {
 				$aData = unserialize($oTemporarySurvey->raw_data);
 
 				$aInput = array();
-/*
-				$aInput['house_no'] 		= safeText('address_house_no');
-				$aInput['house_name'] 	= safeText('address_house_name');
-				$aInput['street_name'] 	= safeText('address_street_name');
-				$aInput['pincode'] 			= safeText('address_pincode');
-*/
-
 
 				$aInput['address_house_no'] 		= safeText('address_house_no');
 				$aInput['address_house_name'] 	= safeText('address_house_name');
@@ -200,7 +195,7 @@ function process_Answers_Address_Question () {
 
 				$aData['address_new'] = $aInput;
 
-				$this->updateTemporaryTable($this->iEnumeratorAccountNo, $aData, 'raw_data' );
+				$this->updateTemporaryTable($this->iEnumeratorAccountNo, $aData, 'raw_data', $oTemporarySurvey->id);
 
 			}
 
@@ -211,7 +206,7 @@ function process_Answers_Address_Question () {
 }
 
 
-		function processAnswerForQuestion($iQuestionNo){
+		function processAnswerForQuestion($iQuestionNo, $iCurrentTemporarySurveyId){
 
 			$this->load->config('question_config');
 
@@ -221,7 +216,10 @@ function process_Answers_Address_Question () {
 			$questions_master_data 	= $this->question_model->getQuestionMasterData();
 			$answer_types_details	= $this->config->item('answer_types_details');
 
-			$this->db->where('enumerator_account_no', s('ACCOUNT_NO'));
+      $iEnumeratorAccountNo = s('ACCOUNT_NO');
+
+			$this->db->where('enumerator_account_no', $iEnumeratorAccountNo);
+      $this->db->where('id', $iCurrentTemporarySurveyId);
 			$oTemporarySurvey = $oRow = $this->db->get('temporary_survey')->row();
 
       $sError = '';
@@ -280,7 +278,7 @@ function process_Answers_Address_Question () {
 
   				$aData[$aQuestion['table_name']][$aQuestion['field_name']] = $value;
 
-  				$this->updateTemporaryTable($this->iEnumeratorAccountNo, $aData, 'raw_data' );
+  				$this->updateTemporaryTable($this->iEnumeratorAccountNo, $aData, 'raw_data', $iCurrentTemporarySurveyId);
         }
 
 
@@ -345,10 +343,10 @@ function process_Answers_Address_Question () {
 
 
 
-		function updateTemporaryTable($iEnumeratorAccountNo, $aData, $sGroupName ) {
+		function updateTemporaryTable($iEnumeratorAccountNo, $aData, $sGroupName, $iTemporarySurveyNumber ) {
 
 			$sSectionFieldName = $sGroupName;
-
+      $this->db->where('id', $iTemporarySurveyNumber);
 			$this->db->where('enumerator_account_no', s('ACCOUNT_NO'));
 			$this->db->set($sSectionFieldName, serialize($aData));
 			$this->db->update('temporary_survey');

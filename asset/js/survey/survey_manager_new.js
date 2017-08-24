@@ -191,7 +191,7 @@ function fetchNextQuestion(question_id, specific) {
  * @param  {[type]} survey_id [description]
  * @return {[type]}           [description]
  */
-function showSurveyCompleteView(survey_id) {
+function showSurveyCompleteView(data) {
 
   // remove all buttons etc
   $('#survey_container').html('');
@@ -202,8 +202,8 @@ function showSurveyCompleteView(survey_id) {
   $('#survey_container').html(
     $(
       '<div style="text-align:center;">' +
-        '<h4>Survey has been completed !</h4>' +
-        '<a href="'+base_url+'survey/data/'+survey_id+'" style="align:center" class="btn btn-primary">View the data collected' +
+        '<h4>'+ data.success_msg +'</h4>' +
+        '<a href="'+base_url+'survey_result/view/'+data.survey_id+'" style="align:center" class="btn btn-primary">View the data collected' +
         '</a>' +
       '</div>'
       )
@@ -222,7 +222,7 @@ function surveyCompleteRoutines() {
 
       if(data.error == '') {
 
-        showSurveyCompleteView(data.survey_id);
+        showSurveyCompleteView(data);
 	      dont_confirm_leave = 1;
 
       } else {

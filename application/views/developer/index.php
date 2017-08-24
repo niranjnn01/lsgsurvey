@@ -18,7 +18,7 @@
     <td>Created On</td>
     <td>Enumerator</td>
     <td>Raw Data</td>
-    <td>Final Survey</td>
+    <td>Delete Survey</td>
   </th>
 <?php foreach($aTemporarySurveys AS $oItem):?>
   <tr>
@@ -37,6 +37,14 @@
       </a>
 
     </td>
+
+    <td>
+      <a href="<?php echo $c_base_url, 'test/delete_survey/', $oItem->survey_id;?>">
+        Delete Survey
+      </a>
+
+    </td>
+
   </tr>
 <?php endforeach;?>
 </table>

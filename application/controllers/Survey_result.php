@@ -98,55 +98,12 @@ class Survey_result extends CI_Controller {
 		$this->db->join('users U', 'U.account_no = S.enumerator_account_no');
 		$this->mcontents['oSurveyData'] = $this->db->get('surveys S')->row();
 
-		// get house Details
-		$this->db->select('
-											H.id house_id,
-											H.address_house_name,
-											H.address_house_no,
-											H.address_street_name, H.address_pincode,
-											H.owner_id, H.house_area_range_id, H.num_floors, H.num_rooms, H.largest_accessible_vehicle,
-											H.toilet_count, H.is_electrified, H.connection_type_to_septic_tank, H.nearest_auto_stand_access_time');
-		$this->db->where('S.id', $this->mcontents['oSurveyData']->id);
-		$this->db->join('surveys S', 'H.id = S.house_id');
-		$this->mcontents['oHouseData'] = $this->db->get('houses H')->row();
 
-		// hous tax
-		$this->db->where('HT.house_id', $this->mcontents['oHouseData']->house_id);
-		$this->mcontents['oHouseData']->amount = $this->db->get('house_tax HT')->row()->amount;
-//p($this->mcontents['oHouseData']);
-
-/*
-$this->mcontents['oHouseData']
-house_type_id
-*/
-
-
-		// get house types
-		$this->mcontents['oHouseData']->house_type_id = [];
-
-		$this->db->select('HHTM.house_type_id as id');
-		$this->db->where('HHTM.house_id', $this->mcontents['oHouseData']->house_id);
-		$aHouseHouseTypesMap = $this->db->get('house_house_type_map HHTM')->result();
-		foreach($aHouseHouseTypesMap as $oItem){
-			array_push($this->mcontents['oHouseData']->house_type_id, $oItem->id);
-		}
-
-
-		// get house floor types
-		$this->mcontents['oHouseData']->floor_type_id = [];
-
-		$this->db->select('HFTM.floor_type_id as id');
- 		$this->db->where('HFTM.house_id', $this->mcontents['oHouseData']->house_id);
- 		$aHomeFloorTypesMap = $this->db->get('house_floor_type_map HFTM')->result();
-		//p($this->db->last_query());
-		foreach($aHomeFloorTypesMap as $oFloorType){
-			array_push($this->mcontents['oHouseData']->floor_type_id, $oFloorType->id);
-		}
-
-//p($this->mcontents['oHouseData']->aFloorTypes);
-
-
-		// get personal details
+		/**
+		 *
+		 *
+		 *  get personal details of the head of house
+		 */
 		$this->db->select('
 			SU.name,
 			SU.id surveyee_user_id,
@@ -220,17 +177,79 @@ house_type_id
 		$this->db->join('families F', 'SUFM.family_id = F.id');
 		$this->db->join('family_house_map FHM', 'F.id = FHM.family_id');
 		$this->db->join('houses H', 'FHM.house_id = H.id');
-		$this->db->join('surveys S', 'S.house_id = H.id');
+		$this->db->join('surveys S', 'S.surveyee_user_id__head_of_family = SU.id');
 		$this->db->join('ward_sabha_participation WP', 'WP.surveyee_user_id = SU.id', 'left');
 		$this->db->join('house_tax HTX', 'HTX.house_id= H.id', 'left');
-		$this->db->where('S.id', $iSurveyId);
+		$this->db->where('S.id', $this->mcontents['oSurveyData']->id);
 		$this->db->where('SUFM.is_head', 1);
 
 		$this->mcontents['oUserPersonalData'] = $this->db->get('surveyee_users SU')->row();
 
-		//p($this->mcontents['oUserPersonalData']);
 
-p($this->mcontents['oUserPersonalData']);
+
+		/**
+		 *
+		 *
+		 *  get house Details
+		 */
+		$this->db->select('
+											H.id house_id,
+											H.address_house_name,
+											H.address_house_no,
+											H.address_street_name, H.address_pincode,
+											H.owner_id, H.house_area_range_id, H.num_floors, H.num_rooms, H.largest_accessible_vehicle,
+											H.toilet_count, H.is_electrified, H.connection_type_to_septic_tank, H.nearest_auto_stand_access_time');
+		$this->db->where('H.id', $this->mcontents['oUserPersonalData']->house_id);
+		//$this->db->join('surveys S', 'H.id = S.house_id');
+		$this->mcontents['oHouseData'] = $this->db->get('houses H')->row();
+
+
+
+		/**
+		 *
+		 *  house tax
+		 */
+		$this->mcontents['oHouseData']->amount = null;
+		$this->db->where('HT.house_id', $this->mcontents['oHouseData']->house_id);
+		if($oRow = $this->db->get('house_tax HT')->row()) {
+			$this->mcontents['oHouseData']->amount = $oRow->amount;
+		}
+
+
+
+		/**
+		 *
+		 *
+		 *  get house types
+		 */
+		$this->mcontents['oHouseData']->house_type_id = [];
+
+		$this->db->select('HHTM.house_type_id as id');
+		$this->db->where('HHTM.house_id', $this->mcontents['oHouseData']->house_id);
+		$aHouseHouseTypesMap = $this->db->get('house_house_type_map HHTM')->result();
+		foreach($aHouseHouseTypesMap as $oItem){
+			array_push($this->mcontents['oHouseData']->house_type_id, $oItem->id);
+		}
+
+
+
+		/**
+		 *
+		 *
+		 *  get house floor types
+		 */
+		$this->mcontents['oHouseData']->floor_type_id = [];
+
+		$this->db->select('HFTM.floor_type_id as id');
+ 		$this->db->where('HFTM.house_id', $this->mcontents['oHouseData']->house_id);
+ 		$aHomeFloorTypesMap = $this->db->get('house_floor_type_map HFTM')->result();
+
+		foreach($aHomeFloorTypesMap as $oFloorType){
+			array_push($this->mcontents['oHouseData']->floor_type_id, $oFloorType->id);
+		}
+
+
+
 
 		// users Investment types
 		$this->db->select('SUIM.investment_type_id as id');
@@ -240,6 +259,7 @@ p($this->mcontents['oUserPersonalData']);
 		foreach($aRows as $oItem){
 			array_push($this->mcontents['oUserPersonalData']->investment_type_id, $oItem->id);
 		}
+
 
 
 		// users Loan purposes
