@@ -14,7 +14,6 @@ class Survey extends CI_Controller {
 
 		$this->aErrorTypes = c('error_types');
 
-
 	}
 
 
@@ -77,7 +76,9 @@ class Survey extends CI_Controller {
 
 			$this->mcontents['iSurveyStatus'] = $this->mcontents['aSurveyStatus']['in_progress'];
 
+
 			$oNewTemporarySurveyId = $this->survey_model->createTemporarySurvey();
+
 			$this->survey_model->setTemporarySurveyAsCurrent($oNewTemporarySurveyId, s('ACCOUNT_NO'));
 
 			$this->mcontents['iCurrentTemporarySurveyNumber']	= $oNewTemporarySurveyId;

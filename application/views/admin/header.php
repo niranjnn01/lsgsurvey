@@ -80,27 +80,57 @@
           ),
 
 	array(
-
 		'section_title' =>'Users',
 		'links' => array(
-
-
 			array(
 				'title' => 'Enumerators',
 				'uri' => 'user/listing',
                 'opened' => false
 			),
-
-
 			array(
 				'title' => 'Create Enumerator',
 				'uri' => 'user/create',
                 'opened' => false
 			),
-
 		),
         'opened' => ($sCurrentMainMenu == 'users') ? true : false,
 	),
+
+  	array(
+  		'section_title' =>'Survey',
+  		'links' => array(
+  			array(
+  				'title' => 'Start New Survey',
+  				'uri' => 'survey',
+                  'opened' => false
+  			),
+  			array(
+  				'title' => 'Surveys - Completed',
+  				'uri' => 'survey_list/completed',
+          'opened' => ($sCurrentMainMenuChild == 'surveys-completed') ? true : false,
+  			),
+
+  			array(
+  				'title' => 'Surveys - In progress',
+  				'uri' => 'survey_list/in_progress',
+          'opened' => ($sCurrentMainMenuChild == 'surveys-in-progress') ? true : false,
+  			),
+  		),
+      'opened' => ($sCurrentMainMenu == 'survey') ? true : false,
+  	),
+
+    array(
+  		'section_title' =>'Reports',
+  		'links' => array(
+  			array(
+  				'title' => 'Reports',
+  				'uri' => 'report',
+                  'opened' => false
+  			),
+  		),
+          'opened' => ($sCurrentMainMenu == 'report') ? true : false,
+  	),
+
 
 	/*
 	array(

@@ -28,16 +28,28 @@ array (
     array (
       0 => 
       array (
-        'title' => 'ജനന തീയതി',
-        'answer_type' => '1',
+        'title' => 'ഏതൊക്കെ പെൻഷൻ ഉണ്ട് ?',
+        'answer_type' => '3',
         'answer_options' => 
         array (
+          0 => 
+          array (
+            'value' => '1',
+            'title' => 'ഗവണ്മെന്റ് പെൻഷൻ',
+          ),
+          1 => 
+          array (
+            'value' => '2',
+            'title' => 'മുതിർന്ന പൗരനുള്ള പെൻഷൻ',
+          ),
         ),
         'answer_non_selection_option' => 
         array (
+          'value' => '',
+          'title' => 'പെൻഷൻ ഇല്ലാ',
         ),
-        'field_name' => 'date_of_birth',
-        'table_name' => 'surveyee_users',
+        'field_name' => 'pension_type_id',
+        'table_name' => '',
         'question_type' => '1',
         'questions' => 
         array (
@@ -47,10 +59,10 @@ array (
         'ui_validation' => NULL,
         'question_template' => '',
         'multiple_answer_sets' => false,
-        'uid' => '41060327',
-        'uname' => 'date_of_birth',
+        'uid' => '61776713',
+        'uname' => 'pension_type_id',
         'help_text' => NULL,
-        'form_field' => '1',
+        'form_field' => '3',
         'type' => '1',
         'is_multipliable' => '0',
         'is_required_question' => '0',
@@ -61,150 +73,6 @@ array (
         'group_id' => '1',
       ),
       1 => 
-      array (
-        'title' => 'വിവാഹാവസ്ഥ',
-        'answer_type' => '5',
-        'answer_options' => 
-        array (
-          0 => 
-          array (
-            'value' => '1',
-            'title' => 'കല്യാണം കഴിച്ചിട്ടില്ലാ',
-          ),
-          1 => 
-          array (
-            'value' => '2',
-            'title' => 'കല്യാണം കഴിച്ചു',
-          ),
-          2 => 
-          array (
-            'value' => '3',
-            'title' => 'ഡിവോഴ്സ് ചെയ്തു',
-          ),
-          3 => 
-          array (
-            'value' => '4',
-            'title' => 'പുനർ വിവാഹം ചെയ്തു',
-          ),
-        ),
-        'answer_non_selection_option' => 
-        array (
-          'value' => '0',
-          'title' => ' -- തിരഞ്ഞെടുക്കു -- ',
-        ),
-        'field_name' => 'marital_status',
-        'table_name' => 'surveyee_users',
-        'question_type' => '1',
-        'questions' => 
-        array (
-        ),
-        'default_value' => NULL,
-        'ci_validation' => '',
-        'ui_validation' => NULL,
-        'question_template' => '',
-        'multiple_answer_sets' => false,
-        'uid' => '13767273',
-        'uname' => 'marital_status',
-        'help_text' => NULL,
-        'form_field' => '5',
-        'type' => '1',
-        'is_multipliable' => '0',
-        'is_required_question' => '0',
-        'question_order' => '1',
-        'collection_question_uid' => '15207088',
-        'template' => NULL,
-        'true_false_variant' => NULL,
-        'group_id' => '1',
-      ),
-      2 => 
-      array (
-        'title' => 'പാസ്പോര്ട്ട് ഉണ്ടോ ?',
-        'answer_type' => '5',
-        'answer_options' => 
-        array (
-          0 => 
-          array (
-            'value' => 0,
-            'title' => 'ഇല്ലാ',
-          ),
-          1 => 
-          array (
-            'value' => 1,
-            'title' => 'ഉണ്ട്',
-          ),
-        ),
-        'answer_non_selection_option' => 
-        array (
-        ),
-        'field_name' => 'has_passport',
-        'table_name' => 'surveyee_users',
-        'question_type' => '1',
-        'questions' => 
-        array (
-        ),
-        'default_value' => NULL,
-        'ci_validation' => '',
-        'ui_validation' => NULL,
-        'question_template' => '',
-        'multiple_answer_sets' => false,
-        'uid' => '20468652',
-        'uname' => 'has_passport',
-        'help_text' => NULL,
-        'form_field' => '5',
-        'type' => '1',
-        'is_multipliable' => '0',
-        'is_required_question' => '0',
-        'question_order' => '1',
-        'collection_question_uid' => '15207088',
-        'template' => NULL,
-        'true_false_variant' => '2',
-        'group_id' => '1',
-      ),
-      3 => 
-      array (
-        'title' => 'ബാങ്ക് അക്കൗണ്ട് ഉണ്ടോ ?',
-        'answer_type' => '5',
-        'answer_options' => 
-        array (
-          0 => 
-          array (
-            'value' => 0,
-            'title' => 'ഇല്ലാ',
-          ),
-          1 => 
-          array (
-            'value' => 1,
-            'title' => 'ഉണ്ട്',
-          ),
-        ),
-        'answer_non_selection_option' => 
-        array (
-        ),
-        'field_name' => 'has_bank_account',
-        'table_name' => 'surveyee_users',
-        'question_type' => '1',
-        'questions' => 
-        array (
-        ),
-        'default_value' => NULL,
-        'ci_validation' => '',
-        'ui_validation' => NULL,
-        'question_template' => '',
-        'multiple_answer_sets' => false,
-        'uid' => '31786733',
-        'uname' => 'has_bank_account',
-        'help_text' => NULL,
-        'form_field' => '5',
-        'type' => '1',
-        'is_multipliable' => '0',
-        'is_required_question' => '0',
-        'question_order' => '1',
-        'collection_question_uid' => '15207088',
-        'template' => NULL,
-        'true_false_variant' => '2',
-        'group_id' => '1',
-      ),
-      4 => 
       array (
         'title' => 'ഡ്രൈവിങ് ലൈസൻസ് ഉണ്ടോ ?',
         'answer_type' => '5',
@@ -237,6 +105,152 @@ array (
         'multiple_answer_sets' => false,
         'uid' => '30138200',
         'uname' => 'has_driving_license',
+        'help_text' => NULL,
+        'form_field' => '5',
+        'type' => '1',
+        'is_multipliable' => '0',
+        'is_required_question' => '0',
+        'question_order' => '1',
+        'collection_question_uid' => '15207088',
+        'template' => NULL,
+        'true_false_variant' => '2',
+        'group_id' => '1',
+      ),
+      2 => 
+      array (
+        'title' => 'ഏതൊക്കെ ഇൻഷുറൻസ് പരിരക്ഷ ഉണ്ട് ?',
+        'answer_type' => '3',
+        'answer_options' => 
+        array (
+          0 => 
+          array (
+            'value' => '1',
+            'title' => 'ലൈഫ് ഇൻഷുറൻസ്',
+          ),
+          1 => 
+          array (
+            'value' => '2',
+            'title' => 'മെഡിക്കൽ ഇൻഷുറൻസ്',
+          ),
+        ),
+        'answer_non_selection_option' => 
+        array (
+          'value' => '',
+          'title' => 'ഇൻഷുറൻസ്  ഇല്ലാ',
+        ),
+        'field_name' => 'insurance_type_id',
+        'table_name' => '',
+        'question_type' => '1',
+        'questions' => 
+        array (
+        ),
+        'default_value' => NULL,
+        'ci_validation' => '',
+        'ui_validation' => NULL,
+        'question_template' => '',
+        'multiple_answer_sets' => false,
+        'uid' => '49851225',
+        'uname' => 'insurance_type_id',
+        'help_text' => NULL,
+        'form_field' => '3',
+        'type' => '1',
+        'is_multipliable' => '0',
+        'is_required_question' => '0',
+        'question_order' => '1',
+        'collection_question_uid' => '15207088',
+        'template' => NULL,
+        'true_false_variant' => NULL,
+        'group_id' => '1',
+      ),
+      3 => 
+      array (
+        'title' => 'വിവാഹാവസ്ഥ',
+        'answer_type' => '5',
+        'answer_options' => 
+        array (
+          0 => 
+          array (
+            'value' => '1',
+            'title' => 'കല്യാണം കഴിച്ചിട്ടില്ലാ',
+          ),
+          1 => 
+          array (
+            'value' => '2',
+            'title' => 'കല്യാണം കഴിച്ചു',
+          ),
+          2 => 
+          array (
+            'value' => '3',
+            'title' => 'ഡിവോഴ്സ് ചെയ്തു',
+          ),
+          3 => 
+          array (
+            'value' => '4',
+            'title' => 'പുനർ വിവാഹം ചെയ്തു',
+          ),
+        ),
+        'answer_non_selection_option' => 
+        array (
+          'value' => '',
+          'title' => ' -- തിരഞ്ഞെടുക്കു -- ',
+        ),
+        'field_name' => 'marital_status',
+        'table_name' => 'surveyee_users',
+        'question_type' => '1',
+        'questions' => 
+        array (
+        ),
+        'default_value' => NULL,
+        'ci_validation' => '',
+        'ui_validation' => NULL,
+        'question_template' => '',
+        'multiple_answer_sets' => false,
+        'uid' => '13767273',
+        'uname' => 'marital_status',
+        'help_text' => NULL,
+        'form_field' => '5',
+        'type' => '1',
+        'is_multipliable' => '0',
+        'is_required_question' => '0',
+        'question_order' => '1',
+        'collection_question_uid' => '15207088',
+        'template' => NULL,
+        'true_false_variant' => NULL,
+        'group_id' => '1',
+      ),
+      4 => 
+      array (
+        'title' => 'പാസ്പോര്ട്ട് ഉണ്ടോ ?',
+        'answer_type' => '5',
+        'answer_options' => 
+        array (
+          0 => 
+          array (
+            'value' => 0,
+            'title' => 'ഇല്ലാ',
+          ),
+          1 => 
+          array (
+            'value' => 1,
+            'title' => 'ഉണ്ട്',
+          ),
+        ),
+        'answer_non_selection_option' => 
+        array (
+        ),
+        'field_name' => 'has_passport',
+        'table_name' => 'surveyee_users',
+        'question_type' => '1',
+        'questions' => 
+        array (
+        ),
+        'default_value' => NULL,
+        'ci_validation' => '',
+        'ui_validation' => NULL,
+        'question_template' => '',
+        'multiple_answer_sets' => false,
+        'uid' => '20468652',
+        'uname' => 'has_passport',
         'help_text' => NULL,
         'form_field' => '5',
         'type' => '1',
@@ -297,7 +311,7 @@ array (
         ),
         'answer_non_selection_option' => 
         array (
-          'value' => '0',
+          'value' => '',
           'title' => 'അറിയില്ലാ',
         ),
         'field_name' => 'blood_group',
@@ -326,28 +340,16 @@ array (
       ),
       6 => 
       array (
-        'title' => 'ഏതൊക്കെ പെൻഷൻ ഉണ്ട് ?',
-        'answer_type' => '3',
+        'title' => 'ജനന തീയതി',
+        'answer_type' => '1',
         'answer_options' => 
         array (
-          0 => 
-          array (
-            'value' => '1',
-            'title' => 'ഗവണ്മെന്റ് പെൻഷൻ',
-          ),
-          1 => 
-          array (
-            'value' => '2',
-            'title' => 'മുതിർന്ന പൗരനുള്ള പെൻഷൻ',
-          ),
         ),
         'answer_non_selection_option' => 
         array (
-          'value' => '0',
-          'title' => 'പെൻഷൻ ഇല്ലാ',
         ),
-        'field_name' => 'pension_type_id',
-        'table_name' => '',
+        'field_name' => 'date_of_birth',
+        'table_name' => 'surveyee_users',
         'question_type' => '1',
         'questions' => 
         array (
@@ -357,10 +359,10 @@ array (
         'ui_validation' => NULL,
         'question_template' => '',
         'multiple_answer_sets' => false,
-        'uid' => '61776713',
-        'uname' => 'pension_type_id',
+        'uid' => '41060327',
+        'uname' => 'date_of_birth',
         'help_text' => NULL,
-        'form_field' => '3',
+        'form_field' => '1',
         'type' => '1',
         'is_multipliable' => '0',
         'is_required_question' => '0',
@@ -372,28 +374,26 @@ array (
       ),
       7 => 
       array (
-        'title' => 'ഏതൊക്കെ ഇൻഷുറൻസ് പരിരക്ഷ ഉണ്ട് ?',
-        'answer_type' => '3',
+        'title' => 'ബാങ്ക് അക്കൗണ്ട് ഉണ്ടോ ?',
+        'answer_type' => '5',
         'answer_options' => 
         array (
           0 => 
           array (
-            'value' => '1',
-            'title' => 'ലൈഫ് ഇൻഷുറൻസ്',
+            'value' => 0,
+            'title' => 'ഇല്ലാ',
           ),
           1 => 
           array (
-            'value' => '2',
-            'title' => 'മെഡിക്കൽ ഇൻഷുറൻസ്',
+            'value' => 1,
+            'title' => 'ഉണ്ട്',
           ),
         ),
         'answer_non_selection_option' => 
         array (
-          'value' => '0',
-          'title' => 'ഇൻഷുറൻസ്  ഇല്ലാ',
         ),
-        'field_name' => 'insurance_type_id',
-        'table_name' => '',
+        'field_name' => 'has_bank_account',
+        'table_name' => 'surveyee_users',
         'question_type' => '1',
         'questions' => 
         array (
@@ -403,17 +403,17 @@ array (
         'ui_validation' => NULL,
         'question_template' => '',
         'multiple_answer_sets' => false,
-        'uid' => '49851225',
-        'uname' => 'insurance_type_id',
+        'uid' => '31786733',
+        'uname' => 'has_bank_account',
         'help_text' => NULL,
-        'form_field' => '3',
+        'form_field' => '5',
         'type' => '1',
         'is_multipliable' => '0',
         'is_required_question' => '0',
         'question_order' => '1',
         'collection_question_uid' => '15207088',
         'template' => NULL,
-        'true_false_variant' => NULL,
+        'true_false_variant' => '2',
         'group_id' => '1',
       ),
       8 => 
@@ -581,7 +581,7 @@ array (
         ),
         'answer_non_selection_option' => 
         array (
-          'value' => '0',
+          'value' => '',
           'title' => 'ഇല്ലാ',
         ),
         'field_name' => 'reservation',
@@ -813,7 +813,7 @@ array (
         ),
         'answer_non_selection_option' => 
         array (
-          'value' => '0',
+          'value' => '',
           'title' => 'ബാധകമല്ലാ',
         ),
         'field_name' => 'relationship_to_head_of_house',
@@ -918,7 +918,7 @@ array (
           0 => 
           array (
             'value' => '1',
-            'title' => 'സർക്കാർ ജോലി',
+            'title' => 'തൊഴിൽ ഇല്ലാ',
           ),
           1 => 
           array (
@@ -939,6 +939,11 @@ array (
           array (
             'value' => '5',
             'title' => 'വിദേശത്തു തൊഴിൽ',
+          ),
+          5 => 
+          array (
+            'value' => '6',
+            'title' => 'സർക്കാർ ജോലി',
           ),
         ),
         'answer_non_selection_option' => 
@@ -3011,6 +3016,11 @@ array (
       array (
         'value' => '6',
         'title' => 'അഞ്ചിന് മുകളിൽ',
+      ),
+      6 => 
+      array (
+        'value' => '7',
+        'title' => 'കക്കൂസ് ഇല്ലാ',
       ),
     ),
     'answer_non_selection_option' => 

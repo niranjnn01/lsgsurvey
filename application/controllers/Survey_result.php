@@ -40,6 +40,7 @@ class Survey_result extends CI_Controller {
 		}
 //p($this->mcontents['aTrueFalseVariants']);
 
+/*
 		$aConfig = array(
 			'table' 		        => 'ans_option_residence_types',
 			'id_field' 		       	=> 'id',
@@ -65,16 +66,6 @@ class Survey_result extends CI_Controller {
 		);
 		$this->mcontents['aHouseAreaRange'] = $this->common_model->getDropDownArray($aConfig);
 
-/*
-		$aConfig = array(
-			'table' 		        => 'house_types',
-			'id_field' 		       	=> 'id',
-			'title_field' 	     	=> 'title',
-			'show_default_value' 	=> FALSE
-		);
-		$this->mcontents['aHouseTypes'] = $this->common_model->getDropDownArray($aConfig);
-*/
-
 		$this->mcontents['aHouseOwnershipTypes'] = array(
 			1 => 'സ്വന്തം',
 			2 => 'വാടകയ്ക്ക്',
@@ -85,7 +76,7 @@ class Survey_result extends CI_Controller {
 			2 => 'പാട്ടം',
 			3 => 'പാരമ്പര്യമായി  കിട്ടിയത്',
 		);
-
+*/
 		$this->load->config('question_config');
 		//$this->mcontents['questions_master_data']	= $this->config->item('questions_master_data');
 
@@ -299,26 +290,6 @@ class Survey_result extends CI_Controller {
 		$this->mcontents['oHouseData']->ration_card_type_id	= $this->mcontents['oUserPersonalData']->ration_card_type_id;
 
 
-/*
-		switch($this->mcontents['oUserPersonalData']->residence_type_id) {
-			case 1:
-				//rented stay
-				$this->mcontents['oHouseData']->sResidenceType = $this->mcontents['aResidenceTypes'][1];
-				break;
-
-			case 2:
-				//permanent stay
-				$this->mcontents['oHouseData']->sResidenceType = $this->mcontents['aResidenceTypes'][2];
-				break;
-
-			case null:
-				// see if is_owner
-				if( $this->mcontents['oUserPersonalData']->surveyee_user_id == $this->mcontents['oHouseData']->owner_id ) {
-					$this->mcontents['oHouseData']->sResidenceType = $this->mcontents['aHouseOwnershipTypes'][1];
-				}
-				break;
-		}
-*/
 
 		//House tax
 		$this->mcontents['oHouseData']->tax_amount = $this->mcontents['oUserPersonalData']->house_tax;
@@ -445,7 +416,6 @@ class Survey_result extends CI_Controller {
 
 
 
-
 		// Home applicances
 		$this->db->select('FLM.livestock_id as id');
 		$this->db->where('FLM.family_id', $this->mcontents['oUserPersonalData']->family_id);
@@ -454,6 +424,7 @@ class Survey_result extends CI_Controller {
 		foreach($aRows AS $oRow) {
 			array_push($this->mcontents['oFamily']->livestock_id, $oRow->id);
 		}
+
 
 
 		// Home applicances
@@ -465,6 +436,8 @@ class Survey_result extends CI_Controller {
 			array_push($this->mcontents['oHouseData']->house_appliance_id, $iItemId->id);
 		}
 
+
+
 		// Family vehicles
 		$this->db->select('FV.vehicle_type_id as id');
 		$this->db->where('FV.family_id', $this->mcontents['oUserPersonalData']->family_id);
@@ -474,6 +447,8 @@ class Survey_result extends CI_Controller {
 		foreach($aFamilyVehicleType AS $iItemId) {
 			array_push($this->mcontents['oHouseData']->vehicle_type_id, $iItemId->id);
 		}
+
+
 
 		// Family agriculture location
 		$this->db->select('FA.agriculture_location_id as id');
@@ -499,20 +474,6 @@ class Survey_result extends CI_Controller {
 			array_push($this->mcontents['oUserPersonalData']->bank_account_type_id, $iItemId->id);
 		}
 
-		//p($this->mcontents['oUserPersonalData']);
-/*
-		// house types
-		$this->db->select('HT.title');
-		$this->db->where('HHTM.house_id', $this->mcontents['oUserPersonalData']->house_id);
-		$this->db->join('house_house_type_map HHTM', 'HT.id = HHTM.house_type_id');
-		$aHouseTypes = $this->db->get('ans_option_house_types HT')->result();
-
-		$this->mcontents['oHouseData']->sHouseTypes = '';
-		foreach($aHouseTypes AS $oItem) {
-			$this->mcontents['oHouseData']->sHouseTypes .= $oItem->title . ', ';
-		}
-		$this->mcontents['oHouseData']->sHouseTypes = rtrim($this->mcontents['oHouseData']->sHouseTypes, ', ');
-*/
 
 
 		$this->db->select('
@@ -541,27 +502,12 @@ class Survey_result extends CI_Controller {
 
 
 
-		//p($this->mcontents['oLandData']);
-		// determine the land ownership
-		/*
-		$this->mcontents['oLandData']->sLandOwnershipType = '';
-		if($this->mcontents['oLandData']->leased_land_id) {
-			$this->mcontents['oLandData']->sLandOwnershipType = $this->mcontents['aLandOwnershipTypes'][2];
-		} elseif($this->mcontents['oLandData']->is_legacy) {
-			$this->mcontents['oLandData']->sLandOwnershipType = $this->mcontents['aLandOwnershipTypes'][3];
-		} elseif($this->mcontents['oUserPersonalData']->surveyee_user_id == $this->mcontents['oLandData']->owner_user_id) {
-			$this->mcontents['oLandData']->sLandOwnershipType = $this->mcontents['aLandOwnershipTypes'][1];
-		}
-		*/
-
 		// land ownership
 		if( $this->mcontents['oLandData']->owner_user_id == $this->mcontents['oUserPersonalData']->surveyee_user_id ) {
 			$this->mcontents['oLandData']->LAND_OWNERSHIP = 1; // own
 		} elseif($this->mcontents['oLandData']->leased_land_id) {
 			$this->mcontents['oHouseData']->LAND_OWNERSHIP = 2; // leased
 		}
-
-
 
 
 		// get the fruit trees on the land
@@ -589,13 +535,25 @@ class Survey_result extends CI_Controller {
 
 
 
-		// get the users pension details
+		// get the users insurance details
 		$this->db->where('SUITM.surveyee_user_id', $this->mcontents['oUserPersonalData']->surveyee_user_id);
 		$aInsuranceTypeIds = $this->db->get('surveyee_user_insurance_type_map SUITM')->result();
 		$this->mcontents['oUserPersonalData']->insurance_type_id = [];
 		if($aInsuranceTypeIds) {
 			foreach($aInsuranceTypeIds AS $oRow) {
 				$this->mcontents['oUserPersonalData']->insurance_type_id[] = $oRow->insurance_type_id;
+			}
+		}
+
+
+
+		// get the users reservation details
+		$this->db->where('SU_RSV_M.surveyee_user_id', $this->mcontents['oUserPersonalData']->surveyee_user_id);
+		$aReservationTypeIds = $this->db->get('surveyee_user_reservation_map SU_RSV_M')->result();
+		$this->mcontents['oUserPersonalData']->reservation = [];
+		if($aReservationTypeIds) {
+			foreach($aReservationTypeIds AS $oRow) {
+				$this->mcontents['oUserPersonalData']->reservation[] = $oRow->reservation_id;
 			}
 		}
 
@@ -623,7 +581,6 @@ class Survey_result extends CI_Controller {
 		);
 
 
-
 		$aQuestionsMasterData_raw = $this->question_model->getQuestionMasterData_raw();
 
 
@@ -632,9 +589,6 @@ class Survey_result extends CI_Controller {
 
 
 		$aAllFieldNames = array_column($aQuestionsMasterData_raw, 'field_name');
-
-
-
 
 		$aAnswerTypes = $this->config->item('answer_types');
 
@@ -663,29 +617,22 @@ class Survey_result extends CI_Controller {
 						//convert the answer options to a more easily accessible format
 						$aKeyValueFormat = $this->question_model->convertAnswerOptionsToKeyValueFormat($aQuestionsMasterData_raw[$iQuid]['answer_options']);
 
-/*
-
-*/
+						$val = '';
 
 						if( ! is_null($aQuestionsMasterData_raw[$iQuid]['true_false_variant']) ) {
-							if( is_null($value) ) {
-								$value = '';
-							} else {
-								if(!isset($aKeyValueFormat[$value])) {
-									p($iQuid);
-									p($value);
-									exit;
+							if( ! is_null($value) ){
+								if( ! isset($aKeyValueFormat[$value]) ) {
+p($iQuid);
 								}
-								$value = $aKeyValueFormat[$value];
+								$val = $aKeyValueFormat[$value];
 							}
 						} else {
-
-							if(! isset($aKeyValueFormat[$value])) {
-								//p($iQuid);
+							if( ! empty($value)) {
+								$val = isset($aKeyValueFormat[$value]) ? $aKeyValueFormat[$value] : $value;
 							}
-
-							$value = isset($aKeyValueFormat[$value]) ? $aKeyValueFormat[$value] : $value;
 						}
+
+						$value = $val;
 
 						break;
 					case $aAnswerTypes['multi_value_checkbox']:
@@ -703,15 +650,9 @@ class Survey_result extends CI_Controller {
 						break;
 				}
 
-//p($aData);exit;
 			}
 
 		}
-
-
-		//p($aCompleteData); exit;
-
-
 
 
 		// make into a single array
@@ -724,7 +665,12 @@ class Survey_result extends CI_Controller {
 			}
 		}
 
-//p($aPopulatedArray);exit;
+
+
+		$aPopulatedArray['{enumerator_name}'] = $this->mcontents['oSurveyData']->enumerator_name;
+		$aPopulatedArray['{survey_date}'] = date('j M, Y', strtotime($this->mcontents['oSurveyData']->created_on));
+
+
 
 		$this->load->model('display_model');
 		$this->mcontents['sPopulatedTemplate'] = $this->display_model->populateTemplate($aPopulatedArray);
@@ -739,10 +685,6 @@ class Survey_result extends CI_Controller {
 		}
 
 	}
-
-
-
-
 
 }
 

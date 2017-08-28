@@ -137,7 +137,7 @@
 
       <div class="col-md-3">
                 <label class="small">വിവാഹാവസ്ഥ</label>
-        <select name="marital_status{row_number}" class="form-control"><option value="0"> -- തിരഞ്ഞെടുക്കു -- </option><option value="1">കല്യാണം കഴിച്ചിട്ടില്ലാ</option><option value="2">കല്യാണം കഴിച്ചു</option><option value="3">ഡിവോഴ്സ് ചെയ്തു</option><option value="4">പുനർ വിവാഹം ചെയ്തു</option></select>      </div>
+        <select name="marital_status{row_number}" class="form-control"><option value=""> -- തിരഞ്ഞെടുക്കു -- </option><option value="1">കല്യാണം കഴിച്ചിട്ടില്ലാ</option><option value="2">കല്യാണം കഴിച്ചു</option><option value="3">ഡിവോഴ്സ് ചെയ്തു</option><option value="4">പുനർ വിവാഹം ചെയ്തു</option></select>      </div>
 
       <div class="col-md-3">
                 <label class="small">പാസ്പോര്ട്ട് ഉണ്ടോ ?</label>
@@ -170,13 +170,13 @@
 
       <div class="col-md-3">
                 <label class="small">ബ്ലഡ് ഗ്രൂപ്പ്</label>
-        <select name="blood_group{row_number}" class="form-control"><option value="0">അറിയില്ലാ</option><option value="1">A +ve</option><option value="2">A -ve</option><option value="3">B +ve</option><option value="4">B -ve</option><option value="5">AB +ve</option><option value="6">AB -ve</option><option value="7">O +ve</option><option value="8">O -ve</option></select>      </div>
+        <select name="blood_group{row_number}" class="form-control"><option value="">അറിയില്ലാ</option><option value="1">A +ve</option><option value="2">A -ve</option><option value="3">B +ve</option><option value="4">B -ve</option><option value="5">AB +ve</option><option value="6">AB -ve</option><option value="7">O +ve</option><option value="8">O -ve</option></select>      </div>
       <div class="col-md-3">
                 <label class="small">ഏതൊക്കെ പെൻഷൻ ഉണ്ട് ?</label>
-        <select name="pension_type_id{row_number}" class="form-control"><option value="0">പെൻഷൻ ഇല്ലാ</option><option value="1">ഗവണ്മെന്റ് പെൻഷൻ</option><option value="2">മുതിർന്ന പൗരനുള്ള പെൻഷൻ</option></select>      </div>
+        <select name="pension_type_id{row_number}" class="form-control"><option value="">പെൻഷൻ ഇല്ലാ</option><option value="1">ഗവണ്മെന്റ് പെൻഷൻ</option><option value="2">മുതിർന്ന പൗരനുള്ള പെൻഷൻ</option></select>      </div>
       <div class="col-md-3">
                 <label class="small">ഏതൊക്കെ ഇൻഷുറൻസ് പരിരക്ഷ ഉണ്ട് ?</label>
-        <select name="insurance_type_id{row_number}" class="form-control"><option value="0">ഇൻഷുറൻസ്  ഇല്ലാ</option><option value="1">ലൈഫ് ഇൻഷുറൻസ്</option><option value="2">മെഡിക്കൽ ഇൻഷുറൻസ്</option></select>      </div>
+        <select name="insurance_type_id{row_number}" class="form-control"><option value="">ഇൻഷുറൻസ്  ഇല്ലാ</option><option value="1">ലൈഫ് ഇൻഷുറൻസ്</option><option value="2">മെഡിക്കൽ ഇൻഷുറൻസ്</option></select>      </div>
     </div>
 
 </div>

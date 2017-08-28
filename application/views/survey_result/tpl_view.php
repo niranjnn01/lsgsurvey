@@ -1,6 +1,27 @@
 <div class="row">
 			<div class="col-md-4">
-				
+
+			<table class="table">
+				<tr>
+					<td>
+						<b>Enumerator</b>
+					</td>
+					<td>
+						{enumerator_name}
+					</td>
+				</tr>
+
+				<tr>
+					<td>
+						<b>Survey Date</b>
+					</td>
+					<td>
+						{survey_date}
+					</td>
+				</tr>
+			</table>
+
+
 			<h4>അടിസ്ഥാന വിവരങ്ങൾ</h4>
 			<table class="table"><tr>
 					<td>ജനന തീയതി</td>
@@ -108,19 +129,19 @@
 					<td>വാർഷിക കെട്ടിട നികുതി</td>
 					<td>{amount}</td>
 				</tr></table>
-				
+
 			<h4>വീട്ടുപകരണങ്ങൾ</h4>
 			<table class="table"><tr>
 					<td>താഴെ പറയുന്നവ വീട്ടിൽ ഉപയോഗിക്കുന്നുണ്ടോ?</td>
 					<td>{house_appliance_id}</td>
 				</tr></table>
-				
+
 			<h4>നഗരസഭാ സേവനങ്ങളുടെ സാമീപ്യം</h4>
 			<table class="table"><tr>
 					<td>നഗരസഭാ സേവനങ്ങളുടെ സാമീപ്യം</td>
 					<td>{public_utility_id}</td>
 				</tr></table>
-				
+
 			<h4>വളർത്തുമൃഗങ്ങൾ/പക്ഷികൾ</h4>
 			<table class="table"><tr>
 					<td>ഏതൊക്കെ അരുമ വളർത്തുമൃഗങ്ങൾ (Pets) ഉണ്ട്</td>
@@ -132,7 +153,7 @@
 					<td>ഉപജീവനത്തിനായി ഉപയോഗിക്കുന്ന മൃഗങ്ങൾ (Live Stock )?</td>
 					<td>{livestock_id}</td>
 				</tr></table>
-				
+
 			<h4>അലങ്കാര മത്സ്യങ്ങൾ</h4>
 			<table class="table"><tr>
 					<td>ബാങ്ക് അക്കൗണ്ട്</td>
@@ -158,7 +179,7 @@
 				</tr></table>
 			</div>
 			<div class="col-md-4">
-				
+
 			<h4>ഗൃഹനാഥൻ്റെ വ്യക്തിപരമായ വിവരങ്ങൾ</h4>
 			<table class="table"><tr>
 					<td>ഗൃഹനാഥൻ്റെ മതം</td>
@@ -203,7 +224,7 @@
 					<td>വാർഡ് സഭകളിൽ പങ്കെടുക്കാറുണ്ടെങ്കിൽ വാർഡ് സഭകൾ മെച്ചപ്പെടുത്താനുള്ള നിർദേശങ്ങൾ ഉണ്ടോ?</td>
 					<td>{have_suggestion}</td>
 				</tr></table>
-				
+
 			<h4>താമസം മാറിയതിന്റെ വിവരം</h4>
 			<table class="table"><tr>
 					<td>ജനനസ്ഥലം ഈ വാർഡ് തന്നെയാണോ?</td>
@@ -215,7 +236,7 @@
 					<td>എത്ര വർഷമായി ഈ വാർഡിൽ താമസമായിട്ട്</td>
 					<td>{YEARS_OF_STAYING}</td>
 				</tr></table>
-				
+
 			<h4>ഭൗതിക പശ്ചാത്തല സൗകര്യങ്ങൾ</h4>
 			<table class="table"><tr>
 					<td>വീട്ടാവശ്യത്തിനുള്ള വെള്ളം എവിടുന്നു എടുക്കുന്നു</td>
@@ -233,7 +254,7 @@
 					<td>അഴുകി ചേരാത്ത മാലിന്യങ്ങൾ എന്ത് ചെയ്യുന്നു</td>
 					<td>{nonbiodegradable_solution_id}</td>
 				</tr></table>
-				
+
 			<h4>കൃഷി</h4>
 			<table class="table"><tr>
 					<td>കൃഷി ഉണ്ടോ ?</td>
@@ -244,13 +265,13 @@
 				</tr></table>
 			</div>
 			<div class="col-md-4">
-				
+
 			<h4>വാഹനങ്ങൾ</h4>
 			<table class="table"><tr>
 					<td>വീട്ടിൽ സ്വന്തമായുള്ള വാഹനങ്ങൾ</td>
 					<td>{vehicle_type_id}</td>
 				</tr></table>
-				
+
 			<h4>ഗതാഗത സാമീപ്യം</h4>
 			<table class="table"><tr>
 					<td>വീട്ടിനുള്ളിൽ  എത്തിച്ചേരുന്ന വാഹനത്തിന്റെ തരം</td>
@@ -262,7 +283,7 @@
 					<td>അടുത്തുള്ള ഓട്ടോ സ്റ്റാൻദിലേക്ക്  എത്താൻ എടുക്കുന്ന സമയം</td>
 					<td>{nearest_auto_stand_access_time}</td>
 				</tr></table>
-				
+
 			<h4>വൈദ്യുതി</h4>
 			<table class="table"><tr>
 					<td>വീട് വൈദ്യുതീകരിച്ചതാണോ?</td>
@@ -271,7 +292,7 @@
 					<td>പാചകത്തിന് ഉപയോഗിക്കുന്ന ഇന്ധനം ഏതൊക്കെ ?</td>
 					<td>{domestic_fuel_type_id}</td>
 				</tr></table>
-				
+
 			<h4>വിളകൾ</h4>
 			<table class="table"><tr>
 					<td>ഭലവൃക്ഷങ്ങൾ ഏതെല്ലാം ഉണ്ട് ?</td>

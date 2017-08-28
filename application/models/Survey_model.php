@@ -5,6 +5,14 @@ class Survey_model extends CI_Model{
 		parent::__construct();
 
 		$this->load->config('survey_config');
+
+		$aConfig = array(
+			'table' 		        => 'survey_statuses',
+			'id_field' 		       	=> 'id',
+			'title_field' 	     	=> 'name',
+		);
+		$this->load->model('common_model');
+		$this->aSurveyStatus = array_flip($this->common_model->getDropDownArray($aConfig));
 	}
 
 
@@ -99,12 +107,22 @@ class Survey_model extends CI_Model{
 		$this->db->where('enumerator_account_no', $iEnumeratorAccountNo);
 		$this->db->delete('temporary_survey');
 		*/
+		$this->load->model('common_model');
+		$aConfig = array(
+			'table' 		=> 'temporary_survey_statuses',
+			'id_field' 		=> 'id',
+			'title_field' 	=> 'name',
+		);
+
+		$aTemporarySurveyStatuses = $this->common_model->getDropDownArray($aConfig);
+		$aTemporarySurveyStatuses_flipped = array_flip($aTemporarySurveyStatuses);
 
 		$this->db->set('session_id', $sSessionId);
 		$this->db->set('enumerator_account_no', $iEnumeratorAccountNo);
 		$this->db->set('general_data', serialize(array()));
 		$this->db->set('house_land_data', serialize(array()));
 		$this->db->set('ward_id', 1);
+		$this->db->set('status', $aTemporarySurveyStatuses_flipped['in-progress']);
 		$this->db->insert('temporary_survey');
 		$iId = $this->db->insert_id();
 
@@ -162,7 +180,7 @@ class Survey_model extends CI_Model{
 
 
 
-		function createSurvey($iTemporarySurveyNumber) {
+		function createSurvey($iTemporarySurveyNumber, $bFailTransaction = FALSE) {
 
 			// Initialize Items that we will be returning.
 			$iSurveyeId = 0;
@@ -197,7 +215,7 @@ class Survey_model extends CI_Model{
 				 *
 				 *  START TRANSACTION
 				 */
-				$this->db->trans_start();
+				$this->db->trans_start($bFailTransaction);
 
 				$iHeadOfFamily_iSurveyeeUserId = 0;
 
@@ -224,15 +242,21 @@ class Survey_model extends CI_Model{
 					}
 
 					//super temporary
-					unset($aSurveyeeUsers['reservation']);
-					$aSurveyeeUsers['date_of_birth'] = '1953-09-13';
-
+					//unset($aSurveyeeUsers['reservation']);
 					unset($aSurveyeeUsers['is_head_of_house']);
 					unset($aSurveyeeUsers['relationship_to_head_of_house']);
 
-					// pension type mapping
+
+					/**
+					 *
+					 * pension type mapping
+					 */
 					$aPensionDetails = array();
-					if( isset($aSurveyeeUsers['pension_type_id']) ) {
+
+					// isset() will return FALSE if testing a variable that has been set to NULL.
+					// so we use array_key_exists
+					if( array_key_exists('pension_type_id', $aSurveyeeUsers) ) {
+						//p('here');exit;
 						if( !empty($aSurveyeeUsers['pension_type_id']) )  {
 
 							$aData = ! is_array( $aSurveyeeUsers['pension_type_id'] ) ? (array)$aSurveyeeUsers['pension_type_id'] : $aSurveyeeUsers['pension_type_id'];
@@ -244,9 +268,16 @@ class Survey_model extends CI_Model{
 						unset($aSurveyeeUsers['pension_type_id']);
 					}
 
-					// insurance type mapping
+
+					/**
+					 *
+					 * insurance type mapping
+					 */
 					$aInsuranceDetails = array();
-					if( isset($aSurveyeeUsers['insurance_type_id']) ) {
+
+					// isset() will return FALSE if testing a variable that has been set to NULL.
+					// so we use array_key_exists
+					if( array_key_exists('insurance_type_id', $aSurveyeeUsers) ) {
 						if(!empty($aSurveyeeUsers['insurance_type_id'])) {
 
 							$aData = ! is_array( $aSurveyeeUsers['insurance_type_id'] ) ? (array)$aSurveyeeUsers['insurance_type_id'] : $aSurveyeeUsers['insurance_type_id'];
@@ -260,11 +291,20 @@ class Survey_model extends CI_Model{
 
 					// reservation mapping
 					$aReservationDetails = array();
-					if( isset($aSurveyeeUsers['reservation']) && !empty($aSurveyeeUsers['reservation'])) {
-						$aData = ! is_array( $aSurveyeeUsers['reservation'] ) ? (array)$aSurveyeeUsers['reservation'] : $aSurveyeeUsers['reservation'];
-						foreach($aData AS $iReservationId) {
-							$aReservationDetails[] = $iReservationId;
+					if(array_key_exists('reservation', $aSurveyeeUsers) ) {
+
+						if ( !empty($aSurveyeeUsers['reservation'] ) ) {
+
+							$aData = ! is_array( $aSurveyeeUsers['reservation'] ) ? (array)$aSurveyeeUsers['reservation'] : $aSurveyeeUsers['reservation'];
+
+							if($aData) {
+								foreach($aData AS $iReservationId) {
+									$aReservationDetails[] = $iReservationId;
+								}
+							}
+
 						}
+
 						unset($aSurveyeeUsers['reservation']);
 					}
 
@@ -272,7 +312,21 @@ class Survey_model extends CI_Model{
 					// $aDiseaseDetails
 
 
-					$aSurveyeeUsers = array_merge($aSurveyeeUsers, $aRawData['surveyee_users']);
+					//if( ! is_null($aRawData['surveyee_users']) ) {
+
+						if(
+
+								isset($aRawData['surveyee_users'])
+								&&
+								$aFamilyMemberDetails['is_head'] === 1
+
+							) {
+
+							$aSurveyeeUsers = array_merge($aSurveyeeUsers, $aRawData['surveyee_users']);
+						}
+
+					//}
+
 
 
 
@@ -291,7 +345,6 @@ class Survey_model extends CI_Model{
 					$aReservationDetails_all_users[$iSurveyeeUserId] 	= $aReservationDetails;
 
 				} // end of foreach
-
 
 
 				// create the family entity
@@ -337,7 +390,7 @@ class Survey_model extends CI_Model{
 					}
 				}
 
-
+//p($aReservationDetails_all_users);
 				// build family members reservation details
 				foreach($aReservationDetails_all_users AS $iUserId => $aReservationTypeIds)  {
 					foreach($aReservationTypeIds AS $iReservationId) {
@@ -366,10 +419,14 @@ class Survey_model extends CI_Model{
 				$aRawData['houses']['address_pincode'] = $aRawData['address_new']['pincode'];
 */
 
-				$aRawData['houses'] = $aRawData['address_new'];
+				$aRawData['houses']['num_floors'] = ! is_null($aRawData['houses']['num_floors']) ? $aRawData['houses']['num_floors'] : 1;
+				$aRawData['houses']['num_rooms'] = ! is_null($aRawData['houses']['num_rooms']) ? $aRawData['houses']['num_rooms'] : 1;
+				$aRawData['houses'] = array_merge($aRawData['houses'], $aRawData['address_new']);
 
 				//proximity of auto stand from a house
 				//$aRawData['houses']['nearest_auto_stand_access_time'] = $aRawData['houses']['nearest_auto_stand_access_time'];
+
+				//p($aRawData['houses']);
 
 				$aRawData['houses']['ward_id']	= $iWardId;
 				$this->db->set($aRawData['houses']);
@@ -393,8 +450,8 @@ class Survey_model extends CI_Model{
 
 
 				// create mapping between house and house type
-				if(isset($aRawData['house_house_type_map'])
-					&& count($aRawData['house_house_type_map']) > 0) {
+				if(isset($aRawData['house_house_type_map']['house_type_id'])
+					&& count($aRawData['house_house_type_map']['house_type_id']) > 0) {
 
 					foreach ($aRawData['house_house_type_map']['house_type_id'] AS $iHouseType) {
 						$this->db->set('house_id', $iHouseId);
@@ -458,10 +515,13 @@ class Survey_model extends CI_Model{
 
 
 				// create the land entity
+				/*
 				if(isset($aRawData['lands']['area_range']) && $aRawData['lands']['area_range'] > 0){
 					$this->db->set($aRawData['lands']);
 
 				}
+				*/
+				$this->db->set($aRawData['lands']);
 				$this->db->insert('lands');
 				$iLandId = $this->db->insert_id();
 
@@ -746,6 +806,7 @@ class Survey_model extends CI_Model{
 				$this->db->set('enumerator_account_no', $oSurveyData->enumerator_account_no);
 				//$this->db->set('house_id', $iHouseId);
 				$this->db->set('surveyee_user_id__head_of_family', $iHeadOfFamily_iSurveyeeUserId); // head of family.
+				$this->db->set('status', $this->aSurveyStatus['completed']);
 				$this->db->insert('surveys');
 				$iSurveyeId = $this->db->insert_id();
 
@@ -753,9 +814,19 @@ class Survey_model extends CI_Model{
 				// mark the survey item in the temporary_survey as NOT current
 				$this->unmarkAsCurrentSurvey($iTemporarySurveyNumber);
 
+
+				$aConfig = array(
+					'table' 		        => 'temporary_survey_statuses',
+					'id_field' 		       	=> 'id',
+					'title_field' 	     	=> 'name',
+				);
+
+				$this->aTemporarySurveyStatus = array_flip($this->common_model->getDropDownArray($aConfig));
+
 				// mark that the survey item in the temporary_survey has been processed.
 				$this->db->set('pushed_to_main', 1);
 				$this->db->set('survey_id', $iSurveyeId);
+				$this->db->set('status', $this->aTemporarySurveyStatus['completed']);
 				$this->db->where('id', $iTemporarySurveyNumber);
 				$this->db->update('temporary_survey');
 

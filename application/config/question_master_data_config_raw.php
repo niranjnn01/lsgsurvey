@@ -11,19 +11,31 @@
 
 $config['questions_master_data_raw_new'] =
 array (
-  15207088 => 
+  61776713 => 
   array (
-    'title' => 'കുടുംബ വിവരങ്ങൾ',
-    'answer_type' => '1',
+    'title' => 'ഏതൊക്കെ പെൻഷൻ ഉണ്ട് ?',
+    'answer_type' => '3',
     'answer_options' => 
     array (
+      0 => 
+      array (
+        'value' => '1',
+        'title' => 'ഗവണ്മെന്റ് പെൻഷൻ',
+      ),
+      1 => 
+      array (
+        'value' => '2',
+        'title' => 'മുതിർന്ന പൗരനുള്ള പെൻഷൻ',
+      ),
     ),
     'answer_non_selection_option' => 
     array (
+      'value' => '',
+      'title' => 'പെൻഷൻ ഇല്ലാ',
     ),
-    'field_name' => '',
-    'table_name' => 'surveyee_users',
-    'question_type' => '2',
+    'field_name' => 'pension_type_id',
+    'table_name' => '',
+    'question_type' => '1',
     'questions' => 
     array (
     ),
@@ -32,30 +44,40 @@ array (
     'ui_validation' => NULL,
     'question_template' => '',
     'multiple_answer_sets' => false,
-    'uid' => '15207088',
-    'uname' => 'family_details',
+    'uid' => '61776713',
+    'uname' => 'pension_type_id',
     'help_text' => NULL,
-    'form_field' => '1',
-    'type' => '2',
-    'is_multipliable' => '1',
+    'form_field' => '3',
+    'type' => '1',
+    'is_multipliable' => '0',
     'is_required_question' => '0',
     'question_order' => '1',
-    'collection_question_uid' => NULL,
-    'template' => 'question/tpl_family_member_details_new',
+    'collection_question_uid' => '15207088',
+    'template' => NULL,
     'true_false_variant' => NULL,
     'group_id' => '1',
   ),
-  41060327 => 
+  30138200 => 
   array (
-    'title' => 'ജനന തീയതി',
-    'answer_type' => '1',
+    'title' => 'ഡ്രൈവിങ് ലൈസൻസ് ഉണ്ടോ ?',
+    'answer_type' => '5',
     'answer_options' => 
     array (
+      0 => 
+      array (
+        'value' => 0,
+        'title' => 'ഇല്ലാ',
+      ),
+      1 => 
+      array (
+        'value' => 1,
+        'title' => 'ഉണ്ട്',
+      ),
     ),
     'answer_non_selection_option' => 
     array (
     ),
-    'field_name' => 'date_of_birth',
+    'field_name' => 'has_driving_license',
     'table_name' => 'surveyee_users',
     'question_type' => '1',
     'questions' => 
@@ -66,10 +88,56 @@ array (
     'ui_validation' => NULL,
     'question_template' => '',
     'multiple_answer_sets' => false,
-    'uid' => '41060327',
-    'uname' => 'date_of_birth',
+    'uid' => '30138200',
+    'uname' => 'has_driving_license',
     'help_text' => NULL,
-    'form_field' => '1',
+    'form_field' => '5',
+    'type' => '1',
+    'is_multipliable' => '0',
+    'is_required_question' => '0',
+    'question_order' => '1',
+    'collection_question_uid' => '15207088',
+    'template' => NULL,
+    'true_false_variant' => '2',
+    'group_id' => '1',
+  ),
+  49851225 => 
+  array (
+    'title' => 'ഏതൊക്കെ ഇൻഷുറൻസ് പരിരക്ഷ ഉണ്ട് ?',
+    'answer_type' => '3',
+    'answer_options' => 
+    array (
+      0 => 
+      array (
+        'value' => '1',
+        'title' => 'ലൈഫ് ഇൻഷുറൻസ്',
+      ),
+      1 => 
+      array (
+        'value' => '2',
+        'title' => 'മെഡിക്കൽ ഇൻഷുറൻസ്',
+      ),
+    ),
+    'answer_non_selection_option' => 
+    array (
+      'value' => '',
+      'title' => 'ഇൻഷുറൻസ്  ഇല്ലാ',
+    ),
+    'field_name' => 'insurance_type_id',
+    'table_name' => '',
+    'question_type' => '1',
+    'questions' => 
+    array (
+    ),
+    'default_value' => NULL,
+    'ci_validation' => '',
+    'ui_validation' => NULL,
+    'question_template' => '',
+    'multiple_answer_sets' => false,
+    'uid' => '49851225',
+    'uname' => 'insurance_type_id',
+    'help_text' => NULL,
+    'form_field' => '3',
     'type' => '1',
     'is_multipliable' => '0',
     'is_required_question' => '0',
@@ -108,7 +176,7 @@ array (
     ),
     'answer_non_selection_option' => 
     array (
-      'value' => '0',
+      'value' => '',
       'title' => ' -- തിരഞ്ഞെടുക്കു -- ',
     ),
     'field_name' => 'marital_status',
@@ -179,29 +247,19 @@ array (
     'true_false_variant' => '2',
     'group_id' => '1',
   ),
-  31786733 => 
+  15207088 => 
   array (
-    'title' => 'ബാങ്ക് അക്കൗണ്ട് ഉണ്ടോ ?',
-    'answer_type' => '5',
+    'title' => 'കുടുംബ വിവരങ്ങൾ',
+    'answer_type' => '1',
     'answer_options' => 
     array (
-      0 => 
-      array (
-        'value' => 0,
-        'title' => 'ഇല്ലാ',
-      ),
-      1 => 
-      array (
-        'value' => 1,
-        'title' => 'ഉണ്ട്',
-      ),
     ),
     'answer_non_selection_option' => 
     array (
     ),
-    'field_name' => 'has_bank_account',
+    'field_name' => '',
     'table_name' => 'surveyee_users',
-    'question_type' => '1',
+    'question_type' => '2',
     'questions' => 
     array (
     ),
@@ -210,61 +268,17 @@ array (
     'ui_validation' => NULL,
     'question_template' => '',
     'multiple_answer_sets' => false,
-    'uid' => '31786733',
-    'uname' => 'has_bank_account',
+    'uid' => '15207088',
+    'uname' => 'family_details',
     'help_text' => NULL,
-    'form_field' => '5',
-    'type' => '1',
-    'is_multipliable' => '0',
+    'form_field' => '1',
+    'type' => '2',
+    'is_multipliable' => '1',
     'is_required_question' => '0',
     'question_order' => '1',
-    'collection_question_uid' => '15207088',
-    'template' => NULL,
-    'true_false_variant' => '2',
-    'group_id' => '1',
-  ),
-  30138200 => 
-  array (
-    'title' => 'ഡ്രൈവിങ് ലൈസൻസ് ഉണ്ടോ ?',
-    'answer_type' => '5',
-    'answer_options' => 
-    array (
-      0 => 
-      array (
-        'value' => 0,
-        'title' => 'ഇല്ലാ',
-      ),
-      1 => 
-      array (
-        'value' => 1,
-        'title' => 'ഉണ്ട്',
-      ),
-    ),
-    'answer_non_selection_option' => 
-    array (
-    ),
-    'field_name' => 'has_driving_license',
-    'table_name' => 'surveyee_users',
-    'question_type' => '1',
-    'questions' => 
-    array (
-    ),
-    'default_value' => NULL,
-    'ci_validation' => '',
-    'ui_validation' => NULL,
-    'question_template' => '',
-    'multiple_answer_sets' => false,
-    'uid' => '30138200',
-    'uname' => 'has_driving_license',
-    'help_text' => NULL,
-    'form_field' => '5',
-    'type' => '1',
-    'is_multipliable' => '0',
-    'is_required_question' => '0',
-    'question_order' => '1',
-    'collection_question_uid' => '15207088',
-    'template' => NULL,
-    'true_false_variant' => '2',
+    'collection_question_uid' => NULL,
+    'template' => 'question/tpl_family_member_details_new',
+    'true_false_variant' => NULL,
     'group_id' => '1',
   ),
   49482177 => 
@@ -316,7 +330,7 @@ array (
     ),
     'answer_non_selection_option' => 
     array (
-      'value' => '0',
+      'value' => '',
       'title' => 'അറിയില്ലാ',
     ),
     'field_name' => 'blood_group',
@@ -343,30 +357,18 @@ array (
     'true_false_variant' => NULL,
     'group_id' => '1',
   ),
-  61776713 => 
+  41060327 => 
   array (
-    'title' => 'ഏതൊക്കെ പെൻഷൻ ഉണ്ട് ?',
-    'answer_type' => '3',
+    'title' => 'ജനന തീയതി',
+    'answer_type' => '1',
     'answer_options' => 
     array (
-      0 => 
-      array (
-        'value' => '1',
-        'title' => 'ഗവണ്മെന്റ് പെൻഷൻ',
-      ),
-      1 => 
-      array (
-        'value' => '2',
-        'title' => 'മുതിർന്ന പൗരനുള്ള പെൻഷൻ',
-      ),
     ),
     'answer_non_selection_option' => 
     array (
-      'value' => '0',
-      'title' => 'പെൻഷൻ ഇല്ലാ',
     ),
-    'field_name' => 'pension_type_id',
-    'table_name' => '',
+    'field_name' => 'date_of_birth',
+    'table_name' => 'surveyee_users',
     'question_type' => '1',
     'questions' => 
     array (
@@ -376,10 +378,10 @@ array (
     'ui_validation' => NULL,
     'question_template' => '',
     'multiple_answer_sets' => false,
-    'uid' => '61776713',
-    'uname' => 'pension_type_id',
+    'uid' => '41060327',
+    'uname' => 'date_of_birth',
     'help_text' => NULL,
-    'form_field' => '3',
+    'form_field' => '1',
     'type' => '1',
     'is_multipliable' => '0',
     'is_required_question' => '0',
@@ -389,30 +391,28 @@ array (
     'true_false_variant' => NULL,
     'group_id' => '1',
   ),
-  49851225 => 
+  31786733 => 
   array (
-    'title' => 'ഏതൊക്കെ ഇൻഷുറൻസ് പരിരക്ഷ ഉണ്ട് ?',
-    'answer_type' => '3',
+    'title' => 'ബാങ്ക് അക്കൗണ്ട് ഉണ്ടോ ?',
+    'answer_type' => '5',
     'answer_options' => 
     array (
       0 => 
       array (
-        'value' => '1',
-        'title' => 'ലൈഫ് ഇൻഷുറൻസ്',
+        'value' => 0,
+        'title' => 'ഇല്ലാ',
       ),
       1 => 
       array (
-        'value' => '2',
-        'title' => 'മെഡിക്കൽ ഇൻഷുറൻസ്',
+        'value' => 1,
+        'title' => 'ഉണ്ട്',
       ),
     ),
     'answer_non_selection_option' => 
     array (
-      'value' => '0',
-      'title' => 'ഇൻഷുറൻസ്  ഇല്ലാ',
     ),
-    'field_name' => 'insurance_type_id',
-    'table_name' => '',
+    'field_name' => 'has_bank_account',
+    'table_name' => 'surveyee_users',
     'question_type' => '1',
     'questions' => 
     array (
@@ -422,16 +422,50 @@ array (
     'ui_validation' => NULL,
     'question_template' => '',
     'multiple_answer_sets' => false,
-    'uid' => '49851225',
-    'uname' => 'insurance_type_id',
+    'uid' => '31786733',
+    'uname' => 'has_bank_account',
     'help_text' => NULL,
-    'form_field' => '3',
+    'form_field' => '5',
     'type' => '1',
     'is_multipliable' => '0',
     'is_required_question' => '0',
     'question_order' => '1',
     'collection_question_uid' => '15207088',
     'template' => NULL,
+    'true_false_variant' => '2',
+    'group_id' => '1',
+  ),
+  35467066 => 
+  array (
+    'title' => 'വിലാസം',
+    'answer_type' => '4',
+    'answer_options' => 
+    array (
+    ),
+    'answer_non_selection_option' => 
+    array (
+    ),
+    'field_name' => 'address',
+    'table_name' => 'houses',
+    'question_type' => '2',
+    'questions' => 
+    array (
+    ),
+    'default_value' => NULL,
+    'ci_validation' => '',
+    'ui_validation' => NULL,
+    'question_template' => '',
+    'multiple_answer_sets' => false,
+    'uid' => '35467066',
+    'uname' => 'address',
+    'help_text' => NULL,
+    'form_field' => '4',
+    'type' => '2',
+    'is_multipliable' => '0',
+    'is_required_question' => '0',
+    'question_order' => '2',
+    'collection_question_uid' => NULL,
+    'template' => 'question/tpl_address',
     'true_false_variant' => NULL,
     'group_id' => '1',
   ),
@@ -466,40 +500,6 @@ array (
     'question_order' => '2',
     'collection_question_uid' => '15207088',
     'template' => '',
-    'true_false_variant' => NULL,
-    'group_id' => '1',
-  ),
-  35467066 => 
-  array (
-    'title' => 'വിലാസം',
-    'answer_type' => '4',
-    'answer_options' => 
-    array (
-    ),
-    'answer_non_selection_option' => 
-    array (
-    ),
-    'field_name' => 'address',
-    'table_name' => 'houses',
-    'question_type' => '2',
-    'questions' => 
-    array (
-    ),
-    'default_value' => NULL,
-    'ci_validation' => '',
-    'ui_validation' => NULL,
-    'question_template' => '',
-    'multiple_answer_sets' => false,
-    'uid' => '35467066',
-    'uname' => 'address',
-    'help_text' => NULL,
-    'form_field' => '4',
-    'type' => '2',
-    'is_multipliable' => '0',
-    'is_required_question' => '0',
-    'question_order' => '2',
-    'collection_question_uid' => NULL,
-    'template' => 'question/tpl_address',
     'true_false_variant' => NULL,
     'group_id' => '1',
   ),
@@ -591,40 +591,6 @@ array (
     'true_false_variant' => '1',
     'group_id' => '1',
   ),
-  74021845 => 
-  array (
-    'title' => 'ഇലക്ഷൻ ഐ. ഡി.',
-    'answer_type' => '1',
-    'answer_options' => 
-    array (
-    ),
-    'answer_non_selection_option' => 
-    array (
-    ),
-    'field_name' => 'election_id',
-    'table_name' => 'surveyee_users',
-    'question_type' => '2',
-    'questions' => 
-    array (
-    ),
-    'default_value' => NULL,
-    'ci_validation' => '',
-    'ui_validation' => NULL,
-    'question_template' => '',
-    'multiple_answer_sets' => false,
-    'uid' => '74021845',
-    'uname' => 'election_id',
-    'help_text' => NULL,
-    'form_field' => '1',
-    'type' => '2',
-    'is_multipliable' => '0',
-    'is_required_question' => '0',
-    'question_order' => '4',
-    'collection_question_uid' => '15207088',
-    'template' => '',
-    'true_false_variant' => NULL,
-    'group_id' => '1',
-  ),
   54694286 => 
   array (
     'title' => 'വീട്ടിലെ താമസം',
@@ -674,9 +640,9 @@ array (
     'true_false_variant' => NULL,
     'group_id' => '1',
   ),
-  81516510 => 
+  74021845 => 
   array (
-    'title' => 'ആധാർ നം',
+    'title' => 'ഇലക്ഷൻ ഐ. ഡി.',
     'answer_type' => '1',
     'answer_options' => 
     array (
@@ -684,7 +650,7 @@ array (
     'answer_non_selection_option' => 
     array (
     ),
-    'field_name' => 'aadhar_id',
+    'field_name' => 'election_id',
     'table_name' => 'surveyee_users',
     'question_type' => '2',
     'questions' => 
@@ -695,14 +661,14 @@ array (
     'ui_validation' => NULL,
     'question_template' => '',
     'multiple_answer_sets' => false,
-    'uid' => '81516510',
-    'uname' => 'aadhar_id',
+    'uid' => '74021845',
+    'uname' => 'election_id',
     'help_text' => NULL,
     'form_field' => '1',
     'type' => '2',
     'is_multipliable' => '0',
     'is_required_question' => '0',
-    'question_order' => '5',
+    'question_order' => '4',
     'collection_question_uid' => '15207088',
     'template' => '',
     'true_false_variant' => NULL,
@@ -752,30 +718,18 @@ array (
     'true_false_variant' => NULL,
     'group_id' => '1',
   ),
-  82775786 => 
+  81516510 => 
   array (
-    'title' => 'സംവരണം',
-    'answer_type' => '5',
+    'title' => 'ആധാർ നം',
+    'answer_type' => '1',
     'answer_options' => 
     array (
-      0 => 
-      array (
-        'value' => '1',
-        'title' => 'പട്ടികജാതി/വർഗം',
-      ),
-      1 => 
-      array (
-        'value' => '2',
-        'title' => 'പിന്നോക്ക സമുദായം',
-      ),
     ),
     'answer_non_selection_option' => 
     array (
-      'value' => '0',
-      'title' => 'ഇല്ലാ',
     ),
-    'field_name' => 'reservation',
-    'table_name' => '',
+    'field_name' => 'aadhar_id',
+    'table_name' => 'surveyee_users',
     'question_type' => '2',
     'questions' => 
     array (
@@ -785,18 +739,18 @@ array (
     'ui_validation' => NULL,
     'question_template' => '',
     'multiple_answer_sets' => false,
-    'uid' => '82775786',
-    'uname' => 'reservation',
+    'uid' => '81516510',
+    'uname' => 'aadhar_id',
     'help_text' => NULL,
-    'form_field' => '5',
+    'form_field' => '1',
     'type' => '2',
     'is_multipliable' => '0',
     'is_required_question' => '0',
-    'question_order' => '6',
+    'question_order' => '5',
     'collection_question_uid' => '15207088',
     'template' => '',
     'true_false_variant' => NULL,
-    'group_id' => '2',
+    'group_id' => '1',
   ),
   89610671 => 
   array (
@@ -842,35 +796,47 @@ array (
     'true_false_variant' => '1',
     'group_id' => '1',
   ),
-  59336358 => 
+  82775786 => 
   array (
-    'title' => 'മൊബൈൽ നമ്പർ',
-    'answer_type' => '1',
+    'title' => 'സംവരണം',
+    'answer_type' => '5',
     'answer_options' => 
     array (
+      0 => 
+      array (
+        'value' => '1',
+        'title' => 'പട്ടികജാതി/വർഗം',
+      ),
+      1 => 
+      array (
+        'value' => '2',
+        'title' => 'പിന്നോക്ക സമുദായം',
+      ),
     ),
     'answer_non_selection_option' => 
     array (
+      'value' => '',
+      'title' => 'ഇല്ലാ',
     ),
-    'field_name' => 'mobile_number',
-    'table_name' => 'surveyee_users',
+    'field_name' => 'reservation',
+    'table_name' => '',
     'question_type' => '2',
     'questions' => 
     array (
     ),
     'default_value' => NULL,
-    'ci_validation' => 'numeric|min_length[10]|max_length[10]',
-    'ui_validation' => 'data-rule-minlength="10" data-rule-maxlength="10" data-rule-number="true"',
+    'ci_validation' => '',
+    'ui_validation' => NULL,
     'question_template' => '',
     'multiple_answer_sets' => false,
-    'uid' => '59336358',
-    'uname' => 'mobile_number',
+    'uid' => '82775786',
+    'uname' => 'reservation',
     'help_text' => NULL,
-    'form_field' => '1',
+    'form_field' => '5',
     'type' => '2',
     'is_multipliable' => '0',
     'is_required_question' => '0',
-    'question_order' => '7',
+    'question_order' => '6',
     'collection_question_uid' => '15207088',
     'template' => '',
     'true_false_variant' => NULL,
@@ -930,9 +896,9 @@ array (
     'true_false_variant' => NULL,
     'group_id' => '1',
   ),
-  71360678 => 
+  59336358 => 
   array (
-    'title' => 'ഇമെയിൽ വിലാസം',
+    'title' => 'മൊബൈൽ നമ്പർ',
     'answer_type' => '1',
     'answer_options' => 
     array (
@@ -940,25 +906,25 @@ array (
     'answer_non_selection_option' => 
     array (
     ),
-    'field_name' => 'email_id',
+    'field_name' => 'mobile_number',
     'table_name' => 'surveyee_users',
     'question_type' => '2',
     'questions' => 
     array (
     ),
     'default_value' => NULL,
-    'ci_validation' => '',
-    'ui_validation' => NULL,
+    'ci_validation' => 'numeric|min_length[10]|max_length[10]',
+    'ui_validation' => 'data-rule-minlength="10" data-rule-maxlength="10" data-rule-number="true"',
     'question_template' => '',
     'multiple_answer_sets' => false,
-    'uid' => '71360678',
-    'uname' => 'email_id',
+    'uid' => '59336358',
+    'uname' => 'mobile_number',
     'help_text' => NULL,
     'form_field' => '1',
     'type' => '2',
     'is_multipliable' => '0',
     'is_required_question' => '0',
-    'question_order' => '8',
+    'question_order' => '7',
     'collection_question_uid' => '15207088',
     'template' => '',
     'true_false_variant' => NULL,
@@ -1018,9 +984,9 @@ array (
     'true_false_variant' => NULL,
     'group_id' => '1',
   ),
-  29424043 => 
+  71360678 => 
   array (
-    'title' => 'വാട്സപ്പ്‍ നമ്പർ',
+    'title' => 'ഇമെയിൽ വിലാസം',
     'answer_type' => '1',
     'answer_options' => 
     array (
@@ -1028,7 +994,7 @@ array (
     'answer_non_selection_option' => 
     array (
     ),
-    'field_name' => 'whatsapp_number',
+    'field_name' => 'email_id',
     'table_name' => 'surveyee_users',
     'question_type' => '2',
     'questions' => 
@@ -1039,14 +1005,14 @@ array (
     'ui_validation' => NULL,
     'question_template' => '',
     'multiple_answer_sets' => false,
-    'uid' => '29424043',
-    'uname' => 'whatsapp_number',
+    'uid' => '71360678',
+    'uname' => 'email_id',
     'help_text' => NULL,
     'form_field' => '1',
     'type' => '2',
     'is_multipliable' => '0',
     'is_required_question' => '0',
-    'question_order' => '9',
+    'question_order' => '8',
     'collection_question_uid' => '15207088',
     'template' => '',
     'true_false_variant' => NULL,
@@ -1125,6 +1091,40 @@ array (
     'template' => '',
     'true_false_variant' => NULL,
     'group_id' => '1',
+  ),
+  29424043 => 
+  array (
+    'title' => 'വാട്സപ്പ്‍ നമ്പർ',
+    'answer_type' => '1',
+    'answer_options' => 
+    array (
+    ),
+    'answer_non_selection_option' => 
+    array (
+    ),
+    'field_name' => 'whatsapp_number',
+    'table_name' => 'surveyee_users',
+    'question_type' => '2',
+    'questions' => 
+    array (
+    ),
+    'default_value' => NULL,
+    'ci_validation' => '',
+    'ui_validation' => NULL,
+    'question_template' => '',
+    'multiple_answer_sets' => false,
+    'uid' => '29424043',
+    'uname' => 'whatsapp_number',
+    'help_text' => NULL,
+    'form_field' => '1',
+    'type' => '2',
+    'is_multipliable' => '0',
+    'is_required_question' => '0',
+    'question_order' => '9',
+    'collection_question_uid' => '15207088',
+    'template' => '',
+    'true_false_variant' => NULL,
+    'group_id' => '2',
   ),
   29392142 => 
   array (
@@ -1283,7 +1283,7 @@ array (
     ),
     'answer_non_selection_option' => 
     array (
-      'value' => '0',
+      'value' => '',
       'title' => 'ബാധകമല്ലാ',
     ),
     'field_name' => 'relationship_to_head_of_house',
@@ -1517,65 +1517,6 @@ array (
     'true_false_variant' => NULL,
     'group_id' => '1',
   ),
-  75506728 => 
-  array (
-    'title' => 'തൊഴിൽ മേഖല',
-    'answer_type' => '5',
-    'answer_options' => 
-    array (
-      0 => 
-      array (
-        'value' => '1',
-        'title' => 'സർക്കാർ ജോലി',
-      ),
-      1 => 
-      array (
-        'value' => '2',
-        'title' => 'അർദ്ധ സർക്കാർ ജോലി',
-      ),
-      2 => 
-      array (
-        'value' => '3',
-        'title' => 'സ്വകാര്യ സ്ഥാപനത്തിൽ',
-      ),
-      3 => 
-      array (
-        'value' => '4',
-        'title' => 'ബിസിനസ്',
-      ),
-      4 => 
-      array (
-        'value' => '5',
-        'title' => 'വിദേശത്തു തൊഴിൽ',
-      ),
-    ),
-    'answer_non_selection_option' => 
-    array (
-    ),
-    'field_name' => 'employment_category',
-    'table_name' => '',
-    'question_type' => '2',
-    'questions' => 
-    array (
-    ),
-    'default_value' => NULL,
-    'ci_validation' => '',
-    'ui_validation' => NULL,
-    'question_template' => '',
-    'multiple_answer_sets' => false,
-    'uid' => '75506728',
-    'uname' => 'employment_category',
-    'help_text' => NULL,
-    'form_field' => '5',
-    'type' => '2',
-    'is_multipliable' => '0',
-    'is_required_question' => '0',
-    'question_order' => '13',
-    'collection_question_uid' => '15207088',
-    'template' => '',
-    'true_false_variant' => NULL,
-    'group_id' => '2',
-  ),
   86756639 => 
   array (
     'title' => 'വാർഷിക കെട്ടിട നികുതി',
@@ -1609,6 +1550,70 @@ array (
     'template' => '',
     'true_false_variant' => NULL,
     'group_id' => '1',
+  ),
+  75506728 => 
+  array (
+    'title' => 'തൊഴിൽ മേഖല',
+    'answer_type' => '5',
+    'answer_options' => 
+    array (
+      0 => 
+      array (
+        'value' => '1',
+        'title' => 'തൊഴിൽ ഇല്ലാ',
+      ),
+      1 => 
+      array (
+        'value' => '2',
+        'title' => 'അർദ്ധ സർക്കാർ ജോലി',
+      ),
+      2 => 
+      array (
+        'value' => '3',
+        'title' => 'സ്വകാര്യ സ്ഥാപനത്തിൽ',
+      ),
+      3 => 
+      array (
+        'value' => '4',
+        'title' => 'ബിസിനസ്',
+      ),
+      4 => 
+      array (
+        'value' => '5',
+        'title' => 'വിദേശത്തു തൊഴിൽ',
+      ),
+      5 => 
+      array (
+        'value' => '6',
+        'title' => 'സർക്കാർ ജോലി',
+      ),
+    ),
+    'answer_non_selection_option' => 
+    array (
+    ),
+    'field_name' => 'employment_category',
+    'table_name' => '',
+    'question_type' => '2',
+    'questions' => 
+    array (
+    ),
+    'default_value' => NULL,
+    'ci_validation' => '',
+    'ui_validation' => NULL,
+    'question_template' => '',
+    'multiple_answer_sets' => false,
+    'uid' => '75506728',
+    'uname' => 'employment_category',
+    'help_text' => NULL,
+    'form_field' => '5',
+    'type' => '2',
+    'is_multipliable' => '0',
+    'is_required_question' => '0',
+    'question_order' => '13',
+    'collection_question_uid' => '15207088',
+    'template' => '',
+    'true_false_variant' => NULL,
+    'group_id' => '2',
   ),
   74853345 => 
   array (
@@ -1737,40 +1742,6 @@ array (
     'true_false_variant' => NULL,
     'group_id' => '2',
   ),
-  49367725 => 
-  array (
-    'title' => 'വീട്ട്  പേര്',
-    'answer_type' => '1',
-    'answer_options' => 
-    array (
-    ),
-    'answer_non_selection_option' => 
-    array (
-    ),
-    'field_name' => 'address_house_name',
-    'table_name' => '',
-    'question_type' => '2',
-    'questions' => 
-    array (
-    ),
-    'default_value' => NULL,
-    'ci_validation' => '',
-    'ui_validation' => NULL,
-    'question_template' => '',
-    'multiple_answer_sets' => false,
-    'uid' => '49367725',
-    'uname' => 'address_house_name',
-    'help_text' => NULL,
-    'form_field' => '1',
-    'type' => '2',
-    'is_multipliable' => '0',
-    'is_required_question' => '0',
-    'question_order' => '16',
-    'collection_question_uid' => '35467066',
-    'template' => '',
-    'true_false_variant' => NULL,
-    'group_id' => '1',
-  ),
   33106339 => 
   array (
     'title' => 'റേഷൻ കാർഡ് നമ്പർ',
@@ -1804,6 +1775,40 @@ array (
     'template' => '',
     'true_false_variant' => NULL,
     'group_id' => '2',
+  ),
+  49367725 => 
+  array (
+    'title' => 'വീട്ട്  പേര്',
+    'answer_type' => '1',
+    'answer_options' => 
+    array (
+    ),
+    'answer_non_selection_option' => 
+    array (
+    ),
+    'field_name' => 'address_house_name',
+    'table_name' => '',
+    'question_type' => '2',
+    'questions' => 
+    array (
+    ),
+    'default_value' => NULL,
+    'ci_validation' => '',
+    'ui_validation' => NULL,
+    'question_template' => '',
+    'multiple_answer_sets' => false,
+    'uid' => '49367725',
+    'uname' => 'address_house_name',
+    'help_text' => NULL,
+    'form_field' => '1',
+    'type' => '2',
+    'is_multipliable' => '0',
+    'is_required_question' => '0',
+    'question_order' => '16',
+    'collection_question_uid' => '35467066',
+    'template' => '',
+    'true_false_variant' => NULL,
+    'group_id' => '1',
   ),
   77629391 => 
   array (
@@ -1893,40 +1898,6 @@ array (
     'true_false_variant' => NULL,
     'group_id' => '2',
   ),
-  39980947 => 
-  array (
-    'title' => 'പിൻകോഡ്',
-    'answer_type' => '1',
-    'answer_options' => 
-    array (
-    ),
-    'answer_non_selection_option' => 
-    array (
-    ),
-    'field_name' => 'address_pincode',
-    'table_name' => '',
-    'question_type' => '2',
-    'questions' => 
-    array (
-    ),
-    'default_value' => NULL,
-    'ci_validation' => '',
-    'ui_validation' => NULL,
-    'question_template' => '',
-    'multiple_answer_sets' => false,
-    'uid' => '39980947',
-    'uname' => 'address_pincode',
-    'help_text' => NULL,
-    'form_field' => '1',
-    'type' => '2',
-    'is_multipliable' => '0',
-    'is_required_question' => '0',
-    'question_order' => '18',
-    'collection_question_uid' => '35467066',
-    'template' => '',
-    'true_false_variant' => NULL,
-    'group_id' => '1',
-  ),
   35334671 => 
   array (
     'title' => 'ഏതെങ്കിലും അയൽക്കൂട്ടം അംഗമാണോ?',
@@ -1970,6 +1941,40 @@ array (
     'template' => '',
     'true_false_variant' => '1',
     'group_id' => '2',
+  ),
+  39980947 => 
+  array (
+    'title' => 'പിൻകോഡ്',
+    'answer_type' => '1',
+    'answer_options' => 
+    array (
+    ),
+    'answer_non_selection_option' => 
+    array (
+    ),
+    'field_name' => 'address_pincode',
+    'table_name' => '',
+    'question_type' => '2',
+    'questions' => 
+    array (
+    ),
+    'default_value' => NULL,
+    'ci_validation' => '',
+    'ui_validation' => NULL,
+    'question_template' => '',
+    'multiple_answer_sets' => false,
+    'uid' => '39980947',
+    'uname' => 'address_pincode',
+    'help_text' => NULL,
+    'form_field' => '1',
+    'type' => '2',
+    'is_multipliable' => '0',
+    'is_required_question' => '0',
+    'question_order' => '18',
+    'collection_question_uid' => '35467066',
+    'template' => '',
+    'true_false_variant' => NULL,
+    'group_id' => '1',
   ),
   56883834 => 
   array (
@@ -3011,6 +3016,11 @@ array (
       array (
         'value' => '6',
         'title' => 'അഞ്ചിന് മുകളിൽ',
+      ),
+      6 => 
+      array (
+        'value' => '7',
+        'title' => 'കക്കൂസ് ഇല്ലാ',
       ),
     ),
     'answer_non_selection_option' => 

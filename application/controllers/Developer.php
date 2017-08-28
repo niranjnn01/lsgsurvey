@@ -9,6 +9,10 @@ class Developer extends CI_Controller {
 
 
 		$this->load->model('common_model');
+
+		if(FALSE) {
+			exit(0);
+		}
 	}
 
 	function index() {
@@ -96,16 +100,18 @@ class Developer extends CI_Controller {
 
 
 
-	function alter_raw_data($iTemporarySurveyId) {
-
-		exit(0); // safe guard . to prevent accidental updates
+	function alter_raw_data() {
+		$iTemporarySurveyId = 7;
+		exit('SAFE GUARD ........ SAFE GUARD!!'); // safe guard . to prevent accidental updates
 
 		$this->db->where('id', $iTemporarySurveyId);
 		$this->mcontents['oRow'] = $this->db->get('temporary_survey')->row();
 
 		$unserialized_data = unserialize($this->mcontents['oRow']->raw_data);
-		$unserialized_data['surveyee_users']['belief_in_religion_id'] = NULL;
-		//p(var_dump($unserialized_data));
+
+
+		$unserialized_data['surveyee_users']['is_office_bearer_ayalkoottam'] = 1;
+
 
 
 		$this->db->where('id', $iTemporarySurveyId);
@@ -115,18 +121,6 @@ class Developer extends CI_Controller {
 	}
 
 
-	function sync_demo_data() {
-		/*
-		$this->db->where('pushed_to_main', 0);
-		$this->db->where('id', 17);
-		foreach($this->db->get('temporary_survey')->result() AS $oItem) {
-			$this->survey_model->createSurvey($oItem->id);
-		}
-		*/
-		$this->load->model('survey_model');
-		//$this->survey_model->createSurvey(20);
-		//$this->survey_model->createSurvey(21);
-	}
 
 
 
@@ -150,9 +144,25 @@ class Developer extends CI_Controller {
 		redirect('developer/show_log');
 	}
 
+
+
+		function sync_demo_data() {
+
+			$aTemporarySurveyIds = array(1, 4, 5, 6, 7);
+
+			$this->load->model('survey_model');
+
+			$bFailTransaction = FALSE; // whether to fail transaction or not. Used for testing.
+
+			foreach($aTemporarySurveyIds AS $iTemporarySurveyId) {
+				$this->survey_model->createSurvey($iTemporarySurveyId, $bFailTransaction);
+			}
+
+		}
+
 	function truncate_all_data_________use_only_when_neeeded() {
 
-		exit(0);
+		//exit('Cannot execute now');
 
 		$aTruncatableTables = array(
 

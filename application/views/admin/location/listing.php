@@ -7,9 +7,9 @@
 		Total of <?php echo $iTotal, ' ', $hierarchy_title[$iType];?>
 	</div>
 	<div class="cell r">
-		
+
 		<?php //p($aData);?>
-		
+
 		<?php //if($iCountryId):?>
 			Country : <?php echo form_dropdown('country', $aCountrys, $iCountryId, 'class="country_filter"  id="country"');?></span>
 		<?php //endif;?>
@@ -19,7 +19,7 @@
 		<?php if($iDistrictId):?>
 			District : <?php echo form_dropdown('district', $aDistricts, $iDistrictId, 'class="district_filter"  id="district"');?></span>
 		<?php endif;?>
-		
+
 	</div>
 </div>
 
@@ -29,7 +29,7 @@
 
 
 <div class="grid_header_cont l">
-	<?php 
+	<?php
 	$width1 = '25px';
 	$width2 = '565px';
 	$width3 = '120px';
@@ -46,13 +46,13 @@
 	<?php
 	$iHierarchyCount = count($hierarchy);
 	foreach($aData AS $iKey=>$oItem):
-	
+
 	$item_id = $sType.'_id';
 	$item_name = $sType.'_name';
-	
-	
+
+
 	$sUrl = '';
-	
+
 	if($sType == 'country') {
 		$sUrl .= 'location/listing/' . $oItem->$item_id;
 	} elseif ($sType == 'state') {
@@ -71,7 +71,7 @@
 				<?php else:?>
 				<?php echo $oItem->$item_name;?>
 				<?php endif;?>
-				
+
 			</h5></div>
 		</div>
 		<div class="cell l" style="width:<?php echo $width3;?>">
@@ -90,11 +90,11 @@
 		</div>
 	</div>
 	<?php //p('test ');exit;?>
-	
+
 	<?php endforeach;?>
 	<?php //p('test 2');exit;?>
 	<?php echo $sPagination;?>
-	
+
 </div>
 
 <?php else:?>
@@ -103,4 +103,4 @@
 <?php
 
 //p($iType + 1);
-endif;?>	
+endif;?>

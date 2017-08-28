@@ -45,34 +45,15 @@ class Search extends CI_Controller {
 					);
 
 					$aGroupBy = $aOrderBy = $aJoin = $aOrWhere = $aAndWhere = $aWhere = $aLike = array();
-					$sSelect = 'S.id survey_id, SU.name user_name, H.ward_id';
+					$sSelect = '';
 
 
+					$this->db->select("S.id survey_id, SU.name user_name, H.ward_id", false);
 
-					$aJoin['surveyee_users SU'] = array(
-								'type' => '',
-								'condition' => 'S.surveyee_user_id__head_of_family = SU.id',
-							);
-
-					$aJoin['surveyee_user_family_map SUFM'] = array(
-				 				 'type' => '',
-				 				 'condition' => 'SU.id = SUFM.surveyee_user_id',
-				 			 );
-
-
-					$aJoin['families F'] = array(
-													'type' => '',
-													'condition' => 'SUFM.family_id = F.id',
-												);
-
-					$aJoin['family_house_map FHM'] = array(
-								'type' => '',
-								'condition' => 'F.id = FHM.family_id',
-							);
 
 					$aJoin['houses H'] = array(
 													'type' => '',
-													'condition' => 'FHM.house_id = H.id',
+													'condition' => 'S.house_id = H.id',
 												);
 
 					$aJoin['land_house_map LHM'] = array(
@@ -80,6 +61,20 @@ class Search extends CI_Controller {
 									'condition' => 'H.id = LHM.house_id',
 								);
 
+					$aJoin['family_house_map FHM'] = array(
+								'type' => '',
+								'condition' => 'H.id = FHM.house_id',
+							);
+
+
+					$aJoin['families F'] = array(
+													'type' => '',
+													'condition' => 'FHM.family_id = F.id',
+												);
+					$aJoin['surveyee_user_family_map SUFM'] = array(
+				 				 'type' => '',
+				 				 'condition' => 'F.id = SUFM.family_id',
+				 			 );
 
 					// family head - we are looking at details of head of family only
 					$aWhere['SUFM.is_head'] = 1;
@@ -153,8 +148,10 @@ class Search extends CI_Controller {
 							*/
 						}
 
-
-
+						$aJoin['surveyee_users SU'] = array(
+										'type' => '',
+										'condition' => 'SUFM.surveyee_user_id = SU.id',
+									);
 
 						if( $LAND_OWNERSHIP_IS_OWNER ) { // is owner
 
@@ -646,7 +643,7 @@ class Search extends CI_Controller {
 
 
 
-				$this->db->select($sSelect, false);
+
 
 				//p($aWhere);
 				if($aWhere){
@@ -700,7 +697,8 @@ class Search extends CI_Controller {
 
 				$aSearchResult = $this->db->get('surveys S')->result();
 
-//p($aSearchResult);
+
+
 
 
 
@@ -738,6 +736,107 @@ class Search extends CI_Controller {
 
 
 
+
+
+	public function do_search_old_to_delete() {
+
+
+		// defining our response
+		$aJsonData = array(
+			'message' => '',
+			'error' => '',
+			'result' => array(),
+		);
+
+
+
+		// Start building query
+
+
+		$this->db->select("S.id survey_id, SU.name user_name, H.ward_id", false);
+
+		$this->db->join('houses H', 'S.house_id = H.id');
+		$this->db->join('land_house_map LHM', 'H.id = LHM.house_id');
+		$this->db->join('family_house_map FHM', 'H.id = FHM.house_id');
+		$this->db->join('lands L', 'LHM.land_id = L.id');
+
+		$this->db->join('families F', 'FHM.family_id = F.id');
+		$this->db->join('surveyee_user_family_map SUFM', 'F.id = SUFM.family_id');
+		$this->db->join('surveyee_users SU', 'SUFM.surveyee_user_id = SU.id');
+
+
+		if(safeText('house_ownership_type', FALSE, 'get') == 1) { // is owner
+			//$this->db->where('H.owner_id', 'SU.id');
+			$this->db->join('surveyee_users SU_2', 'H.owner_id = SU_2.id');
+		} elseif(safeText('house_ownership_type', FALSE, 'get') == 2) { // for rent
+			$this->db->where('FHM.residence_type_id', 1); // 1 = for rent
+		}
+
+
+		switch(safeText('land_ownership_type', FALSE, 'get')) {
+
+			case '1': // is owner
+				//$this->db->where('L.owner_user_id', 'SU.id');
+
+				//$this->db->join('lands L2', 'L2.owner_user_id = SU_2.id');
+				//$this->db->join('surveyee_users SU_3', 'L.owner_user_id = SU_3.id');
+				break;
+
+			case '2': // leased Land
+
+				//$this->db->join('leased_lands LL', 'L.id = LL.land_id', 'LEFT');
+				//$this->db->where('LL.lessee_user_id', 'SU.id');
+
+				$this->db->join('leased_lands LL', 'L.id = LL.land_id', 'LEFT');
+				$this->db->join('surveyee_users SU_3', 'LL.owner_user_id = SU_3.id');
+				break;
+
+			case '3': // is legacy
+				$this->db->where('L.is_legacy', 1);
+				break;
+		}
+
+		if(safeText('house_area_range', FALSE, 'get')) {
+			$this->db->where('H.house_area_range_id', safeText('house_area_range', FALSE, 'get'));
+		}
+
+		if(safeText('land_area_range', FALSE, 'get')) {
+			$this->db->where('L.area_range', safeText('land_area_range', FALSE, 'get'));
+		}
+
+		if(safeText('house_type', FALSE, 'get')) {
+			$this->db->where('HHTM.house_type_id', safeText('house_type', FALSE, 'get'));
+			$this->db->join('house_house_type_map HHTM', 'H.id = HHTM.house_id', 'LEFT');
+		}
+
+
+		$aSearchResult = $this->db->get('surveys S')->result();
+
+
+		log_message('ERROR', $this->db->last_query());
+
+
+		if($aSearchResult) {
+			foreach($aSearchResult AS $oRow) {
+				$aJsonData['result'][] = array(
+					'user_name' => $oRow->user_name,
+					'ward_id' 	=> $oRow->ward_id,
+					'survey_id' 	=> $oRow->survey_id
+				);
+			}
+		}
+
+
+		$aJsonData['message'] = count($aJsonData['result']) . ' results found';
+
+
+
+		$sJsonData = json_encode($aJsonData);
+
+		$this->output->set_header('Content-type: application/json');
+		$this->load->view('output', array('output' => $sJsonData));
+
+	}
 
 }
 

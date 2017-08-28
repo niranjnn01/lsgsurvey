@@ -92,20 +92,14 @@ class Processanswer_model
 				// populate user data
 				$iRowNumber = ++$iKey;
 				foreach($aTableFieldName_to_FormFieldName_map AS $sTableFieldName => $sFormFieldName) {
-          $aInput[$sTableFieldName] = safeText($aItem[$sFormFieldName . $iRowNumber], false, '', TRUE);
+          $value = safeText($aItem[$sFormFieldName . $iRowNumber], false, '', TRUE);
+
+          // if it is empty string, then we assign NULL as the value. - because otherwise, it will affect foreign key constrains.
+          // 0 cannot be considered like this, as it can be a valid response.
+          $value = $value == '' ? NULL : $value;
+
+          $aInput[$sTableFieldName] = $value;
         }
-
-
-
-				// head of family
-				//$aInput['is_head_of_house'] = safeText($aItem['is_head_of_family' . $iRowNumber], false, '', TRUE) == 1 ? 1 : 0;
-
-				//relationship with head of family
-				/*
-				if( ! $aInput['is_head_of_house'] ) {
-					$aInput['relationship_to_head_of_house'] = safeText($aItem['relationship_to_head_of_house' . $iRowNumber], false, '', TRUE);
-				}
-*/
 
 
 
@@ -271,8 +265,31 @@ function process_Answers_Address_Question ($iCurrentTemporarySurveyId) {
         }
 
 
+
         // check whether the data is valid
         list($bIsValid, $sError) = $this->ci_validation_is_valid($aQuestion, $value);
+
+
+        /**
+         * TEMPORARY ARRANGEMENT
+         *
+         * if the value is a true / false variant, then we do one additional step to ensure data integrity.
+         *
+         * Issue 1 : This will make the system fragile. ie, if we want to assign a different value for TRUE and FALSE
+         * other than 1 and 0. then this step will hinder it.
+         *
+         * Issue 2 : No data integrity ensured in DB level. invalid data can still creep in
+         * survey_model->createSurvey() step.
+         *
+         */
+        if ( $aQuestion['true_false_variant'] !== NULL) {
+
+          if( FALSE === in_array($value, array(0,1)) ) {
+            $bIsValid = FALSE;
+            $sError = 'Invalid Data . T/F';
+          }
+        }
+
 
         if( $bIsValid ) {
 
@@ -280,7 +297,6 @@ function process_Answers_Address_Question ($iCurrentTemporarySurveyId) {
 
   				$this->updateTemporaryTable($this->iEnumeratorAccountNo, $aData, 'raw_data', $iCurrentTemporarySurveyId);
         }
-
 
 
 			} else {
